@@ -1,0 +1,17 @@
+name = "sborrbot-worker"
+main = "src/index.ts"
+compatibility_date = "2025-02-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "sborrbot-db"
+database_id = "local"
+migrations_dir = "../migrations"
+
+[[r2_buckets]]
+binding = "MEDIA_BUCKET"
+bucket_name = "sborrbot-media"
+
+[vars]
+BOT_SECRET = "change-me-in-production"
+# BOT_TOKEN → wrangler secret put BOT_TOKEN

@@ -1,0 +1,75 @@
+---
+interface Props {
+  title: string;
+  showSidebar?: boolean;
+}
+
+const { title, showSidebar = true } = Astro.props;
+
+const currentPath = new URL(Astro.request.url).pathname;
+
+const navItems = [
+  { href: '/dashboard', label: 'Dashboard', icon: '📊' },
+  { href: '/content/texts', label: 'Testi', icon: '📝' },
+  { href: '/content/audio', label: 'Audio', icon: '🔊' },
+  { href: '/content/photos', label: 'Foto', icon: '📸' },
+  { href: '/content/stickers', label: 'Sticker', icon: '🎨' },
+  { href: '/groups', label: 'Gruppi', icon: '👥' },
+  { href: '/logs', label: 'Log', icon: '📋' },
+  { href: '/settings', label: 'Impostazioni', icon: '⚙️' },
+];
+---
+
+<!DOCTYPE html>
+<html lang="it" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title} - SborrBot Admin</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>" />
+</head>
+<body class="min-h-screen bg-gray-50 dark:bg-gray-900">
+  {showSidebar ? (
+    <div class="flex min-h-screen">
+      <!-- Sidebar -->
+      <aside class="w-64 bg-gray-800 text-white flex flex-col flex-shrink-0">
+        <div class="p-4 border-b border-gray-700">
+          <h1 class="text-xl font-bold">🤖 SborrBot</h1>
+          <p class="text-xs text-gray-400 mt-1">Admin Panel</p>
+        </div>
+        <nav class="flex-1 p-4 space-y-1">
+          {navItems.map(item => (
+            <a
+              href={item.href}
+              class={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+                currentPath.startsWith(item.href)
+                  ? 'bg-primary-600 text-white'
+                  : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+              }`}
+            >
+              <span>{item.icon}</span>
+              <span>{item.label}</span>
+            </a>
+          ))}
+        </nav>
+        <div class="p-4 border-t border-gray-700">
+          <form action="/api/auth/logout" method="POST">
+            <button type="submit" class="w-full text-left text-sm text-gray-400 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-gray-700">
+              🚪 Logout
+            </button>
+          </form>
+        </div>
+      </aside>
+
+      <!-- Main content -->
+      <main class="flex-1 p-8 overflow-auto">
+        <slot />
+      </main>
+    </div>
+  ) : (
+    <main>
+      <slot />
+    </main>
+  )}
+</body>
+</html>

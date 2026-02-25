@@ -1,0 +1,128 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCategories, getMediaItems } from '../../lib/db';
+
+const env = (Astro.locals as any).runtime?.env;
+const url = new URL(Astro.request.url);
+const categoryId = Number(url.searchParams.get('category')) || 0;
+const page = Number(url.searchParams.get('page')) || 1;
+
+let categories: any[] = [];
+let items: any[] = [];
+let total = 0;
+let selectedCategory: any = null;
+
+if (env?.DB) {
+  const catResult = await getCategories(env.DB, 'sticker');
+  categories = catResult.results ?? [];
+  if (categoryId) {
+    selectedCategory = categories.find((c: any) => c.id === categoryId);
+    const result = await getMediaItems(env.DB, categoryId, page);
+    items = result.items as any[];
+    total = result.total;
+  } else if (categories.length > 0) {
+    return Astro.redirect(`/content/stickers?category=${categories[0].id}`);
+  }
+}
+---
+
+<Layout title="Sticker">
+  <div class="space-y-6">
+    <div>
+      <h1 class="text-2xl font-bold text-white">🎨 Gestione Sticker</h1>
+      <p class="text-gray-400 mt-1">Sticker Telegram per file_id</p>
+    </div>
+
+    <div class="flex gap-2 flex-wrap">
+      {categories.map((cat: any) => (
+        <a
+          href={`/content/stickers?category=${cat.id}`}
+          class={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            cat.id === categoryId
+              ? 'bg-primary-600 text-white'
+              : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+          }`}
+        >
+          {cat.name}
+        </a>
+      ))}
+    </div>
+
+    {selectedCategory && (
+      <div class="bg-gray-800 rounded-xl border border-gray-700">
+        <div class="p-4 border-b border-gray-700">
+          <form id="addForm" class="flex gap-3">
+            <input
+              type="text"
+              name="file_id"
+              placeholder="Telegram file_id dello sticker"
+              class="flex-1 px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 outline-none"
+            />
+            <input
+              type="text"
+              name="caption"
+              placeholder="Descrizione (opzionale)"
+              class="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 outline-none"
+            />
+            <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg transition-colors">
+              Aggiungi
+            </button>
+          </form>
+          <p class="text-gray-500 text-xs mt-2">
+            Per ottenere un file_id, inoltra uno sticker al bot @RawDataBot su Telegram
+          </p>
+        </div>
+
+        <div class="divide-y divide-gray-700">
+          {items.length > 0 ? items.map((item: any) => (
+            <div class="p-4 flex items-center justify-between gap-4">
+              <div class="flex-1">
+                <p class="text-white text-sm font-mono">{item.telegram_file_id || item.r2_key}</p>
+                <p class="text-gray-500 text-xs mt-1">{item.caption || 'Nessuna descrizione'}</p>
+              </div>
+              <button
+                data-delete={item.id}
+                class="text-red-400 hover:text-red-300 text-sm px-3 py-1 rounded bg-gray-700 hover:bg-gray-600 transition-colors"
+              >
+                Elimina
+              </button>
+            </div>
+          )) : (
+            <div class="p-8 text-center text-gray-500">
+              Nessuno sticker in questa categoria.
+            </div>
+          )}
+        </div>
+      </div>
+    )}
+  </div>
+
+  <script define:vars={{ categoryId }}>
+    document.getElementById('addForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const fileId = form.file_id.value.trim();
+      if (!fileId) return;
+
+      const res = await fetch('/api/content/stickers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          category_id: categoryId,
+          telegram_file_id: fileId,
+          caption: form.caption.value.trim() || null,
+        }),
+      });
+      if (res.ok) window.location.reload();
+    });
+
+    document.querySelectorAll('[data-delete]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-delete');
+        if (!confirm('Eliminare questo sticker?')) return;
+        const res = await fetch(`/api/content/media?id=${id}`, { method: 'DELETE' });
+        if (res.ok) window.location.reload();
+      });
+    });
+  </script>
+</Layout>

@@ -1,0 +1,13 @@
+name = "sborrbot-backoffice"
+compatibility_date = "2025-02-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "sborrbot-db"
+database_id = "local"
+
+[[r2_buckets]]
+binding = "MEDIA_BUCKET"
+bucket_name = "sborrbot-media"
+
+# ADMIN_USERNAME, ADMIN_PASSWORD, SESSION_SECRET → Cloudflare Dashboard secrets

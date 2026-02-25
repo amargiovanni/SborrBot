@@ -1,0 +1,170 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCategories, getMediaItems } from '../../lib/db';
+
+const env = (Astro.locals as any).runtime?.env;
+const url = new URL(Astro.request.url);
+const categoryId = Number(url.searchParams.get('category')) || 0;
+const page = Number(url.searchParams.get('page')) || 1;
+
+let categories: any[] = [];
+let items: any[] = [];
+let total = 0;
+let selectedCategory: any = null;
+
+if (env?.DB) {
+  const catResult = await getCategories(env.DB, 'audio');
+  categories = catResult.results ?? [];
+  if (categoryId) {
+    selectedCategory = categories.find((c: any) => c.id === categoryId);
+    const result = await getMediaItems(env.DB, categoryId, page);
+    items = result.items as any[];
+    total = result.total;
+  } else if (categories.length > 0) {
+    return Astro.redirect(`/content/audio?category=${categories[0].id}`);
+  }
+}
+
+const totalPages = Math.ceil(total / 20);
+---
+
+<Layout title="Audio">
+  <div class="space-y-6">
+    <div>
+      <h1 class="text-2xl font-bold text-white">🔊 Gestione Audio</h1>
+      <p class="text-gray-400 mt-1">Audio clip per ogni categoria</p>
+    </div>
+
+    <!-- Category tabs -->
+    <div class="flex gap-2 flex-wrap">
+      {categories.map((cat: any) => (
+        <a
+          href={`/content/audio?category=${cat.id}`}
+          class={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            cat.id === categoryId
+              ? 'bg-primary-600 text-white'
+              : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+          }`}
+        >
+          {cat.name}
+        </a>
+      ))}
+    </div>
+
+    {selectedCategory && (
+      <div class="bg-gray-800 rounded-xl border border-gray-700">
+        <!-- Upload form -->
+        <div class="p-4 border-b border-gray-700">
+          <form id="uploadForm" enctype="multipart/form-data" class="flex gap-3 items-end">
+            <div class="flex-1">
+              <label class="block text-sm text-gray-400 mb-1">File audio (mp3, ogg, wav)</label>
+              <input
+                type="file"
+                name="file"
+                accept="audio/*"
+                class="w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:bg-primary-600 file:text-white hover:file:bg-primary-700"
+              />
+            </div>
+            <div>
+              <label class="block text-sm text-gray-400 mb-1">Titolo (opzionale)</label>
+              <input
+                type="text"
+                name="caption"
+                placeholder="Titolo clip"
+                class="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 outline-none"
+              />
+            </div>
+            <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
+              Carica
+            </button>
+          </form>
+          <div id="uploadStatus" class="hidden mt-2 text-sm"></div>
+        </div>
+
+        <!-- Items list -->
+        <div class="divide-y divide-gray-700">
+          {items.length > 0 ? items.map((item: any) => (
+            <div class="p-4 flex items-center justify-between gap-4">
+              <div class="flex-1">
+                <p class="text-white text-sm font-medium">{item.file_name}</p>
+                <p class="text-gray-500 text-xs mt-1">
+                  {item.caption ? `"${item.caption}" | ` : ''}
+                  {item.mime_type} | {item.file_size ? `${Math.round(item.file_size / 1024)} KB` : 'N/A'}
+                </p>
+                <p class="text-gray-600 text-xs">{item.r2_key}</p>
+              </div>
+              <div class="flex gap-2">
+                <span class={`text-xs px-2 py-1 rounded ${item.telegram_file_id ? 'bg-green-900 text-green-300' : 'bg-yellow-900 text-yellow-300'}`}>
+                  {item.telegram_file_id ? 'Cached' : 'Non cached'}
+                </span>
+                <button
+                  data-delete={item.id}
+                  data-r2key={item.r2_key}
+                  class="text-red-400 hover:text-red-300 text-sm px-3 py-1 rounded bg-gray-700 hover:bg-gray-600 transition-colors"
+                >
+                  Elimina
+                </button>
+              </div>
+            </div>
+          )) : (
+            <div class="p-8 text-center text-gray-500">
+              Nessun audio in questa categoria. Caricane uno!
+            </div>
+          )}
+        </div>
+
+        {totalPages > 1 && (
+          <div class="p-4 border-t border-gray-700 flex items-center justify-between">
+            <span class="text-gray-400 text-sm">{total} file totali</span>
+            <div class="flex gap-2">
+              {page > 1 && (
+                <a href={`/content/audio?category=${categoryId}&page=${page - 1}`} class="px-3 py-1 bg-gray-700 text-gray-300 rounded hover:bg-gray-600">← Prec</a>
+              )}
+              <span class="px-3 py-1 text-gray-400">{page}/{totalPages}</span>
+              {page < totalPages && (
+                <a href={`/content/audio?category=${categoryId}&page=${page + 1}`} class="px-3 py-1 bg-gray-700 text-gray-300 rounded hover:bg-gray-600">Succ →</a>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    )}
+  </div>
+
+  <script define:vars={{ categoryId }}>
+    document.getElementById('uploadForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const statusEl = document.getElementById('uploadStatus');
+
+      const formData = new FormData(form);
+      formData.append('category_id', String(categoryId));
+
+      statusEl.textContent = 'Caricamento in corso...';
+      statusEl.className = 'mt-2 text-sm text-yellow-400';
+      statusEl.classList.remove('hidden');
+
+      const res = await fetch('/api/content/upload', { method: 'POST', body: formData });
+      if (res.ok) {
+        statusEl.textContent = 'Caricato con successo!';
+        statusEl.className = 'mt-2 text-sm text-green-400';
+        setTimeout(() => window.location.reload(), 1000);
+      } else {
+        const data = await res.json();
+        statusEl.textContent = data.error || 'Errore durante il caricamento';
+        statusEl.className = 'mt-2 text-sm text-red-400';
+      }
+    });
+
+    document.querySelectorAll('[data-delete]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-delete');
+        const r2key = btn.getAttribute('data-r2key');
+        if (!confirm('Sei sicuro di voler eliminare questo file?')) return;
+
+        const res = await fetch(`/api/content/media?id=${id}&r2key=${encodeURIComponent(r2key)}`, { method: 'DELETE' });
+        if (res.ok) window.location.reload();
+      });
+    });
+  </script>
+</Layout>

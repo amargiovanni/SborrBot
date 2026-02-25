@@ -1,0 +1,81 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getDashboardStats } from '../lib/db';
+
+const env = (Astro.locals as any).runtime?.env;
+let stats = { totalCommands: 0, activeGroups: 0, topCommands: [] as any[], recentActivity: [] as any[] };
+
+if (env?.DB) {
+  stats = await getDashboardStats(env.DB);
+}
+---
+
+<Layout title="Dashboard">
+  <div class="space-y-8">
+    <div>
+      <h1 class="text-2xl font-bold text-white">Dashboard</h1>
+      <p class="text-gray-400 mt-1">Panoramica del bot</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+        <div class="text-3xl font-bold text-white">{stats.totalCommands}</div>
+        <div class="text-gray-400 text-sm mt-1">Comandi totali</div>
+      </div>
+      <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+        <div class="text-3xl font-bold text-white">{stats.activeGroups}</div>
+        <div class="text-gray-400 text-sm mt-1">Gruppi attivi</div>
+      </div>
+      <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+        <div class="text-3xl font-bold text-white">{stats.topCommands.length > 0 ? stats.topCommands[0].command : '-'}</div>
+        <div class="text-gray-400 text-sm mt-1">Comando piu usato</div>
+      </div>
+    </div>
+
+    <!-- Top Commands -->
+    <div class="bg-gray-800 rounded-xl border border-gray-700 p-6">
+      <h2 class="text-lg font-semibold text-white mb-4">Top 10 Comandi</h2>
+      {stats.topCommands.length > 0 ? (
+        <div class="space-y-3">
+          {stats.topCommands.map((cmd: any, i: number) => (
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <span class="text-gray-500 text-sm w-6">{i + 1}.</span>
+                <span class="text-white font-medium">{cmd.command}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-32 bg-gray-700 rounded-full h-2">
+                  <div
+                    class="bg-primary-500 h-2 rounded-full"
+                    style={`width: ${Math.round((cmd.count / stats.topCommands[0].count) * 100)}%`}
+                  ></div>
+                </div>
+                <span class="text-gray-400 text-sm w-12 text-right">{cmd.count}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p class="text-gray-500">Nessun comando ancora eseguito</p>
+      )}
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="bg-gray-800 rounded-xl border border-gray-700 p-6">
+      <h2 class="text-lg font-semibold text-white mb-4">Attivita ultimi 7 giorni</h2>
+      {stats.recentActivity.length > 0 ? (
+        <div class="grid grid-cols-7 gap-2">
+          {stats.recentActivity.map((day: any) => (
+            <div class="text-center">
+              <div class="text-xs text-gray-500 mb-1">{day.date.slice(5)}</div>
+              <div class="bg-primary-600 rounded text-white text-sm py-1">{day.count}</div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p class="text-gray-500">Nessuna attivita recente</p>
+      )}
+    </div>
+  </div>
+</Layout>

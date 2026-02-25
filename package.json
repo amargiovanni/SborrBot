@@ -1,0 +1,18 @@
+{
+  "name": "sborrbot",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "worker",
+    "backoffice",
+    "shared"
+  ],
+  "scripts": {
+    "dev:worker": "cd worker && npx wrangler dev",
+    "dev:backoffice": "cd backoffice && npm run dev",
+    "deploy:worker": "cd worker && npx wrangler deploy",
+    "deploy:backoffice": "cd backoffice && npm run build",
+    "db:migrate:local": "cd worker && npx wrangler d1 execute sborrbot-db --local --file=../migrations/0001_initial_schema.sql",
+    "db:seed:local": "cd worker && npx wrangler d1 execute sborrbot-db --local --file=../migrations/0002_seed_data.sql"
+  }
+}

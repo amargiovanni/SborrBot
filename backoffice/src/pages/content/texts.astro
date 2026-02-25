@@ -1,0 +1,151 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCategories, getTextResponses } from '../../lib/db';
+
+const env = (Astro.locals as any).runtime?.env;
+const url = new URL(Astro.request.url);
+const categoryId = Number(url.searchParams.get('category')) || 0;
+const page = Number(url.searchParams.get('page')) || 1;
+
+let categories: any[] = [];
+let items: any[] = [];
+let total = 0;
+let selectedCategory: any = null;
+
+if (env?.DB) {
+  const catResult = await getCategories(env.DB, 'text');
+  categories = catResult.results ?? [];
+  if (categoryId) {
+    selectedCategory = categories.find((c: any) => c.id === categoryId);
+    const result = await getTextResponses(env.DB, categoryId, page);
+    items = result.items as any[];
+    total = result.total;
+  } else if (categories.length > 0) {
+    return Astro.redirect(`/content/texts?category=${categories[0].id}`);
+  }
+}
+
+const totalPages = Math.ceil(total / 20);
+---
+
+<Layout title="Testi">
+  <div class="space-y-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold text-white">📝 Gestione Testi</h1>
+        <p class="text-gray-400 mt-1">Frasi per insulti, minacce, bestemmie, nonno e saluti</p>
+      </div>
+    </div>
+
+    <!-- Category tabs -->
+    <div class="flex gap-2 flex-wrap">
+      {categories.map((cat: any) => (
+        <a
+          href={`/content/texts?category=${cat.id}`}
+          class={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            cat.id === categoryId
+              ? 'bg-primary-600 text-white'
+              : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+          }`}
+        >
+          {cat.name}
+        </a>
+      ))}
+    </div>
+
+    {selectedCategory && (
+      <div class="bg-gray-800 rounded-xl border border-gray-700">
+        <!-- Add new -->
+        <div class="p-4 border-b border-gray-700">
+          <form id="addForm" class="flex gap-3">
+            <input type="hidden" name="category_id" value={categoryId} />
+            <input
+              type="text"
+              name="content"
+              placeholder="Nuova frase... (usa {name} come placeholder per il nome)"
+              class="flex-1 px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 outline-none"
+            />
+            <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg transition-colors">
+              Aggiungi
+            </button>
+          </form>
+        </div>
+
+        <!-- Items list -->
+        <div class="divide-y divide-gray-700">
+          {items.length > 0 ? items.map((item: any) => (
+            <div class="p-4 flex items-center justify-between gap-4 hover:bg-gray-750">
+              <div class="flex-1">
+                <p class="text-white text-sm">{item.content}</p>
+                <p class="text-gray-500 text-xs mt-1">ID: {item.id} | {item.created_at}</p>
+              </div>
+              <div class="flex gap-2">
+                <button
+                  data-delete={item.id}
+                  class="text-red-400 hover:text-red-300 text-sm px-3 py-1 rounded bg-gray-700 hover:bg-gray-600 transition-colors"
+                >
+                  Elimina
+                </button>
+              </div>
+            </div>
+          )) : (
+            <div class="p-8 text-center text-gray-500">
+              Nessuna frase in questa categoria. Aggiungine una!
+            </div>
+          )}
+        </div>
+
+        <!-- Pagination -->
+        {totalPages > 1 && (
+          <div class="p-4 border-t border-gray-700 flex items-center justify-between">
+            <span class="text-gray-400 text-sm">{total} elementi totali</span>
+            <div class="flex gap-2">
+              {page > 1 && (
+                <a href={`/content/texts?category=${categoryId}&page=${page - 1}`} class="px-3 py-1 bg-gray-700 text-gray-300 rounded hover:bg-gray-600">
+                  ← Prec
+                </a>
+              )}
+              <span class="px-3 py-1 text-gray-400">{page}/{totalPages}</span>
+              {page < totalPages && (
+                <a href={`/content/texts?category=${categoryId}&page=${page + 1}`} class="px-3 py-1 bg-gray-700 text-gray-300 rounded hover:bg-gray-600">
+                  Succ →
+                </a>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    )}
+  </div>
+
+  <script define:vars={{ categoryId }}>
+    // Add new text response
+    document.getElementById('addForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const content = form.content.value.trim();
+      if (!content) return;
+
+      const res = await fetch('/api/content/texts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ category_id: categoryId, content }),
+      });
+
+      if (res.ok) {
+        window.location.reload();
+      }
+    });
+
+    // Delete
+    document.querySelectorAll('[data-delete]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-delete');
+        if (!confirm('Sei sicuro di voler eliminare questa frase?')) return;
+
+        const res = await fetch(`/api/content/texts?id=${id}`, { method: 'DELETE' });
+        if (res.ok) window.location.reload();
+      });
+    });
+  </script>
+</Layout>

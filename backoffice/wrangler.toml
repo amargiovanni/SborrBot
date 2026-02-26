@@ -4,7 +4,7 @@ compatibility_date = "2025-02-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "sborrbot-db"
-database_id = "local"
+database_id = "7ae5a815-7c5d-49f7-8888-4cae06ebb600"
 
 [[r2_buckets]]
 binding = "MEDIA_BUCKET"

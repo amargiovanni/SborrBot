@@ -94,4 +94,16 @@ export class TelegramApi {
     });
     return res.json();
   }
+
+  async setMessageReaction(chatId: number | string, messageId: number, emoji: string): Promise<void> {
+    await fetch(`${this.baseUrl}/setMessageReaction`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        message_id: messageId,
+        reaction: [{ type: 'emoji', emoji }],
+      }),
+    });
+  }
 }

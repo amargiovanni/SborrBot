@@ -1,6 +1,6 @@
 import { Env } from '../types';
 import { TelegramApi } from '../services/telegram';
-import { getRandomTextResponse, getMultipleRandomTextResponses } from '../services/db';
+import { getRandomTextResponse, getMultipleRandomTextResponses, getRandomGroupUser } from '../services/db';
 
 interface CommandResult {
   handled: boolean;
@@ -39,9 +39,22 @@ const PATTERNS: { pattern: RegExp; slug: string; hasTarget: boolean; useSenderNa
   { pattern: /^ciao\b/i, slug: 'saluti', hasTarget: false },
   // Anti-Juve: triggers on any message containing these words
   { pattern: /\b(?:juve|juventus|gobbi|bianconeri)\b/i, slug: 'anti-juve', hasTarget: false, useSenderName: true },
-  // New features
+  // Oroscopo
   { pattern: /^oroscopo\s*(.*)/i, slug: 'oroscopo', hasTarget: false },
+  // Frasi celebri
   { pattern: /\b(?:frase celebre|citazione|perla di saggezza)\b/i, slug: 'frasi-celebri', hasTarget: false },
+  // Diagnosi medica
+  { pattern: /^(?:dottore|diagnosi)\s+(.+)/i, slug: 'diagnosi', hasTarget: true },
+  // Chi è
+  { pattern: /^(?:chi [eè]|presentami)\s+(.+)/i, slug: 'chi-e', hasTarget: true },
+  // Notizia flash
+  { pattern: /\bnotizia\b/i, slug: 'notizie', hasTarget: false },
+  // Lamenti (auto-trigger)
+  {
+    pattern: /\b(?:ho fame|sono stanco|sono stanca|che noia|mi annoio|sono triste|che palle|ho sonno|sono depresso|sono depressa|sto male|non ce la faccio|sono solo|sono sola|ho caldo|ho freddo|sono stressato|sono stressata|mi fa male|che fatica|sono esausto|sono esausta|che barba|sono a pezzi|non ne posso pi[uù]|basta tutto)\b/i,
+    slug: 'lamenti',
+    hasTarget: false,
+  },
 ];
 
 async function handleOroscopo(text: string, chatId: string, env: Env, api: TelegramApi): Promise<CommandResult> {
@@ -50,24 +63,18 @@ async function handleOroscopo(text: string, chatId: string, env: Env, api: Teleg
 
   const input = match[1]?.trim().toLowerCase() || '';
 
-  // Determine the sign
   let signName: string;
   if (input && ZODIAC_SIGNS[input]) {
     signName = input;
   } else if (input) {
-    // Try to find a partial match
     const found = ZODIAC_NAMES.find(s => s.startsWith(input));
     if (found) {
       signName = found;
     } else {
-      await api.sendMessage(
-        chatId,
-        `Non conosco il segno "${input}"! Prova con: ${ZODIAC_NAMES.join(', ')}`,
-      );
+      await api.sendMessage(chatId, `Non conosco il segno "${input}"! Prova con: ${ZODIAC_NAMES.join(', ')}`);
       return { handled: true, command: 'oroscopo' };
     }
   } else {
-    // Random sign
     signName = ZODIAC_NAMES[Math.floor(Math.random() * ZODIAC_NAMES.length)];
   }
 
@@ -81,7 +88,6 @@ async function handleOroscopo(text: string, chatId: string, env: Env, api: Teleg
 
   const displayName = signName.charAt(0).toUpperCase() + signName.slice(1);
   const message = `\u{1F52E} *Oroscopo di oggi \u2014 ${displayName}* ${emoji}\n\n${response}`;
-
   await api.sendMessage(chatId, message, 'Markdown');
   return { handled: true, command: 'oroscopo' };
 }
@@ -118,9 +124,27 @@ async function handleFrasiCelebri(chatId: string, env: Env, api: TelegramApi): P
   return { handled: true, command: 'frasi-celebri' };
 }
 
+async function handleNotizia(chatId: string, userId: string, senderName: string, env: Env, api: TelegramApi): Promise<CommandResult> {
+  const randomUser = await getRandomGroupUser(env.DB, chatId, userId);
+  const targetName = randomUser ?? senderName;
+
+  const response = await getRandomTextResponse(env.DB, 'notizie');
+
+  if (!response) {
+    await api.sendMessage(chatId, 'Non ho notizie... aggiungi contenuti dal backoffice!');
+    return { handled: true, command: 'notizie' };
+  }
+
+  const finalText = response.replace(/\{name\}/g, targetName);
+  const message = `\u{1F4F0} *NOTIZIA FLASH*\n\n${finalText}`;
+  await api.sendMessage(chatId, message, 'Markdown');
+  return { handled: true, command: 'notizie', target: targetName };
+}
+
 export async function handleTextCommand(
   text: string,
   chatId: string,
+  userId: string,
   env: Env,
   api: TelegramApi,
   senderName?: string
@@ -129,20 +153,17 @@ export async function handleTextCommand(
     const match = text.match(pattern);
     if (!match) continue;
 
-    // Custom handlers for new features
-    if (slug === 'oroscopo') {
-      return handleOroscopo(text, chatId, env, api);
-    }
+    // Custom handlers
+    if (slug === 'oroscopo') return handleOroscopo(text, chatId, env, api);
     if (slug === 'combo-insulti') {
       const target = match[1]?.trim();
       if (!target) continue;
       return handleComboInsulti(target, chatId, env, api);
     }
-    if (slug === 'frasi-celebri') {
-      return handleFrasiCelebri(chatId, env, api);
-    }
+    if (slug === 'frasi-celebri') return handleFrasiCelebri(chatId, env, api);
+    if (slug === 'notizie') return handleNotizia(chatId, userId, senderName ?? 'Tizio', env, api);
 
-    // Standard handler for existing patterns
+    // Standard handler
     const target = hasTarget ? match[1]?.trim() : undefined;
     const response = await getRandomTextResponse(env.DB, slug);
 
@@ -151,7 +172,6 @@ export async function handleTextCommand(
       return { handled: true, command: slug, target };
     }
 
-    // Replace {name} placeholder with target or sender name
     let finalResponse = response;
     if (target) {
       finalResponse = response.replace(/\{name\}/g, target);

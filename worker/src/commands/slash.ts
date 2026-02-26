@@ -33,13 +33,19 @@ export async function handleSlashCommand(
         '• `insulta [nome]` — Insulta qualcuno\n' +
         '• `insulta combo [nome]` — Triplo insulto devastante\n' +
         '• `minaccia [nome]` — Minaccia qualcuno\n' +
+        '• `dottore [nome]` / `diagnosi [nome]` — Referto medico assurdo\n' +
+        '• `chi è [nome]` / `presentami [nome]` — Bio inventata e volgare\n' +
+        '• `notizia` — Notizia flash su un membro del gruppo\n' +
         '• `bestemmia` — Una bella bestemmia\n' +
         '• `come diceva mio nonno` — Saggezza del nonno\n' +
         '• `buongiorno` / `buonanotte` / `ciao` — Saluti\n\n' +
-        '🔮 *Nuovi:*\n' +
+        '🔮 *Speciali:*\n' +
         '• `oroscopo [segno]` — Oroscopo dello sborrone\n' +
         '• `frase celebre` — Citazione trash\n' +
         '• `citazione` / `perla di saggezza` — Idem\n\n' +
+        '😭 *Auto-trigger:*\n' +
+        '• Scrivi "ho fame", "sono stanco" ecc. — risposta sarcastica garantita\n' +
+        '• Scrivi "juve" / "juventus" — reazione immediata 💩\n\n' +
         '📸 *Foto:*\n' +
         '• `fica` / `culo` / `tette` — Foto hot\n' +
         '• `degrado` — Immagini cursed\n\n' +

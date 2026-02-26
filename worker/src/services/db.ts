@@ -96,6 +96,18 @@ export async function logCommand(
     .run();
 }
 
+export async function getRandomGroupUser(db: D1Database, chatId: string, excludeUserId: string): Promise<string | null> {
+  const result = await db
+    .prepare(
+      `SELECT username FROM command_logs
+       WHERE telegram_chat_id = ? AND username IS NOT NULL AND telegram_user_id != ?
+       GROUP BY telegram_user_id ORDER BY RANDOM() LIMIT 1`
+    )
+    .bind(chatId, excludeUserId)
+    .first<{ username: string }>();
+  return result?.username ?? null;
+}
+
 export async function getCategoryList(db: D1Database, type: string): Promise<{ slug: string; name: string }[]> {
   const result = await db
     .prepare('SELECT slug, name FROM categories WHERE type = ? AND is_active = 1 ORDER BY name')

@@ -21,6 +21,20 @@ interface TelegramMessage {
   text?: string;
 }
 
+const JUVE_PATTERN = /\b(?:juve|juventus|gobbi|bianconeri)\b/i;
+const LAMENTI_PATTERN = /\b(?:ho fame|sono stanco|sono stanca|che noia|mi annoio|sono triste|che palle|ho sonno|sono depresso|sono depressa|sto male|non ce la faccio|sono solo|sono sola|ho caldo|ho freddo|sono stressato|sono stressata|mi fa male|che fatica|sono esausto|sono esausta|che barba|sono a pezzi|non ne posso pi[uù]|basta tutto)\b/i;
+const BESTEMMIA_PATTERN = /\bbestemmia\b/i;
+
+async function triggerAutoReaction(text: string, chatId: string, messageId: number, api: TelegramApi): Promise<void> {
+  if (JUVE_PATTERN.test(text)) {
+    await api.setMessageReaction(chatId, messageId, '\uD83D\uDCA9');
+  } else if (LAMENTI_PATTERN.test(text)) {
+    await api.setMessageReaction(chatId, messageId, '\uD83E\uDD23');
+  } else if (BESTEMMIA_PATTERN.test(text)) {
+    await api.setMessageReaction(chatId, messageId, '\uD83D\uDE31');
+  }
+}
+
 export async function handleUpdate(update: TelegramUpdate, env: Env): Promise<void> {
   const message = update.message;
   if (!message?.text) return;
@@ -45,6 +59,9 @@ export async function handleUpdate(update: TelegramUpdate, env: Env): Promise<vo
   const { active } = await checkGroup(env.DB, chatId, chatType, chatTitle);
   if (!active) return;
 
+  // Fire-and-forget emoji reaction
+  triggerAutoReaction(text, chatId, message.message_id, api).catch(() => {});
+
   // Slash commands
   if (text.startsWith('/')) {
     const result = await handleSlashCommand(text, chatId, env, api);
@@ -54,9 +71,9 @@ export async function handleUpdate(update: TelegramUpdate, env: Env): Promise<vo
     return;
   }
 
-  // Text commands (insulta, minaccia, bestemmia, nonno, saluti, anti-juve)
+  // Text commands
   const senderName = message.from?.first_name ?? message.from?.username ?? 'Tizio';
-  const textResult = await handleTextCommand(text, chatId, env, api, senderName);
+  const textResult = await handleTextCommand(text, chatId, userId, env, api, senderName);
   if (textResult.handled) {
     await logBotCommand(env.DB, chatId, userId, username, 'keyword', textResult.command!, textResult.target ?? null, 'text');
     return;

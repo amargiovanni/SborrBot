@@ -31,8 +31,8 @@ const totalPages = Math.ceil(total / 20);
 <Layout title="Audio">
   <div class="space-y-6">
     <div>
-      <h1 class="text-2xl font-bold text-white">🔊 Gestione Audio</h1>
-      <p class="text-gray-400 mt-1">Audio clip per ogni categoria</p>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">🔊 Gestione Audio</h1>
+      <p class="text-gray-500 dark:text-gray-400 mt-1">Audio clip per ogni categoria</p>
     </div>
 
     <!-- Category tabs -->
@@ -40,10 +40,10 @@ const totalPages = Math.ceil(total / 20);
       {categories.map((cat: any) => (
         <a
           href={`/content/audio?category=${cat.id}`}
-          class={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+          class={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
             cat.id === categoryId
               ? 'bg-primary-600 text-white'
-              : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
           }`}
         >
           {cat.name}
@@ -52,29 +52,29 @@ const totalPages = Math.ceil(total / 20);
     </div>
 
     {selectedCategory && (
-      <div class="bg-gray-800 rounded-xl border border-gray-700">
+      <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
         <!-- Upload form -->
-        <div class="p-4 border-b border-gray-700">
+        <div class="p-4 border-b border-gray-100 dark:border-gray-800">
           <form id="uploadForm" enctype="multipart/form-data" class="flex gap-3 items-end">
             <div class="flex-1">
-              <label class="block text-sm text-gray-400 mb-1">File audio (mp3, ogg, wav)</label>
+              <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">File audio (mp3, ogg, wav)</label>
               <input
                 type="file"
                 name="file"
                 accept="audio/*"
-                class="w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:bg-primary-600 file:text-white hover:file:bg-primary-700"
+                class="w-full text-sm text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:bg-primary-600 file:text-white hover:file:bg-primary-700"
               />
             </div>
             <div>
-              <label class="block text-sm text-gray-400 mb-1">Titolo (opzionale)</label>
+              <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">Titolo (opzionale)</label>
               <input
                 type="text"
                 name="caption"
                 placeholder="Titolo clip"
-                class="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 outline-none"
+                class="px-4 py-2 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500 outline-none"
               />
             </div>
-            <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
+            <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-xl transition-colors whitespace-nowrap">
               Carica
             </button>
           </form>
@@ -82,47 +82,47 @@ const totalPages = Math.ceil(total / 20);
         </div>
 
         <!-- Items list -->
-        <div class="divide-y divide-gray-700">
+        <div class="divide-y divide-gray-100 dark:divide-gray-800">
           {items.length > 0 ? items.map((item: any) => (
             <div class="p-4 flex items-center justify-between gap-4">
               <div class="flex-1">
-                <p class="text-white text-sm font-medium">{item.file_name}</p>
-                <p class="text-gray-500 text-xs mt-1">
+                <p class="text-gray-900 dark:text-white text-sm font-medium">{item.file_name}</p>
+                <p class="text-gray-400 dark:text-gray-500 text-xs mt-1">
                   {item.caption ? `"${item.caption}" | ` : ''}
                   {item.mime_type} | {item.file_size ? `${Math.round(item.file_size / 1024)} KB` : 'N/A'}
                 </p>
-                <p class="text-gray-600 text-xs">{item.r2_key}</p>
+                <p class="text-gray-500 dark:text-gray-500 text-xs">{item.r2_key}</p>
               </div>
               <div class="flex gap-2">
-                <span class={`text-xs px-2 py-1 rounded ${item.telegram_file_id ? 'bg-green-900 text-green-300' : 'bg-yellow-900 text-yellow-300'}`}>
+                <span class={`text-xs px-2 py-1 rounded ${item.telegram_file_id ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300' : 'bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300'}`}>
                   {item.telegram_file_id ? 'Cached' : 'Non cached'}
                 </span>
                 <button
                   data-delete={item.id}
                   data-r2key={item.r2_key}
-                  class="text-red-400 hover:text-red-300 text-sm px-3 py-1 rounded bg-gray-700 hover:bg-gray-600 transition-colors"
+                  class="text-red-400 hover:text-red-300 text-sm px-3 py-1 rounded bg-red-50 dark:bg-gray-800 hover:bg-red-100 dark:hover:bg-gray-700 transition-colors"
                 >
                   Elimina
                 </button>
               </div>
             </div>
           )) : (
-            <div class="p-8 text-center text-gray-500">
+            <div class="p-8 text-center text-gray-400 dark:text-gray-500">
               Nessun audio in questa categoria. Caricane uno!
             </div>
           )}
         </div>
 
         {totalPages > 1 && (
-          <div class="p-4 border-t border-gray-700 flex items-center justify-between">
-            <span class="text-gray-400 text-sm">{total} file totali</span>
+          <div class="p-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+            <span class="text-gray-500 dark:text-gray-400 text-sm">{total} file totali</span>
             <div class="flex gap-2">
               {page > 1 && (
-                <a href={`/content/audio?category=${categoryId}&page=${page - 1}`} class="px-3 py-1 bg-gray-700 text-gray-300 rounded hover:bg-gray-600">← Prec</a>
+                <a href={`/content/audio?category=${categoryId}&page=${page - 1}`} class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-700">← Prec</a>
               )}
-              <span class="px-3 py-1 text-gray-400">{page}/{totalPages}</span>
+              <span class="px-3 py-1 text-gray-500 dark:text-gray-400">{page}/{totalPages}</span>
               {page < totalPages && (
-                <a href={`/content/audio?category=${categoryId}&page=${page + 1}`} class="px-3 py-1 bg-gray-700 text-gray-300 rounded hover:bg-gray-600">Succ →</a>
+                <a href={`/content/audio?category=${categoryId}&page=${page + 1}`} class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Succ →</a>
               )}
             </div>
           </div>

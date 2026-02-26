@@ -28,14 +28,14 @@ const typeLabels: Record<string, { label: string; icon: string; href: string }> 
 <Layout title="Contenuti">
   <div class="space-y-8">
     <div>
-      <h1 class="text-2xl font-bold text-white">Gestione Contenuti</h1>
-      <p class="text-gray-400 mt-1">Gestisci tutti i contenuti del bot per categoria</p>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Gestione Contenuti</h1>
+      <p class="text-gray-500 dark:text-gray-400 mt-1">Gestisci tutti i contenuti del bot per categoria</p>
     </div>
 
     {Object.entries(grouped).map(([type, cats]) => (
-      <div class="bg-gray-800 rounded-xl border border-gray-700 p-6">
+      <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold text-white">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
             {typeLabels[type]?.icon} {typeLabels[type]?.label}
           </h2>
           <a href={typeLabels[type]?.href} class="text-primary-400 hover:text-primary-300 text-sm">
@@ -46,13 +46,13 @@ const typeLabels: Record<string, { label: string; icon: string; href: string }> 
           {(cats as any[]).map((cat: any) => (
             <a
               href={`${typeLabels[type]?.href}?category=${cat.id}`}
-              class="flex items-center justify-between p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
+              class="flex items-center justify-between p-3 bg-gray-100 dark:bg-gray-800 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
               <div>
-                <div class="text-white font-medium text-sm">{cat.name}</div>
-                <div class="text-gray-400 text-xs">{cat.slug}</div>
+                <div class="text-gray-900 dark:text-white font-medium text-sm">{cat.name}</div>
+                <div class="text-gray-500 dark:text-gray-400 text-xs">{cat.slug}</div>
               </div>
-              <span class={`text-xs px-2 py-1 rounded ${cat.is_active ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'}`}>
+              <span class={`text-xs px-2 py-1 rounded ${cat.is_active ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300' : 'bg-red-900 text-red-300'}`}>
                 {cat.is_active ? 'Attiva' : 'Disattivata'}
               </span>
             </a>

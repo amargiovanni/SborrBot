@@ -3,66 +3,102 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout title="Login" showSidebar={false}>
-  <div class="min-h-screen flex items-center justify-center bg-gray-900 px-4">
-    <div class="w-full max-w-md">
-      <div class="text-center mb-8">
-        <h1 class="text-4xl font-bold text-white mb-2">🤖 SborrBot</h1>
-        <p class="text-gray-400">Admin Panel</p>
+  <div class="min-h-screen flex items-center justify-center px-4 relative overflow-hidden bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
+    <!-- Animated background blobs -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div class="absolute -top-40 -right-40 w-96 h-96 bg-primary-400/20 dark:bg-primary-600/10 rounded-full blur-3xl animate-pulse"></div>
+      <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-indigo-400/20 dark:bg-indigo-600/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-300/10 dark:bg-purple-600/5 rounded-full blur-3xl"></div>
+    </div>
+
+    <div class="w-full max-w-md relative z-10">
+      <!-- Logo & tagline -->
+      <div class="text-center mb-10">
+        <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white dark:bg-gray-800 shadow-xl shadow-primary-500/10 dark:shadow-primary-500/5 mb-6 border border-gray-100 dark:border-gray-700">
+          <span class="text-4xl">🤖</span>
+        </div>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">SborrBot</h1>
+        <p class="text-gray-500 dark:text-gray-400 mt-2 text-sm">Il pannello di controllo del caos.</p>
+        <p class="text-gray-400 dark:text-gray-600 mt-1 text-xs italic">"Entra, se ne hai il coraggio."</p>
       </div>
 
-      <div class="bg-gray-800 rounded-xl shadow-lg p-8 border border-gray-700">
-        <form id="loginForm" class="space-y-6">
+      <!-- Login card -->
+      <div class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-2xl shadow-xl shadow-gray-200/50 dark:shadow-black/20 p-8 border border-gray-200/60 dark:border-gray-700/60">
+        <form id="loginForm" class="space-y-5">
           <div>
-            <label for="username" class="block text-sm font-medium text-gray-300 mb-2">Username</label>
+            <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Username</label>
             <input
               type="text"
               id="username"
               name="username"
               required
-              class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+              autocomplete="username"
+              class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 outline-none transition-all duration-150"
               placeholder="admin"
             />
           </div>
           <div>
-            <label for="password" class="block text-sm font-medium text-gray-300 mb-2">Password</label>
+            <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password</label>
             <input
               type="password"
               id="password"
               name="password"
               required
-              class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+              autocomplete="current-password"
+              class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 outline-none transition-all duration-150"
               placeholder="••••••••"
             />
           </div>
-          <div id="error" class="hidden text-red-400 text-sm"></div>
-          <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
-            Accedi
+          <div id="error" class="hidden text-red-600 dark:text-red-400 text-sm bg-red-50 dark:bg-red-950/50 px-4 py-2.5 rounded-xl border border-red-200 dark:border-red-800/50"></div>
+          <button
+            type="submit"
+            id="submitBtn"
+            class="w-full bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-150 shadow-lg shadow-primary-600/25 hover:shadow-primary-600/40"
+          >
+            Accedi al pannello
           </button>
         </form>
       </div>
+
+      <p class="text-center text-xs text-gray-400 dark:text-gray-600 mt-6">
+        Accesso riservato. Niente cazzate.
+      </p>
     </div>
   </div>
 
   <script>
     const form = document.getElementById('loginForm') as HTMLFormElement;
     const errorEl = document.getElementById('error') as HTMLDivElement;
+    const submitBtn = document.getElementById('submitBtn') as HTMLButtonElement;
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       errorEl.classList.add('hidden');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Accesso in corso...';
 
       const formData = new FormData(form);
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        body: formData,
-      });
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          body: formData,
+        });
 
-      if (res.ok) {
-        window.location.href = '/dashboard';
-      } else {
-        const data = await res.json();
-        errorEl.textContent = data.error || 'Credenziali non valide';
+        if (res.ok) {
+          submitBtn.textContent = 'Benvenuto, stronzo!';
+          window.location.href = '/dashboard';
+        } else {
+          const data = await res.json();
+          errorEl.textContent = data.error || 'Credenziali non valide';
+          errorEl.classList.remove('hidden');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Accedi al pannello';
+        }
+      } catch {
+        errorEl.textContent = 'Errore di connessione';
         errorEl.classList.remove('hidden');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Accedi al pannello';
       }
     });
   </script>

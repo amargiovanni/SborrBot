@@ -20,18 +20,18 @@ const configLabels: Record<string, { label: string; description: string; type: s
 <Layout title="Impostazioni">
   <div class="space-y-6">
     <div>
-      <h1 class="text-2xl font-bold text-white">⚙️ Impostazioni</h1>
-      <p class="text-gray-400 mt-1">Configurazione globale del bot</p>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">⚙️ Impostazioni</h1>
+      <p class="text-gray-500 dark:text-gray-400 mt-1">Configurazione globale del bot</p>
     </div>
 
-    <div class="bg-gray-800 rounded-xl border border-gray-700 divide-y divide-gray-700">
+    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 divide-y divide-gray-100 dark:divide-gray-800">
       {config.map((item: any) => {
         const meta = configLabels[item.key];
         return (
           <div class="p-4 flex items-center justify-between" data-config-key={item.key}>
             <div>
-              <div class="text-white font-medium text-sm">{meta?.label || item.key}</div>
-              <div class="text-gray-500 text-xs mt-1">{meta?.description || `Chiave: ${item.key}`}</div>
+              <div class="text-gray-900 dark:text-white font-medium text-sm">{meta?.label || item.key}</div>
+              <div class="text-gray-400 dark:text-gray-500 text-xs mt-1">{meta?.description || `Chiave: ${item.key}`}</div>
             </div>
             <div class="flex items-center gap-3">
               {meta?.type === 'toggle' ? (
@@ -39,7 +39,7 @@ const configLabels: Record<string, { label: string; description: string; type: s
                   data-toggle-config={item.key}
                   data-value={item.value}
                   class={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    item.value === 'true' ? 'bg-primary-600' : 'bg-gray-600'
+                    item.value === 'true' ? 'bg-primary-600' : 'bg-gray-300 dark:bg-gray-600'
                   }`}
                 >
                   <span
@@ -54,7 +54,7 @@ const configLabels: Record<string, { label: string; description: string; type: s
                     type={meta?.type || 'text'}
                     value={item.value}
                     data-input-config={item.key}
-                    class="px-3 py-1 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm w-48 focus:ring-2 focus:ring-primary-500 outline-none"
+                    class="px-3 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white text-sm w-48 focus:ring-2 focus:ring-primary-500 outline-none"
                   />
                   <button
                     data-save-config={item.key}
@@ -68,22 +68,6 @@ const configLabels: Record<string, { label: string; description: string; type: s
           </div>
         );
       })}
-    </div>
-
-    <!-- Add sessions table for D1 auth -->
-    <div class="bg-gray-800 rounded-xl border border-gray-700 p-6">
-      <h2 class="text-lg font-semibold text-white mb-2">Tabella Sessions</h2>
-      <p class="text-gray-500 text-sm mb-4">
-        La migration D1 include una tabella `sessions` per gestire l'autenticazione del backoffice.
-        Ricordati di crearla la prima volta che esegui le migrazioni.
-      </p>
-      <div class="bg-gray-900 rounded-lg p-4 text-sm text-gray-300 font-mono">
-        <p>CREATE TABLE IF NOT EXISTS sessions (</p>
-        <p class="ml-4">token TEXT PRIMARY KEY,</p>
-        <p class="ml-4">created_at TEXT DEFAULT (datetime('now')),</p>
-        <p class="ml-4">expires_at TEXT NOT NULL</p>
-        <p>);</p>
-      </div>
     </div>
   </div>
 

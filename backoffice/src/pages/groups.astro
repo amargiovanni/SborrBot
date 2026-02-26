@@ -21,42 +21,42 @@ const totalPages = Math.ceil(total / 20);
 <Layout title="Gruppi">
   <div class="space-y-6">
     <div>
-      <h1 class="text-2xl font-bold text-white">👥 Gestione Gruppi</h1>
-      <p class="text-gray-400 mt-1">Gruppi Telegram dove il bot è attivo</p>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">👥 Gestione Gruppi</h1>
+      <p class="text-gray-500 dark:text-gray-400 mt-1">Gruppi Telegram dove il bot è attivo</p>
     </div>
 
-    <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
+    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
       <table class="w-full">
         <thead>
-          <tr class="border-b border-gray-700 text-left">
-            <th class="px-4 py-3 text-gray-400 text-sm font-medium">Chat ID</th>
-            <th class="px-4 py-3 text-gray-400 text-sm font-medium">Nome</th>
-            <th class="px-4 py-3 text-gray-400 text-sm font-medium">Stato</th>
-            <th class="px-4 py-3 text-gray-400 text-sm font-medium">Ultimo aggiornamento</th>
-            <th class="px-4 py-3 text-gray-400 text-sm font-medium">Azioni</th>
+          <tr class="border-b border-gray-100 dark:border-gray-800 text-left">
+            <th class="px-4 py-3 text-gray-500 dark:text-gray-400 text-sm font-medium">Chat ID</th>
+            <th class="px-4 py-3 text-gray-500 dark:text-gray-400 text-sm font-medium">Nome</th>
+            <th class="px-4 py-3 text-gray-500 dark:text-gray-400 text-sm font-medium">Stato</th>
+            <th class="px-4 py-3 text-gray-500 dark:text-gray-400 text-sm font-medium">Ultimo aggiornamento</th>
+            <th class="px-4 py-3 text-gray-500 dark:text-gray-400 text-sm font-medium">Azioni</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-700">
+        <tbody class="divide-y divide-gray-50 dark:divide-gray-800">
           {groups.length > 0 ? groups.map((group: any) => (
-            <tr class="hover:bg-gray-750">
-              <td class="px-4 py-3 text-gray-300 text-sm font-mono">{group.telegram_chat_id}</td>
-              <td class="px-4 py-3 text-white text-sm">{group.title || '-'}</td>
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+              <td class="px-4 py-3 text-gray-600 dark:text-gray-300 text-sm font-mono">{group.telegram_chat_id}</td>
+              <td class="px-4 py-3 text-gray-900 dark:text-white text-sm">{group.title || '-'}</td>
               <td class="px-4 py-3">
                 {group.is_banned ? (
-                  <span class="text-xs px-2 py-1 rounded bg-red-900 text-red-300">Bannato</span>
+                  <span class="text-xs px-2 py-1 rounded bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300">Bannato</span>
                 ) : group.is_active ? (
-                  <span class="text-xs px-2 py-1 rounded bg-green-900 text-green-300">Attivo</span>
+                  <span class="text-xs px-2 py-1 rounded bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300">Attivo</span>
                 ) : (
-                  <span class="text-xs px-2 py-1 rounded bg-yellow-900 text-yellow-300">In pausa</span>
+                  <span class="text-xs px-2 py-1 rounded bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300">In pausa</span>
                 )}
               </td>
-              <td class="px-4 py-3 text-gray-400 text-sm">{group.updated_at}</td>
+              <td class="px-4 py-3 text-gray-500 dark:text-gray-400 text-sm">{group.updated_at}</td>
               <td class="px-4 py-3">
                 <div class="flex gap-2">
                   <button
                     data-toggle={group.id}
                     data-active={group.is_active}
-                    class="text-xs px-3 py-1 rounded bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors"
+                    class="text-xs px-3 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                   >
                     {group.is_active ? 'Metti in pausa' : 'Attiva'}
                   </button>
@@ -65,8 +65,8 @@ const totalPages = Math.ceil(total / 20);
                     data-banned={group.is_banned}
                     class={`text-xs px-3 py-1 rounded transition-colors ${
                       group.is_banned
-                        ? 'bg-green-800 text-green-300 hover:bg-green-700'
-                        : 'bg-red-800 text-red-300 hover:bg-red-700'
+                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-800/40'
+                        : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-800/40'
                     }`}
                   >
                     {group.is_banned ? 'Sbanna' : 'Banna'}
@@ -85,15 +85,15 @@ const totalPages = Math.ceil(total / 20);
       </table>
 
       {totalPages > 1 && (
-        <div class="p-4 border-t border-gray-700 flex items-center justify-between">
-          <span class="text-gray-400 text-sm">{total} gruppi totali</span>
+        <div class="p-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+          <span class="text-gray-500 dark:text-gray-400 text-sm">{total} gruppi totali</span>
           <div class="flex gap-2">
             {page > 1 && (
-              <a href={`/groups?page=${page - 1}`} class="px-3 py-1 bg-gray-700 text-gray-300 rounded hover:bg-gray-600">← Prec</a>
+              <a href={`/groups?page=${page - 1}`} class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-700">← Prec</a>
             )}
-            <span class="px-3 py-1 text-gray-400">{page}/{totalPages}</span>
+            <span class="px-3 py-1 text-gray-500 dark:text-gray-400">{page}/{totalPages}</span>
             {page < totalPages && (
-              <a href={`/groups?page=${page + 1}`} class="px-3 py-1 bg-gray-700 text-gray-300 rounded hover:bg-gray-600">Succ →</a>
+              <a href={`/groups?page=${page + 1}`} class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Succ →</a>
             )}
           </div>
         </div>

@@ -9,7 +9,7 @@ interface CommandResult {
 }
 
 // Patterns for text commands
-const PATTERNS: { pattern: RegExp; slug: string; hasTarget: boolean }[] = [
+const PATTERNS: { pattern: RegExp; slug: string; hasTarget: boolean; useSenderName?: boolean }[] = [
   { pattern: /^insulta\s+(.+)/i, slug: 'insulti', hasTarget: true },
   { pattern: /^minaccia\s+(.+)/i, slug: 'minacce', hasTarget: true },
   { pattern: /\bbestemmia\b/i, slug: 'bestemmie', hasTarget: false },
@@ -17,15 +17,18 @@ const PATTERNS: { pattern: RegExp; slug: string; hasTarget: boolean }[] = [
   { pattern: /^buongiorno\b/i, slug: 'saluti', hasTarget: false },
   { pattern: /^buonanotte\b/i, slug: 'saluti', hasTarget: false },
   { pattern: /^ciao\b/i, slug: 'saluti', hasTarget: false },
+  // Anti-Juve: triggers on any message containing these words
+  { pattern: /\b(?:juve|juventus|gobbi|bianconeri)\b/i, slug: 'anti-juve', hasTarget: false, useSenderName: true },
 ];
 
 export async function handleTextCommand(
   text: string,
   chatId: string,
   env: Env,
-  api: TelegramApi
+  api: TelegramApi,
+  senderName?: string
 ): Promise<CommandResult> {
-  for (const { pattern, slug, hasTarget } of PATTERNS) {
+  for (const { pattern, slug, hasTarget, useSenderName } of PATTERNS) {
     const match = text.match(pattern);
     if (!match) continue;
 
@@ -37,10 +40,12 @@ export async function handleTextCommand(
       return { handled: true, command: slug, target };
     }
 
-    // Replace {name} placeholder with target
+    // Replace {name} placeholder with target or sender name
     let finalResponse = response;
     if (target) {
       finalResponse = response.replace(/\{name\}/g, target);
+    } else if (useSenderName && senderName) {
+      finalResponse = response.replace(/\{name\}/g, senderName);
     }
 
     await api.sendMessage(chatId, finalResponse);

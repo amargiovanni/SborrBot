@@ -54,8 +54,9 @@ export async function handleUpdate(update: TelegramUpdate, env: Env): Promise<vo
     return;
   }
 
-  // Text commands (insulta, minaccia, bestemmia, nonno, saluti)
-  const textResult = await handleTextCommand(text, chatId, env, api);
+  // Text commands (insulta, minaccia, bestemmia, nonno, saluti, anti-juve)
+  const senderName = message.from?.first_name ?? message.from?.username ?? 'Tizio';
+  const textResult = await handleTextCommand(text, chatId, env, api, senderName);
   if (textResult.handled) {
     await logBotCommand(env.DB, chatId, userId, username, 'keyword', textResult.command!, textResult.target ?? null, 'text');
     return;

@@ -74,6 +74,7 @@ export const CATEGORY_SLUGS = {
   BESTEMMIE: 'bestemmie',
   NONNO: 'nonno',
   SALUTI: 'saluti',
+  ANTI_JUVE: 'anti-juve',
   // Audio
   GERMANO_MOSCONI: 'germano-mosconi',
   CHRISTIAN_DE_SICA: 'christian-de-sica',

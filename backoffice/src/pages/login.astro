@@ -3,103 +3,707 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout title="Login" showSidebar={false}>
-  <div class="min-h-screen flex items-center justify-center px-4 relative overflow-hidden bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
-    <!-- Animated background blobs -->
-    <div class="absolute inset-0 overflow-hidden pointer-events-none">
-      <div class="absolute -top-40 -right-40 w-96 h-96 bg-primary-400/20 dark:bg-primary-600/10 rounded-full blur-3xl animate-pulse"></div>
-      <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-indigo-400/20 dark:bg-indigo-600/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
-      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-300/10 dark:bg-purple-600/5 rounded-full blur-3xl"></div>
+<div class="login-root">
+
+  <!-- ═══ LEFT: CHAOS PANEL ═══ -->
+  <div class="chaos-panel">
+    <div class="chaos-bg"></div>
+    <div class="scanlines"></div>
+    <div class="particles" aria-hidden="true">
+      <span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span>
     </div>
 
-    <div class="w-full max-w-md relative z-10">
-      <!-- Logo & tagline -->
-      <div class="text-center mb-10">
-        <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white dark:bg-gray-800 shadow-xl shadow-primary-500/10 dark:shadow-primary-500/5 mb-6 border border-gray-100 dark:border-gray-700">
-          <span class="text-4xl">🤖</span>
-        </div>
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">SborrBot</h1>
-        <p class="text-gray-500 dark:text-gray-400 mt-2 text-sm">Il pannello di controllo del caos.</p>
-        <p class="text-gray-400 dark:text-gray-600 mt-1 text-xs italic">"Entra, se ne hai il coraggio."</p>
+    <div class="chaos-content">
+      <div class="avatar-wrap">
+        <div class="avatar-ring"></div>
+        <div class="avatar-ring ring2"></div>
+        <img src="/sborrbot.jpeg" alt="SborrBot" class="avatar" />
       </div>
 
-      <!-- Login card -->
-      <div class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-2xl shadow-xl shadow-gray-200/50 dark:shadow-black/20 p-8 border border-gray-200/60 dark:border-gray-700/60">
-        <form id="loginForm" class="space-y-5">
-          <div>
-            <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Username</label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              required
-              autocomplete="username"
-              class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 outline-none transition-all duration-150"
-              placeholder="admin"
-            />
-          </div>
-          <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              required
-              autocomplete="current-password"
-              class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 outline-none transition-all duration-150"
-              placeholder="••••••••"
-            />
-          </div>
-          <div id="error" class="hidden text-red-600 dark:text-red-400 text-sm bg-red-50 dark:bg-red-950/50 px-4 py-2.5 rounded-xl border border-red-200 dark:border-red-800/50"></div>
-          <button
-            type="submit"
-            id="submitBtn"
-            class="w-full bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-150 shadow-lg shadow-primary-600/25 hover:shadow-primary-600/40"
-          >
-            Accedi al pannello
-          </button>
-        </form>
+      <div class="name-wrap">
+        <h1 class="bot-name" data-text="SborrBot">SborrBot</h1>
+        <div class="name-underline"></div>
       </div>
 
-      <p class="text-center text-xs text-gray-400 dark:text-gray-600 mt-6">
-        Accesso riservato. Niente cazzate.
+      <p class="bot-sub">
+        <span class="typing-text">il bot più sborrante del web</span><span class="cursor-blink">█</span>
       </p>
+
+      <div class="feature-grid">
+        <div class="feat">
+          <span class="feat-icon">💀</span>
+          <div>
+            <strong>Insulti devastanti</strong>
+            <small>Su misura per ogni stronzo</small>
+          </div>
+        </div>
+        <div class="feat">
+          <span class="feat-icon">🔮</span>
+          <div>
+            <strong>Oroscopi osceni</strong>
+            <small>Le stelle dicono che sei un coglione</small>
+          </div>
+        </div>
+        <div class="feat">
+          <span class="feat-icon">📰</span>
+          <div>
+            <strong>Notizie flash</strong>
+            <small>Fake news sui tuoi amici</small>
+          </div>
+        </div>
+        <div class="feat">
+          <span class="feat-icon">💩</span>
+          <div>
+            <strong>Anti-Juve automatico</strong>
+            <small>Scrivi "Juve" e paga le conseguenze</small>
+          </div>
+        </div>
+        <div class="feat">
+          <span class="feat-icon">🩺</span>
+          <div>
+            <strong>Diagnosi mediche</strong>
+            <small>Referti assurdi e volgari</small>
+          </div>
+        </div>
+        <div class="feat">
+          <span class="feat-icon">😭</span>
+          <div>
+            <strong>Lamenti ignorati</strong>
+            <small>Piangi? Il bot ride di te</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="powered">⚡ Powered by Cloudflare Workers · D1 · R2</div>
     </div>
   </div>
 
-  <script>
-    const form = document.getElementById('loginForm') as HTMLFormElement;
-    const errorEl = document.getElementById('error') as HTMLDivElement;
-    const submitBtn = document.getElementById('submitBtn') as HTMLButtonElement;
+  <!-- ═══ RIGHT: LOGIN PANEL ═══ -->
+  <div class="login-panel">
+    <div class="login-content">
+      <div class="login-top">
+        <div class="admin-badge">PANNELLO DI CONTROLLO</div>
+        <h2 class="login-title">Bentornato,<br/>stronzo.</h2>
+        <p class="login-sub">Accesso riservato ai degenerati autorizzati.</p>
+      </div>
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      errorEl.classList.add('hidden');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Accesso in corso...';
+      <form id="loginForm" class="login-form">
+        <div class="field-wrap">
+          <label for="username" class="field-label">Username</label>
+          <input type="text" id="username" name="username" required autocomplete="username" placeholder="admin" class="field-input" />
+        </div>
+        <div class="field-wrap">
+          <label for="password" class="field-label">Password</label>
+          <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="••••••••" class="field-input" />
+        </div>
+        <div id="error" class="error-box" style="display:none;"></div>
+        <button type="submit" id="submitBtn" class="submit-btn">
+          <span class="btn-text">Entra nel pannello</span>
+          <span class="btn-arrow">→</span>
+        </button>
+      </form>
 
-      const formData = new FormData(form);
-      try {
-        const res = await fetch('/api/auth/login', {
-          method: 'POST',
-          body: formData,
-        });
+      <p class="login-footer">Niente cazzate. Sei stato avvertito.</p>
+    </div>
+  </div>
 
-        if (res.ok) {
-          submitBtn.textContent = 'Benvenuto, stronzo!';
-          window.location.href = '/dashboard';
-        } else {
-          const data = await res.json();
-          errorEl.textContent = data.error || 'Credenziali non valide';
-          errorEl.classList.remove('hidden');
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Accedi al pannello';
-        }
-      } catch {
-        errorEl.textContent = 'Errore di connessione';
-        errorEl.classList.remove('hidden');
+</div>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Anton&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .login-root {
+    display: flex;
+    min-height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* ─────────────────────────────────── LEFT PANEL ─────────────────────────────────── */
+
+  .chaos-panel {
+    flex: 1;
+    position: relative;
+    background: #04060f;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: slideInLeft 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-50px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  /* Grid background */
+  .chaos-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(37, 99, 235, 0.055) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(37, 99, 235, 0.055) 1px, transparent 1px);
+    background-size: 44px 44px;
+    animation: gridDrift 25s linear infinite;
+  }
+
+  @keyframes gridDrift {
+    from { background-position: 0 0; }
+    to   { background-position: 44px 44px; }
+  }
+
+  /* Scanlines */
+  .scanlines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.13) 2px,
+      rgba(0, 0, 0, 0.13) 4px
+    );
+    z-index: 1;
+  }
+
+  /* Particles */
+  .particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .particles span {
+    position: absolute;
+    bottom: -10px;
+    border-radius: 50%;
+    background: #3b82f6;
+    opacity: 0;
+    animation: floatUp var(--dur, 6s) var(--delay, 0s) infinite ease-in;
+    width: var(--sz, 3px);
+    height: var(--sz, 3px);
+  }
+
+  .particles span:nth-child(1)  { left: 4%;  --dur: 7s;   --delay: 0s;    --sz: 2px; background: #60a5fa; }
+  .particles span:nth-child(2)  { left: 11%; --dur: 5.5s; --delay: 1.5s;  --sz: 4px; }
+  .particles span:nth-child(3)  { left: 19%; --dur: 8s;   --delay: 0.7s;  --sz: 2px; background: #93c5fd; }
+  .particles span:nth-child(4)  { left: 27%; --dur: 6.5s; --delay: 2.2s;  --sz: 3px; }
+  .particles span:nth-child(5)  { left: 34%; --dur: 9s;   --delay: 0.3s;  --sz: 2px; background: #60a5fa; }
+  .particles span:nth-child(6)  { left: 41%; --dur: 5s;   --delay: 1s;    --sz: 4px; }
+  .particles span:nth-child(7)  { left: 49%; --dur: 7.5s; --delay: 3.2s;  --sz: 2px; background: #93c5fd; }
+  .particles span:nth-child(8)  { left: 57%; --dur: 6s;   --delay: 0.6s;  --sz: 3px; }
+  .particles span:nth-child(9)  { left: 64%; --dur: 8.5s; --delay: 2s;    --sz: 2px; }
+  .particles span:nth-child(10) { left: 71%; --dur: 5.5s; --delay: 1.8s;  --sz: 4px; background: #60a5fa; }
+  .particles span:nth-child(11) { left: 79%; --dur: 7s;   --delay: 0.4s;  --sz: 2px; }
+  .particles span:nth-child(12) { left: 87%; --dur: 6s;   --delay: 2.6s;  --sz: 3px; background: #93c5fd; }
+  .particles span:nth-child(13) { left: 93%; --dur: 9s;   --delay: 1.2s;  --sz: 2px; }
+  .particles span:nth-child(14) { left: 16%; --dur: 6s;   --delay: 4s;    --sz: 3px; background: #1d4ed8; }
+  .particles span:nth-child(15) { left: 47%; --dur: 8s;   --delay: 3.5s;  --sz: 2px; background: #60a5fa; }
+  .particles span:nth-child(16) { left: 74%; --dur: 5.5s; --delay: 0.9s;  --sz: 4px; }
+
+  @keyframes floatUp {
+    0%   { transform: translateY(0) scale(1); opacity: 0; }
+    8%   { opacity: 0.9; }
+    90%  { opacity: 0.5; }
+    100% { transform: translateY(-105vh) scale(0.4); opacity: 0; }
+  }
+
+  /* Content */
+  .chaos-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2.5rem 2rem;
+    max-width: 540px;
+    width: 100%;
+  }
+
+  /* Avatar */
+  .avatar-wrap {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin-bottom: 1.75rem;
+    animation: avatarPop 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+  }
+
+  @keyframes avatarPop {
+    from { transform: scale(0.4) rotate(-8deg); opacity: 0; }
+    to   { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  .avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    position: relative;
+    z-index: 2;
+    border: 3px solid rgba(37, 99, 235, 0.7);
+    display: block;
+  }
+
+  .avatar-ring {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 2px solid rgba(37, 99, 235, 0.7);
+    animation: ringGlow 2.8s ease-in-out infinite;
+    z-index: 1;
+  }
+
+  .ring2 {
+    inset: -18px;
+    border-color: rgba(37, 99, 235, 0.3);
+    border-width: 1.5px;
+    animation-delay: 0.9s;
+  }
+
+  @keyframes ringGlow {
+    0%, 100% {
+      box-shadow: 0 0 10px rgba(37, 99, 235, 0.5), 0 0 28px rgba(37, 99, 235, 0.25);
+      opacity: 1;
+    }
+    50% {
+      box-shadow: 0 0 22px rgba(37, 99, 235, 1), 0 0 55px rgba(37, 99, 235, 0.5), 0 0 90px rgba(37, 99, 235, 0.2);
+      opacity: 0.75;
+    }
+  }
+
+  /* Title + glitch */
+  .name-wrap {
+    margin-bottom: 0.6rem;
+    animation: titleRise 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
+  }
+
+  @keyframes titleRise {
+    from { transform: translateY(18px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+  }
+
+  .bot-name {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(3.5rem, 6.5vw, 5.5rem);
+    color: #f1f5f9;
+    letter-spacing: 0.03em;
+    line-height: 1;
+    position: relative;
+    display: inline-block;
+  }
+
+  .bot-name::before,
+  .bot-name::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    font-family: inherit;
+    font-size: inherit;
+    letter-spacing: inherit;
+    pointer-events: none;
+  }
+
+  .bot-name::before {
+    color: #60a5fa;
+    animation: glitch1 5s infinite;
+    clip-path: inset(0 0 100% 0);
+  }
+
+  .bot-name::after {
+    color: #f97316;
+    animation: glitch2 5s infinite;
+    clip-path: inset(100% 0 0 0);
+  }
+
+  @keyframes glitch1 {
+    0%, 82%, 100% { transform: translate(0); clip-path: inset(0 0 100% 0); opacity: 0; }
+    84%  { transform: translate(-5px, 2px);  clip-path: inset(5% 0 85% 0);  opacity: 1; }
+    86%  { transform: translate(4px, -2px);  clip-path: inset(30% 0 60% 0); opacity: 1; }
+    88%  { transform: translate(-3px, 1px);  clip-path: inset(55% 0 35% 0); opacity: 1; }
+    90%  { transform: translate(0);          clip-path: inset(0 0 100% 0);  opacity: 0; }
+  }
+
+  @keyframes glitch2 {
+    0%, 85%, 100% { transform: translate(0); clip-path: inset(100% 0 0 0); opacity: 0; }
+    87%  { transform: translate(5px, -2px);  clip-path: inset(75% 0 5% 0);  opacity: 1; }
+    89%  { transform: translate(-4px, 1px);  clip-path: inset(55% 0 30% 0); opacity: 1; }
+    91%  { transform: translate(0);          clip-path: inset(100% 0 0 0);  opacity: 0; }
+  }
+
+  .name-underline {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #2563eb, transparent);
+    border-radius: 2px;
+    animation: underlineExpand 0.7s cubic-bezier(0.16, 1, 0.3, 1) 1s both;
+    transform-origin: center;
+  }
+
+  @keyframes underlineExpand {
+    from { transform: scaleX(0); opacity: 0; }
+    to   { transform: scaleX(1); opacity: 1; }
+  }
+
+  /* Subtitle */
+  .bot-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem;
+    color: #60a5fa;
+    margin-bottom: 2.25rem;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    animation: fadeUp 0.6s ease 1.1s both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .cursor-blink {
+    color: #2563eb;
+    font-size: 0.65rem;
+    animation: blink 0.9s step-end infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+  }
+
+  /* Features */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
+    width: 100%;
+    margin-bottom: 1.75rem;
+    text-align: left;
+  }
+
+  .feat {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    background: rgba(37, 99, 235, 0.06);
+    border: 1px solid rgba(37, 99, 235, 0.14);
+    border-left: 2px solid rgba(37, 99, 235, 0.4);
+    border-radius: 8px;
+    padding: 0.65rem 0.75rem;
+    transition: background 0.2s, border-color 0.2s;
+    animation: featIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .feat:hover {
+    background: rgba(37, 99, 235, 0.11);
+    border-color: rgba(37, 99, 235, 0.28);
+    border-left-color: #2563eb;
+  }
+
+  .feat:nth-child(1) { animation-delay: 0.75s; }
+  .feat:nth-child(2) { animation-delay: 0.9s; }
+  .feat:nth-child(3) { animation-delay: 1.05s; }
+  .feat:nth-child(4) { animation-delay: 1.2s; }
+  .feat:nth-child(5) { animation-delay: 1.35s; }
+  .feat:nth-child(6) { animation-delay: 1.5s; }
+
+  @keyframes featIn {
+    from { transform: translateY(8px); opacity: 0; }
+    to   { transform: translateY(0);   opacity: 1; }
+  }
+
+  .feat-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
+
+  .feat strong {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 1px;
+  }
+
+  .feat small {
+    font-size: 0.66rem;
+    color: #475569;
+    font-family: 'DM Mono', monospace;
+    line-height: 1.35;
+  }
+
+  /* Powered */
+  .powered {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: #1e3a5f;
+    letter-spacing: 0.06em;
+    border-top: 1px solid rgba(37, 99, 235, 0.09);
+    padding-top: 1rem;
+    width: 100%;
+    text-align: center;
+    animation: fadeUp 0.5s ease 1.7s both;
+  }
+
+  /* ─────────────────────────────────── RIGHT PANEL ─────────────────────────────────── */
+
+  .login-panel {
+    width: min(460px, 43%);
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 2.5rem;
+    position: relative;
+    animation: slideInRight 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+    border-left: 1px solid rgba(37, 99, 235, 0.1);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .login-panel {
+      background: #0d1117;
+      border-left-color: rgba(37, 99, 235, 0.08);
+    }
+  }
+
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(50px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  .login-content {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .login-top { margin-bottom: 2.25rem; }
+
+  .admin-badge {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    color: #2563eb;
+    background: rgba(37, 99, 235, 0.08);
+    border: 1px solid rgba(37, 99, 235, 0.18);
+    border-radius: 4px;
+    padding: 3px 9px;
+    margin-bottom: 1.1rem;
+  }
+
+  .login-title {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(2.2rem, 4vw, 3rem);
+    letter-spacing: 0.02em;
+    color: #0f172a;
+    line-height: 1.05;
+    margin-bottom: 0.6rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .login-title { color: #f1f5f9; }
+  }
+
+  .login-sub {
+    font-size: 0.82rem;
+    color: #64748b;
+    line-height: 1.5;
+  }
+
+  /* Form */
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  .field-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .field-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #475569;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-family: 'DM Mono', monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .field-label { color: #64748b; }
+  }
+
+  .field-input {
+    width: 100%;
+    padding: 0.78rem 1rem;
+    background: white;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 9px;
+    font-size: 0.88rem;
+    font-family: 'DM Sans', sans-serif;
+    color: #0f172a;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    -webkit-appearance: none;
+  }
+
+  .field-input::placeholder { color: #94a3b8; }
+
+  .field-input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    background: #fafcff;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .field-input {
+      background: #161d2b;
+      border-color: #1e2d42;
+      color: #f1f5f9;
+    }
+    .field-input::placeholder { color: #334155; }
+    .field-input:focus {
+      background: #1a2538;
+      border-color: #2563eb;
+    }
+  }
+
+  /* Error */
+  .error-box {
+    background: #fff0f0;
+    border: 1px solid #fecaca;
+    border-radius: 7px;
+    padding: 0.65rem 0.9rem;
+    font-size: 0.78rem;
+    color: #dc2626;
+    font-family: 'DM Mono', monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .error-box {
+      background: rgba(220, 38, 38, 0.08);
+      border-color: rgba(220, 38, 38, 0.25);
+      color: #f87171;
+    }
+  }
+
+  /* Submit button */
+  .submit-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.85rem 1.2rem;
+    background: #2563eb;
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.88rem;
+    border: none;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.32);
+    margin-top: 0.2rem;
+  }
+
+  .submit-btn:hover:not(:disabled) {
+    background: #1d4ed8;
+    box-shadow: 0 6px 22px rgba(37, 99, 235, 0.48);
+    transform: translateY(-1px);
+  }
+
+  .submit-btn:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 3px 10px rgba(37, 99, 235, 0.3);
+  }
+
+  .submit-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+
+  .btn-arrow {
+    font-size: 1rem;
+    transition: transform 0.2s ease;
+  }
+
+  .submit-btn:hover:not(:disabled) .btn-arrow {
+    transform: translateX(4px);
+  }
+
+  /* Footer */
+  .login-footer {
+    margin-top: 1.75rem;
+    font-size: 0.68rem;
+    color: #94a3b8;
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.03em;
+  }
+
+  /* ─────────────────────────────────── RESPONSIVE ─────────────────────────────────── */
+
+  @media (max-width: 820px) {
+    .login-root { flex-direction: column; }
+    .chaos-panel { min-height: 55vh; }
+    .login-panel { width: 100%; padding: 2.5rem 1.5rem; }
+    .chaos-content { padding: 2rem 1.5rem; }
+  }
+
+  @media (max-width: 500px) {
+    .feature-grid { grid-template-columns: 1fr; }
+    .bot-name { font-size: 3.2rem; }
+    .login-title { font-size: 2.2rem; }
+  }
+</style>
+
+<script>
+  const form = document.getElementById('loginForm') as HTMLFormElement;
+  const errorEl = document.getElementById('error') as HTMLDivElement;
+  const submitBtn = document.getElementById('submitBtn') as HTMLButtonElement;
+  const btnText = submitBtn.querySelector('.btn-text') as HTMLSpanElement;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorEl.style.display = 'none';
+    submitBtn.disabled = true;
+    btnText.textContent = 'Accesso in corso...';
+
+    const formData = new FormData(form);
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (res.ok) {
+        btnText.textContent = 'Benvenuto, stronzo!';
+        window.location.href = '/dashboard';
+      } else {
+        const data = await res.json() as { error?: string };
+        errorEl.textContent = data.error || 'Credenziali non valide';
+        errorEl.style.display = 'block';
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Accedi al pannello';
+        btnText.textContent = 'Entra nel pannello';
       }
-    });
-  </script>
+    } catch {
+      errorEl.textContent = 'Errore di connessione';
+      errorEl.style.display = 'block';
+      submitBtn.disabled = false;
+      btnText.textContent = 'Entra nel pannello';
+    }
+  });
+</script>
 </Layout>

@@ -24,6 +24,7 @@ const PHOTO_PATTERNS: { pattern: RegExp; slug: string }[] = [
   { pattern: /\bfica\b/i, slug: 'fica' },
   { pattern: /\bculo\b/i, slug: 'culo' },
   { pattern: /\btette\b/i, slug: 'tette' },
+  { pattern: /\bdegrado\b/i, slug: 'degrado' },
 ];
 
 export async function handleMediaCommand(

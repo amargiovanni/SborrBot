@@ -41,7 +41,8 @@ export async function handleSlashCommand(
         '• `frase celebre` — Citazione trash\n' +
         '• `citazione` / `perla di saggezza` — Idem\n\n' +
         '📸 *Foto:*\n' +
-        '• `fica` / `culo` / `tette` — Foto hot\n\n' +
+        '• `fica` / `culo` / `tette` — Foto hot\n' +
+        '• `degrado` — Immagini cursed\n\n' +
         '🔊 *Audio:*\n' +
         '• `germano mosconi` — Il mitico Germano\n' +
         '• `christian de sica` — Christian De Sica\n' +

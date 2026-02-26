@@ -31,10 +31,15 @@ export async function handleSlashCommand(
         '📋 *Comandi SborrBot*\n\n' +
         '🔤 *Testo:*\n' +
         '• `insulta [nome]` — Insulta qualcuno\n' +
+        '• `insulta combo [nome]` — Triplo insulto devastante\n' +
         '• `minaccia [nome]` — Minaccia qualcuno\n' +
         '• `bestemmia` — Una bella bestemmia\n' +
         '• `come diceva mio nonno` — Saggezza del nonno\n' +
         '• `buongiorno` / `buonanotte` / `ciao` — Saluti\n\n' +
+        '🔮 *Nuovi:*\n' +
+        '• `oroscopo [segno]` — Oroscopo dello sborrone\n' +
+        '• `frase celebre` — Citazione trash\n' +
+        '• `citazione` / `perla di saggezza` — Idem\n\n' +
         '📸 *Foto:*\n' +
         '• `fica` / `culo` / `tette` — Foto hot\n\n' +
         '🔊 *Audio:*\n' +

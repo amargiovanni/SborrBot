@@ -11,6 +11,19 @@ export async function getRandomTextResponse(db: D1Database, categorySlug: string
   return result?.content ?? null;
 }
 
+export async function getMultipleRandomTextResponses(db: D1Database, categorySlug: string, count: number): Promise<string[]> {
+  const result = await db
+    .prepare(
+      `SELECT tr.content FROM text_responses tr
+       JOIN categories c ON c.id = tr.category_id
+       WHERE c.slug = ? AND tr.is_active = 1 AND c.is_active = 1
+       ORDER BY RANDOM() LIMIT ?`
+    )
+    .bind(categorySlug, count)
+    .all<{ content: string }>();
+  return result.results.map(r => r.content);
+}
+
 export async function getRandomMedia(db: D1Database, categorySlug: string): Promise<{
   r2_key: string;
   file_name: string;

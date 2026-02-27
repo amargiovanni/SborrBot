@@ -111,7 +111,7 @@ const turnstileSiteKey: string = env?.TURNSTILE_SITE_KEY ?? '';
           <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="••••••••" class="field-input" />
         </div>
         <div id="error" class="error-box" style="display:none;"></div>
-        <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="dark" data-language="it"></div>
+        <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="auto" data-language="it"></div>
         <button type="submit" id="submitBtn" class="submit-btn">
           <span class="btn-text">Entra nel pannello</span>
           <span class="btn-arrow">→</span>

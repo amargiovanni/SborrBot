@@ -96,6 +96,19 @@ export async function logCommand(
     .run();
 }
 
+export async function getTwoRandomGroupUsers(db: D1Database, chatId: string): Promise<[string, string]> {
+  const result = await db
+    .prepare(
+      `SELECT username FROM command_logs
+       WHERE telegram_chat_id = ? AND username IS NOT NULL
+       GROUP BY telegram_user_id ORDER BY RANDOM() LIMIT 2`
+    )
+    .bind(chatId)
+    .all<{ username: string }>();
+  const users = result.results.map(r => r.username);
+  return [users[0] ?? 'Tizio', users[1] ?? 'Caio'];
+}
+
 export async function getRandomGroupUser(db: D1Database, chatId: string, excludeUserId: string): Promise<string | null> {
   const result = await db
     .prepare(

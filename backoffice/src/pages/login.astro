@@ -107,6 +107,10 @@ import Layout from '../layouts/Layout.astro';
       </form>
 
       <p class="login-footer">Niente cazzate. Sei stato avvertito.</p>
+      <a href="https://t.me/SborrrrBot_bot" target="_blank" rel="noopener noreferrer" class="tg-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.018 9.51c-.148.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.116 14.37 4.15 13.45c-.65-.203-.662-.65.136-.963l10.892-4.197c.54-.195 1.016.12.84.958h-.456z"/></svg>
+        Aggiungi SborrBot al tuo gruppo
+      </a>
     </div>
   </div>
 
@@ -651,6 +655,42 @@ import Layout from '../layouts/Layout.astro';
     text-align: center;
     font-family: 'DM Mono', monospace;
     letter-spacing: 0.03em;
+  }
+
+  /* Telegram link */
+  .tg-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    margin-top: 1rem;
+    font-size: 0.75rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    color: #2563eb;
+    text-decoration: none;
+    padding: 0.55rem 1rem;
+    border: 1px solid rgba(37, 99, 235, 0.2);
+    border-radius: 8px;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+
+  .tg-link:hover {
+    background: rgba(37, 99, 235, 0.07);
+    border-color: rgba(37, 99, 235, 0.4);
+    color: #1d4ed8;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .tg-link {
+      color: #60a5fa;
+      border-color: rgba(96, 165, 250, 0.2);
+    }
+    .tg-link:hover {
+      background: rgba(96, 165, 250, 0.07);
+      border-color: rgba(96, 165, 250, 0.4);
+      color: #93c5fd;
+    }
   }
 
   /* ─────────────────────────────────── RESPONSIVE ─────────────────────────────────── */

@@ -33,18 +33,25 @@ export async function handleSlashCommand(
         '• `insulta [nome]` — Insulta qualcuno\n' +
         '• `insulta combo [nome]` — Triplo insulto devastante\n' +
         '• `minaccia [nome]` — Minaccia qualcuno\n' +
+        '• `necrologio [nome]` — Necrologio pre-mortem\n' +
+        '• `processo [nome]` — Verdetto del Tribunale SborrBot\n' +
+        '• `cv [nome]` / `curriculum [nome]` — CV disastroso\n' +
+        '• `complimento [nome]` — Complimento backhanded\n' +
         '• `dottore [nome]` / `diagnosi [nome]` — Referto medico assurdo\n' +
         '• `chi è [nome]` / `presentami [nome]` — Bio inventata e volgare\n' +
         '• `notizia` — Notizia flash su un membro del gruppo\n' +
+        '• `segreto` — Rivela una storia torbida tra due membri del gruppo\n' +
         '• `bestemmia` — Una bella bestemmia\n' +
         '• `come diceva mio nonno` — Saggezza del nonno\n' +
         '• `buongiorno` / `buonanotte` / `ciao` — Saluti\n\n' +
         '🔮 *Speciali:*\n' +
         '• `oroscopo [segno]` — Oroscopo dello sborrone\n' +
-        '• `frase celebre` — Citazione trash\n' +
-        '• `citazione` / `perla di saggezza` — Idem\n\n' +
+        '• `frase celebre` / `citazione` / `perla di saggezza` — Citazione trash\n\n' +
         '😭 *Auto-trigger:*\n' +
-        '• Scrivi "ho fame", "sono stanco" ecc. — risposta sarcastica garantita\n' +
+        '• Scrivi `grazie` — risposta adeguata\n' +
+        '• Scrivi `auguri` / `buon compleanno` — auguri del cazzo\n' +
+        '• Scrivi `sono il migliore` / `sono forte` / `sono bravo` — demolizione ego\n' +
+        '• Scrivi "ho fame", "sono stanco/a" ecc. — risposta sarcastica\n' +
         '• Scrivi "juve" / "juventus" — reazione immediata 💩\n\n' +
         '📸 *Foto:*\n' +
         '• `fica` / `culo` / `tette` — Foto hot\n' +

@@ -1,8 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro';
+const env = (Astro.locals as any).runtime?.env;
+const turnstileSiteKey: string = env?.TURNSTILE_SITE_KEY ?? '';
 ---
 
 <Layout title="Login" showSidebar={false}>
+<Fragment slot="head">
+  <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</Fragment>
 <div class="login-root">
 
   <!-- ═══ LEFT: CHAOS PANEL ═══ -->
@@ -106,6 +111,7 @@ import Layout from '../layouts/Layout.astro';
           <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="••••••••" class="field-input" />
         </div>
         <div id="error" class="error-box" style="display:none;"></div>
+        <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="dark" data-language="it"></div>
         <button type="submit" id="submitBtn" class="submit-btn">
           <span class="btn-text">Entra nel pannello</span>
           <span class="btn-arrow">→</span>
@@ -602,6 +608,12 @@ import Layout from '../layouts/Layout.astro';
       border-color: rgba(220, 38, 38, 0.25);
       color: #f87171;
     }
+  }
+
+  /* Turnstile widget */
+  .cf-turnstile {
+    display: flex;
+    justify-content: center;
   }
 
   /* Submit button */

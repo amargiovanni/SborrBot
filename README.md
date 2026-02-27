@@ -1,5 +1,11 @@
 # 🤖💦 SborrBot
 
+<p align="center">
+  <a href="https://t.me/SborrrrBot_bot?startgroup=true">
+    <img src="https://img.shields.io/badge/%F0%9F%92%A6%20AGGIUNGI%20SBORRBOT%20AL%20TUO%20GRUPPO-blue?style=for-the-badge&logo=telegram&logoColor=white&labelColor=0088cc&color=0088cc&link=https://t.me/SborrrrBot_bot?startgroup=true" alt="Aggiungi SborrBot al tuo gruppo" height="60">
+  </a>
+</p>
+
 **Il bot Telegram più sborrante che esista.** Ispirato al leggendario SpacoBot, ma più cattivo, più scurrile e con un pannello admin che te lo sogni.
 
 Insulta i tuoi amici, mandali affanculo con stile, bestemmia come Germano Mosconi e fai piovere tette e culi nelle chat di gruppo. Tutto su Cloudflare, perché anche le porcherie meritano un'infrastruttura seria.

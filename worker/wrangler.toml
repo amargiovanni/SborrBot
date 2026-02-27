@@ -12,6 +12,5 @@ migrations_dir = "../migrations"
 binding = "MEDIA_BUCKET"
 bucket_name = "sborrbot-media"
 
-[vars]
-BOT_SECRET = "change-me-in-production"
 # BOT_TOKEN → wrangler secret put BOT_TOKEN
+# BOT_SECRET → wrangler secret put BOT_SECRET

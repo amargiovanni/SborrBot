@@ -142,7 +142,14 @@ SborrBot/
 │
 ├── migrations/             # Schema D1
 │   ├── 0001_initial_schema.sql
-│   └── 0002_seed_data.sql
+│   ├── 0002_seed_data.sql
+│   ├── 0003_bulk_content.sql
+│   ├── 0003_anti_juve.sql
+│   ├── 0004_extra_dirty_content.sql
+│   ├── 0005_new_features.sql
+│   ├── 0006_media_uploads.sql
+│   ├── 0007_new_features_2.sql
+│   └── 0008_new_features_3.sql
 │
 ├── shared/                 # Tipi TypeScript condivisi
 │   └── types.ts
@@ -187,34 +194,56 @@ wrangler r2 bucket create sborrbot-media
 
 ### 3. Aggiorna i wrangler.toml
 
-Prendi il `database_id` dall'output del comando precedente e sostituiscilo in:
-- `worker/wrangler.toml` → `database_id = "il-tuo-id-qui"`
-- `backoffice/wrangler.toml` → `database_id = "il-tuo-id-qui"`
+Prendi il `database_id` dall'output del comando precedente e sostituiscilo in entrambi i file:
+- `worker/wrangler.toml` → sostituisci il valore di `database_id` con il tuo
+- `backoffice/wrangler.toml` → stessa cosa
 
 ### 4. Esegui le migrazioni
 
 ```bash
-# Locale (per sviluppo)
 cd worker
-npx wrangler d1 execute sborrbot-db --local --file=../migrations/0001_initial_schema.sql
-npx wrangler d1 execute sborrbot-db --local --file=../migrations/0002_seed_data.sql
 
-# Remoto (per produzione)
-npx wrangler d1 execute sborrbot-db --remote --file=../migrations/0001_initial_schema.sql
-npx wrangler d1 execute sborrbot-db --remote --file=../migrations/0002_seed_data.sql
+# Locale (per sviluppo)
+for f in ../migrations/0001_initial_schema.sql \
+         ../migrations/0002_seed_data.sql \
+         ../migrations/0003_bulk_content.sql \
+         ../migrations/0003_anti_juve.sql \
+         ../migrations/0004_extra_dirty_content.sql \
+         ../migrations/0005_new_features.sql \
+         ../migrations/0006_media_uploads.sql \
+         ../migrations/0007_new_features_2.sql \
+         ../migrations/0008_new_features_3.sql; do
+  npx wrangler d1 execute sborrbot-db --local --file="$f"
+done
+
+# Remoto (per produzione) — stessi file con --remote
+for f in ../migrations/0001_initial_schema.sql \
+         ../migrations/0002_seed_data.sql \
+         ../migrations/0003_bulk_content.sql \
+         ../migrations/0003_anti_juve.sql \
+         ../migrations/0004_extra_dirty_content.sql \
+         ../migrations/0005_new_features.sql \
+         ../migrations/0006_media_uploads.sql \
+         ../migrations/0007_new_features_2.sql \
+         ../migrations/0008_new_features_3.sql; do
+  npx wrangler d1 execute sborrbot-db --remote --file="$f"
+done
+
 cd ..
 ```
+
+> **Nota sui media:** Le migrazioni creano lo schema, i testi di esempio e le categorie. La migration `0006_media_uploads.sql` inserisce anche record di esempio per foto, ma questi puntano a file R2 che **non sono inclusi nel repo** (vanno caricati tramite il backoffice). Se non hai file nel tuo bucket R2, puoi saltare la `0006` o eseguirla comunque — i record orfani non causano crash, il bot semplicemente risponderà che non ci sono contenuti disponibili per quella categoria. I comandi testuali (insulti, minacce, bestemmie, ecc.) funzionano subito dopo le migrazioni.
 
 ### 5. Configura i secrets
 
 ```bash
-# Worker — il token del bot (quello di BotFather)
+# Worker — token del bot e secret per il webhook
 cd worker
 wrangler secret put BOT_TOKEN
-# → Incolla il token quando te lo chiede
+# → Incolla il token di BotFather
 
-# Il BOT_SECRET nel wrangler.toml cambialo con qualcosa di serio, coglione.
-# Non lasciare "change-me-in-production"
+wrangler secret put BOT_SECRET
+# → Scegli una stringa casuale, serve per validare le richieste webhook da Telegram
 
 cd ../backoffice
 # Backoffice — credenziali admin
@@ -387,7 +416,7 @@ SborrBot è un progetto di intrattenimento. Il bot è pensato per essere usato t
 
 ## 📜 Licenza
 
-Fai quello cazzo che vuoi. MIT License o qualcosa del genere.
+MIT License — fai quello cazzo che vuoi. Vedi [LICENSE](LICENSE).
 
 ---
 

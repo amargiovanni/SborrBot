@@ -36,6 +36,7 @@ const PATTERNS: { pattern: RegExp; slug: string; hasTarget: boolean; useSenderNa
   { pattern: /^processo\s+(.+)/i, slug: 'processo', hasTarget: true },
   { pattern: /^(?:cv|curriculum)\s+(.+)/i, slug: 'cv', hasTarget: true },
   { pattern: /^complimento\s+(.+)/i, slug: 'complimento', hasTarget: true },
+  { pattern: /^autopsia\s+(.+)/i, slug: 'autopsia', hasTarget: true },
   { pattern: /\bbestemmia\b/i, slug: 'bestemmie', hasTarget: false },
   { pattern: /\bcome diceva mio nonno\b/i, slug: 'nonno', hasTarget: false },
   { pattern: /^buongiorno\b/i, slug: 'saluti', hasTarget: false },
@@ -53,8 +54,16 @@ const PATTERNS: { pattern: RegExp; slug: string; hasTarget: boolean; useSenderNa
   { pattern: /^(?:chi [eè]|presentami)\s+(.+)/i, slug: 'chi-e', hasTarget: true },
   // Notizia flash
   { pattern: /\bnotizia\b/i, slug: 'notizie', hasTarget: false },
+  // Fact check
+  { pattern: /\bfact check\b/i, slug: 'fact-check', hasTarget: false },
+  // Ricetta
+  { pattern: /\bricetta\b/i, slug: 'ricetta', hasTarget: false },
   // Segreto (custom: two random group users)
   { pattern: /\bsegreto\b/i, slug: 'segreto', hasTarget: false },
+  // Complotto (custom: two random group users)
+  { pattern: /\bcomplotto\b/i, slug: 'complotto', hasTarget: false },
+  // Eredità / Testamento (custom: two random group users)
+  { pattern: /\b(?:eredit[aà]|testamento)\b/i, slug: 'eredita', hasTarget: false },
   // Grazie (hardcoded)
   { pattern: /\bgrazie\b/i, slug: 'grazie', hasTarget: false },
   // Auguri / buon compleanno
@@ -157,6 +166,65 @@ async function handleSegreto(chatId: string, env: Env, api: TelegramApi): Promis
   return { handled: true, command: 'segreto' };
 }
 
+async function handleComplotto(chatId: string, env: Env, api: TelegramApi): Promise<CommandResult> {
+  const [name1, name2] = await getTwoRandomGroupUsers(env.DB, chatId);
+  const response = await getRandomTextResponse(env.DB, 'complotto');
+
+  if (!response) {
+    await api.sendMessage(chatId, 'Non ho complotti da rivelare... per ora.');
+    return { handled: true, command: 'complotto' };
+  }
+
+  const finalText = response.replace(/\{name1\}/g, name1).replace(/\{name2\}/g, name2);
+  await api.sendMessage(chatId, `\uD83D\uDD75\uFE0F *COMPLOTTO RIVELATO*\n\n${finalText}`, 'Markdown');
+  return { handled: true, command: 'complotto' };
+}
+
+async function handleEredita(chatId: string, env: Env, api: TelegramApi): Promise<CommandResult> {
+  const [name1, name2] = await getTwoRandomGroupUsers(env.DB, chatId);
+  const response = await getRandomTextResponse(env.DB, 'eredita');
+
+  if (!response) {
+    await api.sendMessage(chatId, 'Non ci sono testamenti da leggere... ancora.');
+    return { handled: true, command: 'eredita' };
+  }
+
+  const finalText = response.replace(/\{name1\}/g, name1).replace(/\{name2\}/g, name2);
+  await api.sendMessage(chatId, `\uD83D\uDCDC *TESTAMENTO APERTO*\n\n${finalText}`, 'Markdown');
+  return { handled: true, command: 'eredita' };
+}
+
+async function handleFactCheck(chatId: string, env: Env, api: TelegramApi): Promise<CommandResult> {
+  const response = await getRandomTextResponse(env.DB, 'fact-check');
+  if (!response) {
+    await api.sendMessage(chatId, 'Non ho fact check disponibili... aggiungi contenuti dal backoffice!');
+    return { handled: true, command: 'fact-check' };
+  }
+  await api.sendMessage(chatId, `\u2705 *FACT CHECK*\n\n${response}`, 'Markdown');
+  return { handled: true, command: 'fact-check' };
+}
+
+async function handleRicetta(chatId: string, env: Env, api: TelegramApi): Promise<CommandResult> {
+  const response = await getRandomTextResponse(env.DB, 'ricetta');
+  if (!response) {
+    await api.sendMessage(chatId, 'Non ho ricette disponibili... aggiungi contenuti dal backoffice!');
+    return { handled: true, command: 'ricetta' };
+  }
+  await api.sendMessage(chatId, `\uD83C\uDF7D\uFE0F *RICETTA DELLO CHEF*\n\n${response}`, 'Markdown');
+  return { handled: true, command: 'ricetta' };
+}
+
+async function handleAutopsia(target: string, chatId: string, env: Env, api: TelegramApi): Promise<CommandResult> {
+  const response = await getRandomTextResponse(env.DB, 'autopsia');
+  if (!response) {
+    await api.sendMessage(chatId, 'Non ho referti disponibili... aggiungi contenuti dal backoffice!');
+    return { handled: true, command: 'autopsia', target };
+  }
+  const finalText = response.replace(/\{name\}/g, target);
+  await api.sendMessage(chatId, `\uD83D\uDD2C *REFERTO AUTOPTICO*\n\n${finalText}`, 'Markdown');
+  return { handled: true, command: 'autopsia', target };
+}
+
 export async function handleTextCommand(
   text: string,
   chatId: string,
@@ -179,6 +247,15 @@ export async function handleTextCommand(
     if (slug === 'frasi-celebri') return handleFrasiCelebri(chatId, env, api);
     if (slug === 'notizie') return handleNotizia(chatId, userId, senderName ?? 'Tizio', env, api);
     if (slug === 'segreto') return handleSegreto(chatId, env, api);
+    if (slug === 'complotto') return handleComplotto(chatId, env, api);
+    if (slug === 'eredita') return handleEredita(chatId, env, api);
+    if (slug === 'fact-check') return handleFactCheck(chatId, env, api);
+    if (slug === 'ricetta') return handleRicetta(chatId, env, api);
+    if (slug === 'autopsia') {
+      const target = match[1]?.trim();
+      if (!target) continue;
+      return handleAutopsia(target, chatId, env, api);
+    }
     if (slug === 'grazie') {
       await api.sendMessage(chatId, 'Grazie al cazzo. Scemo dimmerda.');
       return { handled: true, command: 'grazie' };

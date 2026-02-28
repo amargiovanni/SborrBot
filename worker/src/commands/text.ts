@@ -1,6 +1,7 @@
 import { Env } from '../types';
 import { TelegramApi } from '../services/telegram';
 import { getRandomTextResponse, getMultipleRandomTextResponses, getRandomGroupUser, getTwoRandomGroupUsers } from '../services/db';
+import { fetchWeather, buildWeatherMessage } from '../services/weather';
 
 interface CommandResult {
   handled: boolean;
@@ -52,6 +53,8 @@ const PATTERNS: { pattern: RegExp; slug: string; hasTarget: boolean; useSenderNa
   { pattern: /^(?:dottore|diagnosi)\s+(.+)/i, slug: 'diagnosi', hasTarget: true },
   // Chi è
   { pattern: /^(?:chi [eè]|presentami)\s+(.+)/i, slug: 'chi-e', hasTarget: true },
+  // Meteo (custom: fetch from OpenWeatherMap)
+  { pattern: /^meteo\s+(.+)/i, slug: 'meteo', hasTarget: true },
   // Notizia flash
   { pattern: /\bnotizia\b/i, slug: 'notizie', hasTarget: false },
   // Fact check
@@ -214,6 +217,22 @@ async function handleRicetta(chatId: string, env: Env, api: TelegramApi): Promis
   return { handled: true, command: 'ricetta' };
 }
 
+async function handleMeteo(city: string, chatId: string, env: Env, api: TelegramApi): Promise<CommandResult> {
+  try {
+    const weather = await fetchWeather(env.OPENWEATHERMAP_API_KEY, city);
+    const message = buildWeatherMessage(weather);
+    await api.sendMessage(chatId, `\u2600\uFE0F\uD83C\uDF27\uFE0F *METEO ${weather.cityName.toUpperCase()}*\n\n${message}`, 'Markdown');
+    return { handled: true, command: 'meteo', target: weather.cityName };
+  } catch (error: any) {
+    if (error.message === 'CITY_NOT_FOUND') {
+      await api.sendMessage(chatId, `"${city}"?! Ma dove cazzo sta? Manco Google Maps la trova, scrivi una citt\u00E0 vera, coglione.`);
+    } else {
+      await api.sendMessage(chatId, 'Il meteo \u00E8 in sciopero, tipo te quando devi lavorare. Riprova dopo, stronzo.');
+    }
+    return { handled: true, command: 'meteo', target: city };
+  }
+}
+
 async function handleAutopsia(target: string, chatId: string, env: Env, api: TelegramApi): Promise<CommandResult> {
   const response = await getRandomTextResponse(env.DB, 'autopsia');
   if (!response) {
@@ -246,6 +265,11 @@ export async function handleTextCommand(
     }
     if (slug === 'frasi-celebri') return handleFrasiCelebri(chatId, env, api);
     if (slug === 'notizie') return handleNotizia(chatId, userId, senderName ?? 'Tizio', env, api);
+    if (slug === 'meteo') {
+      const city = match[1]?.trim();
+      if (!city) continue;
+      return handleMeteo(city, chatId, env, api);
+    }
     if (slug === 'segreto') return handleSegreto(chatId, env, api);
     if (slug === 'complotto') return handleComplotto(chatId, env, api);
     if (slug === 'eredita') return handleEredita(chatId, env, api);

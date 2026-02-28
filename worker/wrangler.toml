@@ -14,3 +14,4 @@ bucket_name = "sborrbot-media"
 
 # BOT_TOKEN → wrangler secret put BOT_TOKEN
 # BOT_SECRET → wrangler secret put BOT_SECRET
+# OPENWEATHERMAP_API_KEY → wrangler secret put OPENWEATHERMAP_API_KEY

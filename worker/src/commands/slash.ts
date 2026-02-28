@@ -39,13 +39,19 @@ export async function handleSlashCommand(
         '• `complimento [nome]` — Complimento backhanded\n' +
         '• `dottore [nome]` / `diagnosi [nome]` — Referto medico assurdo\n' +
         '• `chi è [nome]` / `presentami [nome]` — Bio inventata e volgare\n' +
+        '• `autopsia [nome]` — Referto autoptico volgare\n' +
         '• `notizia` — Notizia flash su un membro del gruppo\n' +
-        '• `segreto` — Rivela una storia torbida tra due membri del gruppo\n' +
+        '• `segreto` — Storia torbida tra due membri del gruppo\n' +
+        '• `complotto` — Teoria del complotto su due membri\n' +
+        '• `eredità` / `testamento` — Testamento assurdo con due membri\n' +
+        '• `fact check` — Fact check inventato e assurdo\n' +
+        '• `ricetta` — Ricetta disgustosa dello chef\n' +
         '• `bestemmia` — Una bella bestemmia\n' +
         '• `come diceva mio nonno` — Saggezza del nonno\n' +
         '• `buongiorno` / `buonanotte` / `ciao` — Saluti\n\n' +
         '🔮 *Speciali:*\n' +
         '• `oroscopo [segno]` — Oroscopo dello sborrone\n' +
+        '• `meteo [città]` — Meteo volgare in tempo reale\n' +
         '• `frase celebre` / `citazione` / `perla di saggezza` — Citazione trash\n\n' +
         '😭 *Auto-trigger:*\n' +
         '• Scrivi `grazie` — risposta adeguata\n' +

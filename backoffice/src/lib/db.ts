@@ -76,9 +76,29 @@ export async function getCommandLogs(db: D1Database, page = 1, limit = 50, filte
 }
 
 export async function getDashboardStats(db: D1Database) {
-  const [totalCommands, activeGroups, topCommands, recentActivity] = await Promise.all([
+  const [
+    totalCommands,
+    commandsToday,
+    activeGroups,
+    totalGroups,
+    uniqueUsers,
+    totalContent,
+    topCommands,
+    recentActivity,
+    activity30d,
+    commandsByType,
+    responseTypes,
+    hourlyActivity,
+    topGroups,
+    topUsers,
+    recentCommands,
+  ] = await Promise.all([
     db.prepare('SELECT COUNT(*) as total FROM command_logs').first<{ total: number }>(),
+    db.prepare("SELECT COUNT(*) as total FROM command_logs WHERE created_at >= datetime('now', 'start of day')").first<{ total: number }>(),
     db.prepare('SELECT COUNT(*) as total FROM groups WHERE is_active = 1').first<{ total: number }>(),
+    db.prepare('SELECT COUNT(*) as total FROM groups').first<{ total: number }>(),
+    db.prepare('SELECT COUNT(DISTINCT telegram_user_id) as total FROM command_logs').first<{ total: number }>(),
+    db.prepare('SELECT (SELECT COUNT(*) FROM text_responses WHERE is_active = 1) + (SELECT COUNT(*) FROM media WHERE is_active = 1) as total').first<{ total: number }>(),
     db.prepare(
       `SELECT command, COUNT(*) as count FROM command_logs
        GROUP BY command ORDER BY count DESC LIMIT 10`
@@ -88,13 +108,59 @@ export async function getDashboardStats(db: D1Database) {
        WHERE created_at >= datetime('now', '-7 days')
        GROUP BY DATE(created_at) ORDER BY date`
     ).all<{ date: string; count: number }>(),
+    db.prepare(
+      `SELECT DATE(created_at) as date, COUNT(*) as count FROM command_logs
+       WHERE created_at >= datetime('now', '-30 days')
+       GROUP BY DATE(created_at) ORDER BY date`
+    ).all<{ date: string; count: number }>(),
+    db.prepare(
+      `SELECT command_type, COUNT(*) as count FROM command_logs
+       GROUP BY command_type ORDER BY count DESC`
+    ).all<{ command_type: string; count: number }>(),
+    db.prepare(
+      `SELECT response_type, COUNT(*) as count FROM command_logs
+       WHERE response_type IS NOT NULL
+       GROUP BY response_type ORDER BY count DESC`
+    ).all<{ response_type: string; count: number }>(),
+    db.prepare(
+      `SELECT CAST(strftime('%H', created_at) AS INTEGER) as hour, COUNT(*) as count
+       FROM command_logs GROUP BY hour ORDER BY hour`
+    ).all<{ hour: number; count: number }>(),
+    db.prepare(
+      `SELECT cl.telegram_chat_id, g.title, COUNT(*) as count
+       FROM command_logs cl
+       LEFT JOIN groups g ON cl.telegram_chat_id = g.telegram_chat_id
+       GROUP BY cl.telegram_chat_id
+       ORDER BY count DESC LIMIT 5`
+    ).all<{ telegram_chat_id: string; title: string | null; count: number }>(),
+    db.prepare(
+      `SELECT telegram_user_id, username, COUNT(*) as count
+       FROM command_logs
+       GROUP BY telegram_user_id
+       ORDER BY count DESC LIMIT 5`
+    ).all<{ telegram_user_id: string; username: string | null; count: number }>(),
+    db.prepare(
+      `SELECT command, username, command_type, response_type, created_at
+       FROM command_logs ORDER BY created_at DESC LIMIT 10`
+    ).all<{ command: string; username: string | null; command_type: string; response_type: string | null; created_at: string }>(),
   ]);
 
   return {
     totalCommands: totalCommands?.total ?? 0,
+    commandsToday: commandsToday?.total ?? 0,
     activeGroups: activeGroups?.total ?? 0,
+    totalGroups: totalGroups?.total ?? 0,
+    uniqueUsers: uniqueUsers?.total ?? 0,
+    totalContent: totalContent?.total ?? 0,
     topCommands: topCommands?.results ?? [],
     recentActivity: recentActivity?.results ?? [],
+    activity30d: activity30d?.results ?? [],
+    commandsByType: commandsByType?.results ?? [],
+    responseTypes: responseTypes?.results ?? [],
+    hourlyActivity: hourlyActivity?.results ?? [],
+    topGroups: topGroups?.results ?? [],
+    topUsers: topUsers?.results ?? [],
+    recentCommands: recentCommands?.results ?? [],
   };
 }
 

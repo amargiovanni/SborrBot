@@ -3,79 +3,501 @@ import Layout from '../layouts/Layout.astro';
 import { getDashboardStats } from '../lib/db';
 
 const env = (Astro.locals as any).runtime?.env;
-let stats = { totalCommands: 0, activeGroups: 0, topCommands: [] as any[], recentActivity: [] as any[] };
+let stats = {
+  totalCommands: 0, commandsToday: 0, activeGroups: 0, totalGroups: 0,
+  uniqueUsers: 0, totalContent: 0,
+  topCommands: [] as any[], recentActivity: [] as any[],
+  activity30d: [] as any[], commandsByType: [] as any[],
+  responseTypes: [] as any[], hourlyActivity: [] as any[],
+  topGroups: [] as any[], topUsers: [] as any[],
+  recentCommands: [] as any[],
+};
 
 if (env?.DB) {
   stats = await getDashboardStats(env.DB);
 }
+
+// Helpers
+const maxHourCount = Math.max(...stats.hourlyActivity.map((h: any) => h.count), 1);
+
+const cmdTypeLabels: Record<string, string> = { keyword: 'Keyword', slash: 'Slash', control: 'Controllo' };
+const cmdTypeColors: Record<string, string> = { keyword: '#3b82f6', slash: '#10b981', control: '#f59e0b' };
+const respTypeLabels: Record<string, string> = { text: 'Testo', audio: 'Audio', photo: 'Foto', sticker: 'Sticker' };
+const respTypeColors: Record<string, string> = { text: '#3b82f6', audio: '#8b5cf6', photo: '#ec4899', sticker: '#f97316' };
+
+const cmdTypeBadgeClasses: Record<string, string> = {
+  keyword: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
+  slash: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300',
+  control: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300',
+};
+const respTypeBadgeClasses: Record<string, string> = {
+  text: 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
+  audio: 'bg-violet-50 text-violet-600 dark:bg-violet-900/30 dark:text-violet-400',
+  photo: 'bg-pink-50 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400',
+  sticker: 'bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400',
+};
+
+function formatTime(dateStr: string) {
+  try {
+    const d = new Date(dateStr + 'Z');
+    return d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+  } catch { return '--:--'; }
+}
 ---
 
 <Layout title="Dashboard">
+  <script slot="head" is:inline src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js" defer></script>
+
   <div class="space-y-8">
+    <!-- Header -->
     <div>
       <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
       <p class="text-gray-500 dark:text-gray-400 mt-1">Panoramica del bot</p>
     </div>
 
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-6 border border-gray-100 dark:border-gray-800">
-        <div class="text-3xl font-bold text-gray-900 dark:text-white">{stats.totalCommands}</div>
-        <div class="text-gray-500 dark:text-gray-400 text-sm mt-1">Comandi totali</div>
+    <!-- Stat Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <!-- Comandi Totali -->
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-5 border border-gray-100 dark:border-gray-800 border-l-4 border-l-blue-500">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950 flex items-center justify-center text-lg">⚡</div>
+          <div>
+            <div class="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalCommands.toLocaleString('it-IT')}</div>
+            <div class="text-gray-500 dark:text-gray-400 text-xs">Comandi totali</div>
+          </div>
+        </div>
+        {stats.commandsToday > 0 && (
+          <div class="mt-3 text-xs text-blue-600 dark:text-blue-400 font-medium">+{stats.commandsToday} oggi</div>
+        )}
       </div>
-      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-6 border border-gray-100 dark:border-gray-800">
-        <div class="text-3xl font-bold text-gray-900 dark:text-white">{stats.activeGroups}</div>
-        <div class="text-gray-500 dark:text-gray-400 text-sm mt-1">Gruppi attivi</div>
+
+      <!-- Gruppi Attivi -->
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-5 border border-gray-100 dark:border-gray-800 border-l-4 border-l-emerald-500">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950 flex items-center justify-center text-lg">👥</div>
+          <div>
+            <div class="text-2xl font-bold text-gray-900 dark:text-white">{stats.activeGroups}</div>
+            <div class="text-gray-500 dark:text-gray-400 text-xs">Gruppi attivi</div>
+          </div>
+        </div>
+        {stats.totalGroups > stats.activeGroups && (
+          <div class="mt-3 text-xs text-gray-400 dark:text-gray-500">su {stats.totalGroups} totali</div>
+        )}
       </div>
-      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-6 border border-gray-100 dark:border-gray-800">
-        <div class="text-3xl font-bold text-gray-900 dark:text-white">{stats.topCommands.length > 0 ? stats.topCommands[0].command : '-'}</div>
-        <div class="text-gray-500 dark:text-gray-400 text-sm mt-1">Comando piu usato</div>
+
+      <!-- Utenti Unici -->
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-5 border border-gray-100 dark:border-gray-800 border-l-4 border-l-violet-500">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-violet-50 dark:bg-violet-950 flex items-center justify-center text-lg">👤</div>
+          <div>
+            <div class="text-2xl font-bold text-gray-900 dark:text-white">{stats.uniqueUsers}</div>
+            <div class="text-gray-500 dark:text-gray-400 text-xs">Utenti unici</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comandi Oggi -->
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-5 border border-gray-100 dark:border-gray-800 border-l-4 border-l-amber-500">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950 flex items-center justify-center text-lg">📈</div>
+          <div>
+            <div class="text-2xl font-bold text-gray-900 dark:text-white">{stats.commandsToday}</div>
+            <div class="text-gray-500 dark:text-gray-400 text-xs">Comandi oggi</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contenuti -->
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-5 border border-gray-100 dark:border-gray-800 border-l-4 border-l-pink-500">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-pink-50 dark:bg-pink-950 flex items-center justify-center text-lg">💾</div>
+          <div>
+            <div class="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalContent}</div>
+            <div class="text-gray-500 dark:text-gray-400 text-xs">Contenuti attivi</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comando Top -->
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-5 border border-gray-100 dark:border-gray-800 border-l-4 border-l-orange-500">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-950 flex items-center justify-center text-lg">🏆</div>
+          <div>
+            <div class="text-2xl font-bold text-gray-900 dark:text-white truncate max-w-[140px]">{stats.topCommands.length > 0 ? stats.topCommands[0].command : '-'}</div>
+            <div class="text-gray-500 dark:text-gray-400 text-xs">Comando piu' usato</div>
+          </div>
+        </div>
+        {stats.topCommands.length > 0 && (
+          <div class="mt-3 text-xs text-orange-600 dark:text-orange-400 font-medium">{stats.topCommands[0].count} utilizzi</div>
+        )}
       </div>
     </div>
 
-    <!-- Top Commands -->
+    <!-- 30-Day Activity Chart -->
+    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Attivita' - Ultimi 30 Giorni</h2>
+      <div class="h-64">
+        <canvas id="activityChart" data-chart={JSON.stringify(stats.activity30d)}></canvas>
+      </div>
+    </div>
+
+    <!-- Distribution Charts (2 cols) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Command Types Doughnut -->
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Distribuzione Comandi</h2>
+        {stats.commandsByType.length > 0 ? (
+          <div class="flex flex-col items-center">
+            <div class="w-56 h-56">
+              <canvas
+                id="cmdTypeChart"
+                data-labels={JSON.stringify(stats.commandsByType.map((c: any) => cmdTypeLabels[c.command_type] || c.command_type))}
+                data-values={JSON.stringify(stats.commandsByType.map((c: any) => c.count))}
+                data-colors={JSON.stringify(stats.commandsByType.map((c: any) => cmdTypeColors[c.command_type] || '#6b7280'))}
+              ></canvas>
+            </div>
+            <div class="flex gap-4 mt-4">
+              {stats.commandsByType.map((c: any) => (
+                <div class="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400">
+                  <div class="w-2.5 h-2.5 rounded-full" style={`background-color: ${cmdTypeColors[c.command_type] || '#6b7280'}`}></div>
+                  {cmdTypeLabels[c.command_type] || c.command_type} ({c.count})
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <p class="text-gray-400 dark:text-gray-500 text-sm">Nessun dato disponibile</p>
+        )}
+      </div>
+
+      <!-- Response Types Bar -->
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Tipo Risposte</h2>
+        {stats.responseTypes.length > 0 ? (
+          <div class="h-56">
+            <canvas
+              id="respTypeChart"
+              data-labels={JSON.stringify(stats.responseTypes.map((r: any) => respTypeLabels[r.response_type] || r.response_type))}
+              data-values={JSON.stringify(stats.responseTypes.map((r: any) => r.count))}
+              data-colors={JSON.stringify(stats.responseTypes.map((r: any) => respTypeColors[r.response_type] || '#6b7280'))}
+            ></canvas>
+          </div>
+        ) : (
+          <p class="text-gray-400 dark:text-gray-500 text-sm">Nessun dato disponibile</p>
+        )}
+      </div>
+    </div>
+
+    <!-- Hourly Activity Heatmap -->
+    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Attivita' per Ora</h2>
+      <div class="grid grid-cols-24 gap-1">
+        {Array.from({ length: 24 }, (_, i) => {
+          const hourData = stats.hourlyActivity.find((h: any) => h.hour === i);
+          const count = hourData?.count ?? 0;
+          const intensity = count / maxHourCount;
+          return (
+            <div class="flex flex-col items-center gap-1">
+              <div
+                class="w-full aspect-square rounded-lg transition-colors"
+                style={`background-color: rgba(59, 130, 246, ${Math.max(intensity, 0.08)})`}
+                title={`${String(i).padStart(2, '0')}:00 - ${count} comandi`}
+              ></div>
+              <span class="text-[10px] text-gray-400 dark:text-gray-500">{String(i).padStart(2, '0')}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+
+    <!-- Top 10 Commands -->
     <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6">
       <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Top 10 Comandi</h2>
       {stats.topCommands.length > 0 ? (
-        <div class="space-y-3">
-          {stats.topCommands.map((cmd: any, i: number) => (
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <span class="text-gray-400 dark:text-gray-500 text-sm w-6">{i + 1}.</span>
-                <span class="text-gray-900 dark:text-white font-medium">{cmd.command}</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <div class="w-32 bg-gray-100 dark:bg-gray-800 rounded-full h-2">
-                  <div
-                    class="bg-primary-500 h-2 rounded-full"
-                    style={`width: ${Math.round((cmd.count / stats.topCommands[0].count) * 100)}%`}
-                  ></div>
+        <div class="space-y-2">
+          {stats.topCommands.map((cmd: any, i: number) => {
+            const pct = Math.round((cmd.count / stats.topCommands[0].count) * 100);
+            const totalPct = stats.totalCommands > 0 ? ((cmd.count / stats.totalCommands) * 100).toFixed(1) : '0';
+            const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : null;
+            return (
+              <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                <span class="w-8 text-center text-sm font-medium text-gray-400 dark:text-gray-500">
+                  {medal ? <span class="text-lg">{medal}</span> : `${i + 1}.`}
+                </span>
+                <div class="flex-1 min-w-0">
+                  <div class="flex justify-between items-center mb-1.5">
+                    <span class={`font-medium text-gray-900 dark:text-white ${i < 3 ? 'text-sm' : 'text-sm'}`}>{cmd.command}</span>
+                    <span class="text-xs text-gray-500 dark:text-gray-400 tabular-nums">
+                      {cmd.count} <span class="text-gray-400 dark:text-gray-500">({totalPct}%)</span>
+                    </span>
+                  </div>
+                  <div class="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-2.5">
+                    <div
+                      class="bg-gradient-to-r from-primary-600 to-primary-400 h-2.5 rounded-full transition-all duration-500"
+                      style={`width: ${pct}%`}
+                    ></div>
+                  </div>
                 </div>
-                <span class="text-gray-500 dark:text-gray-400 text-sm w-12 text-right">{cmd.count}</span>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
-        <p class="text-gray-400 dark:text-gray-500">Nessun comando ancora eseguito</p>
+        <p class="text-gray-400 dark:text-gray-500 text-sm">Nessun comando ancora eseguito</p>
       )}
     </div>
 
-    <!-- Recent Activity -->
+    <!-- Leaderboards (2 cols) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Top Groups -->
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Gruppi Piu' Attivi</h2>
+        {stats.topGroups.length > 0 ? (
+          <div class="space-y-3">
+            {stats.topGroups.map((g: any, i: number) => {
+              const pct = Math.round((g.count / stats.topGroups[0].count) * 100);
+              return (
+                <div class="flex items-center gap-3">
+                  <span class="text-xs text-gray-400 dark:text-gray-500 w-5 text-center font-medium">{i + 1}.</span>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex justify-between items-center mb-1">
+                      <span class="text-sm font-medium text-gray-900 dark:text-white truncate">{g.title || `Gruppo ${g.telegram_chat_id}`}</span>
+                      <span class="text-xs text-gray-500 dark:text-gray-400 tabular-nums ml-2 flex-shrink-0">{g.count}</span>
+                    </div>
+                    <div class="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-1.5">
+                      <div class="bg-emerald-500 h-1.5 rounded-full" style={`width: ${pct}%`}></div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <p class="text-gray-400 dark:text-gray-500 text-sm">Nessun dato disponibile</p>
+        )}
+      </div>
+
+      <!-- Top Users -->
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Utenti Piu' Attivi</h2>
+        {stats.topUsers.length > 0 ? (
+          <div class="space-y-3">
+            {stats.topUsers.map((u: any, i: number) => {
+              const pct = Math.round((u.count / stats.topUsers[0].count) * 100);
+              return (
+                <div class="flex items-center gap-3">
+                  <span class="text-xs text-gray-400 dark:text-gray-500 w-5 text-center font-medium">{i + 1}.</span>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex justify-between items-center mb-1">
+                      <span class="text-sm font-medium text-gray-900 dark:text-white truncate">
+                        {u.username ? `@${u.username}` : `User ${u.telegram_user_id}`}
+                      </span>
+                      <span class="text-xs text-gray-500 dark:text-gray-400 tabular-nums ml-2 flex-shrink-0">{u.count}</span>
+                    </div>
+                    <div class="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-1.5">
+                      <div class="bg-violet-500 h-1.5 rounded-full" style={`width: ${pct}%`}></div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <p class="text-gray-400 dark:text-gray-500 text-sm">Nessun dato disponibile</p>
+        )}
+      </div>
+    </div>
+
+    <!-- Recent Commands Feed -->
     <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6">
-      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Attivita ultimi 7 giorni</h2>
-      {stats.recentActivity.length > 0 ? (
-        <div class="grid grid-cols-7 gap-2">
-          {stats.recentActivity.map((day: any) => (
-            <div class="text-center">
-              <div class="text-xs text-gray-400 dark:text-gray-500 mb-1">{day.date.slice(5)}</div>
-              <div class="bg-primary-600 rounded text-white text-sm py-1">{day.count}</div>
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Ultimi Comandi</h2>
+      {stats.recentCommands.length > 0 ? (
+        <div class="space-y-2">
+          {stats.recentCommands.map((cmd: any) => (
+            <div class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors text-sm">
+              <span class="text-xs text-gray-400 dark:text-gray-500 tabular-nums w-12 flex-shrink-0">{formatTime(cmd.created_at)}</span>
+              <span class="text-primary-600 dark:text-primary-400 font-medium truncate w-24 flex-shrink-0">
+                {cmd.username ? `@${cmd.username}` : 'anonimo'}
+              </span>
+              <span class="text-gray-900 dark:text-white font-medium truncate flex-1">{cmd.command}</span>
+              <span class={`text-[10px] px-1.5 py-0.5 rounded-full font-medium flex-shrink-0 ${cmdTypeBadgeClasses[cmd.command_type] || 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'}`}>
+                {cmdTypeLabels[cmd.command_type] || cmd.command_type}
+              </span>
+              {cmd.response_type && (
+                <span class={`text-[10px] px-1.5 py-0.5 rounded-full font-medium flex-shrink-0 ${respTypeBadgeClasses[cmd.response_type] || 'bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-400'}`}>
+                  {respTypeLabels[cmd.response_type] || cmd.response_type}
+                </span>
+              )}
             </div>
           ))}
         </div>
       ) : (
-        <p class="text-gray-400 dark:text-gray-500">Nessuna attivita recente</p>
+        <p class="text-gray-400 dark:text-gray-500 text-sm">Nessun comando recente</p>
       )}
     </div>
   </div>
+
+  <!-- Chart.js initialization -->
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof Chart === 'undefined') return;
+
+      var isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var gridColor = isDark ? '#1f2937' : '#f3f4f6';
+      var textColor = isDark ? '#9ca3af' : '#6b7280';
+
+      Chart.defaults.color = textColor;
+      Chart.defaults.borderColor = gridColor;
+      Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
+
+      // 30-day Activity Line Chart
+      var activityCanvas = document.getElementById('activityChart');
+      if (activityCanvas) {
+        var activityData = JSON.parse(activityCanvas.dataset.chart || '[]');
+        var ctx = activityCanvas.getContext('2d');
+        var gradient = ctx.createLinearGradient(0, 0, 0, activityCanvas.parentElement.clientHeight);
+        gradient.addColorStop(0, 'rgba(59, 130, 246, 0.25)');
+        gradient.addColorStop(1, 'rgba(59, 130, 246, 0.02)');
+
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: activityData.map(function(d) { return d.date.slice(5); }),
+            datasets: [{
+              label: 'Comandi',
+              data: activityData.map(function(d) { return d.count; }),
+              borderColor: '#3b82f6',
+              backgroundColor: gradient,
+              fill: true,
+              tension: 0.4,
+              borderWidth: 2,
+              pointRadius: 0,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: '#3b82f6',
+              pointHoverBorderColor: isDark ? '#111827' : '#ffffff',
+              pointHoverBorderWidth: 2,
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { intersect: false, mode: 'index' },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: isDark ? '#1f2937' : '#ffffff',
+                titleColor: isDark ? '#f3f4f6' : '#111827',
+                bodyColor: isDark ? '#d1d5db' : '#4b5563',
+                borderColor: isDark ? '#374151' : '#e5e7eb',
+                borderWidth: 1,
+                padding: 10,
+                cornerRadius: 8,
+                displayColors: false,
+              }
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: { maxTicksLimit: 10, font: { size: 11 } }
+              },
+              y: {
+                beginAtZero: true,
+                grid: { color: gridColor },
+                ticks: { font: { size: 11 } }
+              }
+            }
+          }
+        });
+      }
+
+      // Command Types Doughnut
+      var cmdTypeCanvas = document.getElementById('cmdTypeChart');
+      if (cmdTypeCanvas) {
+        var labels = JSON.parse(cmdTypeCanvas.dataset.labels || '[]');
+        var values = JSON.parse(cmdTypeCanvas.dataset.values || '[]');
+        var colors = JSON.parse(cmdTypeCanvas.dataset.colors || '[]');
+
+        new Chart(cmdTypeCanvas.getContext('2d'), {
+          type: 'doughnut',
+          data: {
+            labels: labels,
+            datasets: [{
+              data: values,
+              backgroundColor: colors,
+              borderWidth: 0,
+              spacing: 3,
+              hoverOffset: 8,
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            cutout: '68%',
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: isDark ? '#1f2937' : '#ffffff',
+                titleColor: isDark ? '#f3f4f6' : '#111827',
+                bodyColor: isDark ? '#d1d5db' : '#4b5563',
+                borderColor: isDark ? '#374151' : '#e5e7eb',
+                borderWidth: 1,
+                padding: 10,
+                cornerRadius: 8,
+              }
+            }
+          }
+        });
+      }
+
+      // Response Types Horizontal Bar
+      var respTypeCanvas = document.getElementById('respTypeChart');
+      if (respTypeCanvas) {
+        var labels = JSON.parse(respTypeCanvas.dataset.labels || '[]');
+        var values = JSON.parse(respTypeCanvas.dataset.values || '[]');
+        var colors = JSON.parse(respTypeCanvas.dataset.colors || '[]');
+
+        new Chart(respTypeCanvas.getContext('2d'), {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              data: values,
+              backgroundColor: colors,
+              borderRadius: 8,
+              barThickness: 28,
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: isDark ? '#1f2937' : '#ffffff',
+                titleColor: isDark ? '#f3f4f6' : '#111827',
+                bodyColor: isDark ? '#d1d5db' : '#4b5563',
+                borderColor: isDark ? '#374151' : '#e5e7eb',
+                borderWidth: 1,
+                padding: 10,
+                cornerRadius: 8,
+                displayColors: false,
+              }
+            },
+            scales: {
+              x: {
+                beginAtZero: true,
+                grid: { color: gridColor },
+                ticks: { font: { size: 11 } }
+              },
+              y: {
+                grid: { display: false },
+                ticks: { font: { size: 12, weight: '500' } }
+              }
+            }
+          }
+        });
+      }
+    });
+  </script>
 </Layout>

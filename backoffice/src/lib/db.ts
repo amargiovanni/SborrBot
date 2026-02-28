@@ -164,6 +164,29 @@ export async function getDashboardStats(db: D1Database) {
   };
 }
 
+export async function getCategoriesWithCounts(db: D1Database, type: string) {
+  const table = type === 'text' ? 'text_responses' : 'media';
+  return db.prepare(
+    `SELECT c.*, COALESCE(cnt.count, 0) as item_count
+     FROM categories c
+     LEFT JOIN (SELECT category_id, COUNT(*) as count FROM ${table} GROUP BY category_id) cnt
+     ON c.id = cnt.category_id
+     WHERE c.type = ?
+     ORDER BY c.name`
+  ).bind(type).all();
+}
+
+export async function getGroupStats(db: D1Database) {
+  return db.prepare(
+    `SELECT
+       COUNT(*) as total,
+       SUM(CASE WHEN is_active = 1 AND is_banned = 0 THEN 1 ELSE 0 END) as active,
+       SUM(CASE WHEN is_active = 0 AND is_banned = 0 THEN 1 ELSE 0 END) as paused,
+       SUM(CASE WHEN is_banned = 1 THEN 1 ELSE 0 END) as banned
+     FROM groups`
+  ).first<{ total: number; active: number; paused: number; banned: number }>();
+}
+
 export async function getBotConfig(db: D1Database) {
   const result = await db.prepare('SELECT * FROM bot_config').all<{ key: string; value: string }>();
   return result.results;

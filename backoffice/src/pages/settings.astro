@@ -9,76 +9,132 @@ if (env?.DB) {
   config = await getBotConfig(env.DB);
 }
 
-const configLabels: Record<string, { label: string; description: string; type: string }> = {
-  bot_name: { label: 'Nome Bot', description: 'Il nome del bot mostrato nei messaggi', type: 'text' },
-  rate_limit_per_minute: { label: 'Rate Limit (per minuto)', description: 'Numero massimo di comandi per utente al minuto', type: 'number' },
-  nsfw_default: { label: 'NSFW abilitato', description: 'Abilita comandi foto NSFW di default', type: 'toggle' },
-  audio_default: { label: 'Audio abilitato', description: 'Abilita comandi audio di default', type: 'toggle' },
+const configMeta: Record<string, { label: string; description: string; type: string; icon: string; section: string }> = {
+  bot_name: { label: 'Nome Bot', description: 'Il nome del bot mostrato nei messaggi', type: 'text', icon: '🤖', section: 'general' },
+  rate_limit_per_minute: { label: 'Rate Limit', description: 'Numero massimo di comandi per utente al minuto', type: 'number', icon: '⏱️', section: 'limits' },
+  nsfw_default: { label: 'NSFW abilitato', description: 'Abilita comandi foto NSFW di default per i nuovi gruppi', type: 'toggle', icon: '🔞', section: 'features' },
+  audio_default: { label: 'Audio abilitato', description: 'Abilita comandi audio di default per i nuovi gruppi', type: 'toggle', icon: '🔊', section: 'features' },
 };
+
+const sections = [
+  { key: 'general', title: 'Generale', description: 'Impostazioni generali del bot' },
+  { key: 'limits', title: 'Limiti', description: 'Rate limiting e restrizioni' },
+  { key: 'features', title: 'Funzionalita\'', description: 'Abilita o disabilita funzionalita\'' },
+];
+
+function getConfigBySection(sectionKey: string) {
+  return config.filter((item: any) => {
+    const meta = configMeta[item.key];
+    return meta?.section === sectionKey;
+  });
+}
 ---
 
 <Layout title="Impostazioni">
   <div class="space-y-6">
     <div>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">⚙️ Impostazioni</h1>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Impostazioni</h1>
       <p class="text-gray-500 dark:text-gray-400 mt-1">Configurazione globale del bot</p>
     </div>
 
-    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 divide-y divide-gray-100 dark:divide-gray-800">
-      {config.map((item: any) => {
-        const meta = configLabels[item.key];
-        return (
-          <div class="p-4 flex items-center justify-between" data-config-key={item.key}>
-            <div>
-              <div class="text-gray-900 dark:text-white font-medium text-sm">{meta?.label || item.key}</div>
-              <div class="text-gray-400 dark:text-gray-500 text-xs mt-1">{meta?.description || `Chiave: ${item.key}`}</div>
-            </div>
-            <div class="flex items-center gap-3">
-              {meta?.type === 'toggle' ? (
-                <button
-                  data-toggle-config={item.key}
-                  data-value={item.value}
-                  class={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    item.value === 'true' ? 'bg-primary-600' : 'bg-gray-300 dark:bg-gray-600'
-                  }`}
-                >
-                  <span
-                    class={`inline-block h-4 w-4 rounded-full bg-white transition-transform ${
-                      item.value === 'true' ? 'translate-x-6' : 'translate-x-1'
-                    }`}
-                  />
-                </button>
-              ) : (
-                <div class="flex gap-2">
-                  <input
-                    type={meta?.type || 'text'}
-                    value={item.value}
-                    data-input-config={item.key}
-                    class="px-3 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white text-sm w-48 focus:ring-2 focus:ring-primary-500 outline-none"
-                  />
-                  <button
-                    data-save-config={item.key}
-                    class="bg-primary-600 hover:bg-primary-700 text-white text-sm px-3 py-1 rounded-lg transition-colors"
-                  >
-                    Salva
-                  </button>
-                </div>
-              )}
-            </div>
+    {sections.map(section => {
+      const sectionItems = getConfigBySection(section.key);
+      if (sectionItems.length === 0) return null;
+      return (
+        <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
+          <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800">
+            <h2 class="text-base font-semibold text-gray-900 dark:text-white">{section.title}</h2>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{section.description}</p>
           </div>
-        );
-      })}
-    </div>
+          <div class="divide-y divide-gray-100 dark:divide-gray-800">
+            {sectionItems.map((item: any) => {
+              const meta = configMeta[item.key];
+              return (
+                <div class="px-6 py-4 flex items-center justify-between gap-4" data-config-key={item.key}>
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-lg flex-shrink-0">{meta?.icon || '⚙️'}</div>
+                    <div>
+                      <div class="text-sm font-medium text-gray-900 dark:text-white">{meta?.label || item.key}</div>
+                      <div class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{meta?.description || `Chiave: ${item.key}`}</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3 flex-shrink-0">
+                    {meta?.type === 'toggle' ? (
+                      <button
+                        data-toggle-config={item.key}
+                        data-value={item.value}
+                        class={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors cursor-pointer ${
+                          item.value === 'true' ? 'bg-primary-600' : 'bg-gray-300 dark:bg-gray-600'
+                        }`}
+                      >
+                        <span class={`inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${
+                          item.value === 'true' ? 'translate-x-6' : 'translate-x-1'
+                        }`} />
+                      </button>
+                    ) : (
+                      <div class="flex gap-2 items-center">
+                        <input
+                          type={(meta?.type || 'text') as any}
+                          value={item.value}
+                          data-input-config={item.key}
+                          class="px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white text-sm w-48 focus:ring-2 focus:ring-primary-500/40 outline-none transition-all"
+                        />
+                        <button
+                          data-save-config={item.key}
+                          class="btn-primary text-sm !py-2 !px-4"
+                        >
+                          Salva
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    })}
+
+    <!-- Impostazioni non riconosciute -->
+    {config.filter((item: any) => !configMeta[item.key]).length > 0 && (
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800">
+          <h2 class="text-base font-semibold text-gray-900 dark:text-white">Altro</h2>
+          <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Impostazioni aggiuntive</p>
+        </div>
+        <div class="divide-y divide-gray-100 dark:divide-gray-800">
+          {config.filter((item: any) => !configMeta[item.key]).map((item: any) => (
+            <div class="px-6 py-4 flex items-center justify-between gap-4" data-config-key={item.key}>
+              <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-lg flex-shrink-0">⚙️</div>
+                <div>
+                  <div class="text-sm font-medium text-gray-900 dark:text-white font-mono">{item.key}</div>
+                  <div class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Chiave custom</div>
+                </div>
+              </div>
+              <div class="flex gap-2 items-center flex-shrink-0">
+                <input
+                  type="text"
+                  value={item.value}
+                  data-input-config={item.key}
+                  class="px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white text-sm w-48 focus:ring-2 focus:ring-primary-500/40 outline-none"
+                />
+                <button data-save-config={item.key} class="btn-primary text-sm !py-2 !px-4">Salva</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
   </div>
 
   <script>
-    // Toggle configs
     document.querySelectorAll('[data-toggle-config]').forEach(btn => {
       btn.addEventListener('click', async () => {
         const key = btn.getAttribute('data-toggle-config');
         const currentValue = btn.getAttribute('data-value');
         const newValue = currentValue === 'true' ? 'false' : 'true';
-
         const res = await fetch('/api/config', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -88,13 +144,12 @@ const configLabels: Record<string, { label: string; description: string; type: s
       });
     });
 
-    // Save text/number configs
     document.querySelectorAll('[data-save-config]').forEach(btn => {
       btn.addEventListener('click', async () => {
         const key = btn.getAttribute('data-save-config');
-        const input = document.querySelector(`[data-input-config="${key}"]`);
+        const input = document.querySelector(`[data-input-config="${key}"]`) as HTMLInputElement | null;
+        if (!input) return;
         const value = input.value;
-
         const res = await fetch('/api/config', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -102,7 +157,13 @@ const configLabels: Record<string, { label: string; description: string; type: s
         });
         if (res.ok) {
           btn.textContent = 'Salvato!';
-          setTimeout(() => btn.textContent = 'Salva', 2000);
+          btn.classList.remove('bg-primary-600', 'hover:bg-primary-700');
+          btn.classList.add('bg-green-600', 'hover:bg-green-700');
+          setTimeout(() => {
+            btn.textContent = 'Salva';
+            btn.classList.remove('bg-green-600', 'hover:bg-green-700');
+            btn.classList.add('bg-primary-600', 'hover:bg-primary-700');
+          }, 2000);
         }
       });
     });

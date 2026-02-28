@@ -1,6 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getGroups } from '../lib/db';
+import { getGroups, getGroupStats } from '../lib/db';
 
 const env = (Astro.locals as any).runtime?.env;
 const url = new URL(Astro.request.url);
@@ -8,65 +8,102 @@ const page = Number(url.searchParams.get('page')) || 1;
 
 let groups: any[] = [];
 let total = 0;
+let stats = { total: 0, active: 0, paused: 0, banned: 0 };
 
 if (env?.DB) {
-  const result = await getGroups(env.DB, page);
+  const [result, groupStats] = await Promise.all([
+    getGroups(env.DB, page),
+    getGroupStats(env.DB),
+  ]);
   groups = result.items as any[];
   total = result.total;
+  if (groupStats) stats = groupStats;
 }
 
 const totalPages = Math.ceil(total / 20);
+
+function formatDate(dateStr: string | null) {
+  if (!dateStr) return '-';
+  try {
+    const d = new Date(dateStr + 'Z');
+    return d.toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  } catch { return dateStr; }
+}
 ---
 
 <Layout title="Gruppi">
   <div class="space-y-6">
     <div>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">👥 Gestione Gruppi</h1>
-      <p class="text-gray-500 dark:text-gray-400 mt-1">Gruppi Telegram dove il bot è attivo</p>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Gestione Gruppi</h1>
+      <p class="text-gray-500 dark:text-gray-400 mt-1">Gruppi Telegram dove il bot e' attivo</p>
     </div>
 
+    <!-- Stat cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-5 border border-gray-100 dark:border-gray-800 border-l-4 border-l-emerald-500">
+        <div class="text-2xl font-bold text-gray-900 dark:text-white">{stats.active}</div>
+        <div class="text-gray-500 dark:text-gray-400 text-xs mt-1">Gruppi attivi</div>
+      </div>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-5 border border-gray-100 dark:border-gray-800 border-l-4 border-l-yellow-500">
+        <div class="text-2xl font-bold text-gray-900 dark:text-white">{stats.paused}</div>
+        <div class="text-gray-500 dark:text-gray-400 text-xs mt-1">In pausa</div>
+      </div>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-5 border border-gray-100 dark:border-gray-800 border-l-4 border-l-red-500">
+        <div class="text-2xl font-bold text-gray-900 dark:text-white">{stats.banned}</div>
+        <div class="text-gray-500 dark:text-gray-400 text-xs mt-1">Bannati</div>
+      </div>
+    </div>
+
+    <!-- Table -->
     <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
       <table class="w-full">
         <thead>
           <tr class="border-b border-gray-100 dark:border-gray-800 text-left">
-            <th class="px-4 py-3 text-gray-500 dark:text-gray-400 text-sm font-medium">Chat ID</th>
-            <th class="px-4 py-3 text-gray-500 dark:text-gray-400 text-sm font-medium">Nome</th>
-            <th class="px-4 py-3 text-gray-500 dark:text-gray-400 text-sm font-medium">Stato</th>
-            <th class="px-4 py-3 text-gray-500 dark:text-gray-400 text-sm font-medium">Ultimo aggiornamento</th>
-            <th class="px-4 py-3 text-gray-500 dark:text-gray-400 text-sm font-medium">Azioni</th>
+            <th class="px-5 py-3.5 text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Gruppo</th>
+            <th class="px-5 py-3.5 text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Stato</th>
+            <th class="px-5 py-3.5 text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Ultimo aggiornamento</th>
+            <th class="px-5 py-3.5 text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider text-right">Azioni</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-50 dark:divide-gray-800">
           {groups.length > 0 ? groups.map((group: any) => (
-            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-              <td class="px-4 py-3 text-gray-600 dark:text-gray-300 text-sm font-mono">{group.telegram_chat_id}</td>
-              <td class="px-4 py-3 text-gray-900 dark:text-white text-sm">{group.title || '-'}</td>
-              <td class="px-4 py-3">
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
+              <td class="px-5 py-4">
+                <div class="text-sm font-medium text-gray-900 dark:text-white">{group.title || 'Senza nome'}</div>
+                <div class="text-xs text-gray-400 dark:text-gray-500 font-mono mt-0.5">{group.telegram_chat_id}</div>
+              </td>
+              <td class="px-5 py-4">
                 {group.is_banned ? (
-                  <span class="text-xs px-2 py-1 rounded bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300">Bannato</span>
+                  <span class="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg font-medium bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400">
+                    <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Bannato
+                  </span>
                 ) : group.is_active ? (
-                  <span class="text-xs px-2 py-1 rounded bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300">Attivo</span>
+                  <span class="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg font-medium bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400">
+                    <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Attivo
+                  </span>
                 ) : (
-                  <span class="text-xs px-2 py-1 rounded bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300">In pausa</span>
+                  <span class="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg font-medium bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400">
+                    <span class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span> In pausa
+                  </span>
                 )}
               </td>
-              <td class="px-4 py-3 text-gray-500 dark:text-gray-400 text-sm">{group.updated_at}</td>
-              <td class="px-4 py-3">
-                <div class="flex gap-2">
+              <td class="px-5 py-4 text-sm text-gray-500 dark:text-gray-400">{formatDate(group.updated_at)}</td>
+              <td class="px-5 py-4 text-right">
+                <div class="flex gap-2 justify-end">
                   <button
                     data-toggle={group.id}
                     data-active={group.is_active}
-                    class="text-xs px-3 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                    class="text-xs px-3 py-1.5 rounded-lg font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                   >
-                    {group.is_active ? 'Metti in pausa' : 'Attiva'}
+                    {group.is_active ? 'Pausa' : 'Attiva'}
                   </button>
                   <button
                     data-ban={group.id}
                     data-banned={group.is_banned}
-                    class={`text-xs px-3 py-1 rounded transition-colors ${
+                    class={`text-xs px-3 py-1.5 rounded-lg font-medium transition-colors ${
                       group.is_banned
-                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-800/40'
-                        : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-800/40'
+                        ? 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-800/40'
+                        : 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-800/40'
                     }`}
                   >
                     {group.is_banned ? 'Sbanna' : 'Banna'}
@@ -76,8 +113,9 @@ const totalPages = Math.ceil(total / 20);
             </tr>
           )) : (
             <tr>
-              <td colspan="5" class="px-4 py-8 text-center text-gray-500">
-                Nessun gruppo ancora registrato
+              <td colspan="4" class="px-5 py-12 text-center">
+                <div class="text-4xl mb-3">👥</div>
+                <p class="text-gray-500 dark:text-gray-400 font-medium">Nessun gruppo ancora registrato</p>
               </td>
             </tr>
           )}
@@ -87,14 +125,10 @@ const totalPages = Math.ceil(total / 20);
       {totalPages > 1 && (
         <div class="p-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
           <span class="text-gray-500 dark:text-gray-400 text-sm">{total} gruppi totali</span>
-          <div class="flex gap-2">
-            {page > 1 && (
-              <a href={`/groups?page=${page - 1}`} class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-700">← Prec</a>
-            )}
-            <span class="px-3 py-1 text-gray-500 dark:text-gray-400">{page}/{totalPages}</span>
-            {page < totalPages && (
-              <a href={`/groups?page=${page + 1}`} class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Succ →</a>
-            )}
+          <div class="flex items-center gap-2">
+            {page > 1 && <a href={`/groups?page=${page - 1}`} class="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">&larr; Prec</a>}
+            <span class="px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 tabular-nums">{page}/{totalPages}</span>
+            {page < totalPages && <a href={`/groups?page=${page + 1}`} class="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Succ &rarr;</a>}
           </div>
         </div>
       )}
@@ -121,7 +155,6 @@ const totalPages = Math.ceil(total / 20);
         const currentBanned = btn.getAttribute('data-banned') === '1';
         const action = currentBanned ? 'sbannare' : 'bannare';
         if (!confirm(`Sei sicuro di voler ${action} questo gruppo?`)) return;
-
         const res = await fetch('/api/groups', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },

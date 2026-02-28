@@ -1,6 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { getCategories, getMediaItems } from '../../lib/db';
+import { getCategoriesWithCounts, getMediaItems } from '../../lib/db';
 
 const env = (Astro.locals as any).runtime?.env;
 const url = new URL(Astro.request.url);
@@ -13,7 +13,7 @@ let total = 0;
 let selectedCategory: any = null;
 
 if (env?.DB) {
-  const catResult = await getCategories(env.DB, 'audio');
+  const catResult = await getCategoriesWithCounts(env.DB, 'audio');
   categories = catResult.results ?? [];
   if (categoryId) {
     selectedCategory = categories.find((c: any) => c.id === categoryId);
@@ -26,143 +26,173 @@ if (env?.DB) {
 }
 
 const totalPages = Math.ceil(total / 20);
+
+function formatSize(bytes: number | null) {
+  if (!bytes) return 'N/A';
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return Math.round(bytes / 1024) + ' KB';
+  return (bytes / 1048576).toFixed(1) + ' MB';
+}
+
+function formatDate(dateStr: string) {
+  try {
+    const d = new Date(dateStr + 'Z');
+    return d.toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' });
+  } catch { return dateStr; }
+}
+
+function getFileIcon(mime: string) {
+  if (mime?.includes('ogg')) return '🔊';
+  if (mime?.includes('wav')) return '🎵';
+  return '🎧';
+}
 ---
 
 <Layout title="Audio">
   <div class="space-y-6">
     <div>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">🔊 Gestione Audio</h1>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Gestione Audio</h1>
       <p class="text-gray-500 dark:text-gray-400 mt-1">Audio clip per ogni categoria</p>
     </div>
 
-    <!-- Category tabs -->
-    <div class="flex gap-2 flex-wrap">
-      {categories.map((cat: any) => (
-        <a
-          href={`/content/audio?category=${cat.id}`}
-          class={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-            cat.id === categoryId
-              ? 'bg-primary-600 text-white'
-              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-          }`}
-        >
-          {cat.name}
-        </a>
-      ))}
-    </div>
+    <div class="flex gap-6 min-h-[600px]">
+      <!-- Sidebar categorie -->
+      <div class="w-56 flex-shrink-0">
+        <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm sticky top-6">
+          <div class="p-3 border-b border-gray-100 dark:border-gray-800">
+            <input type="text" id="catSearch" placeholder="Cerca categoria..." class="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500/40 outline-none" />
+          </div>
+          <nav class="p-2 max-h-[520px] overflow-y-auto" id="catList">
+            {categories.map((cat: any) => (
+              <a
+                href={`/content/audio?category=${cat.id}`}
+                data-cat-name={cat.name.toLowerCase()}
+                class={`flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-colors ${
+                  cat.id === categoryId
+                    ? 'bg-primary-50 dark:bg-primary-950 text-primary-700 dark:text-primary-400 font-medium'
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                }`}
+              >
+                <span class="truncate">{cat.name}</span>
+                <span class={`text-xs tabular-nums ml-2 flex-shrink-0 ${cat.id === categoryId ? 'text-primary-500 dark:text-primary-400' : 'text-gray-400 dark:text-gray-500'}`}>{cat.item_count}</span>
+              </a>
+            ))}
+          </nav>
+        </div>
+      </div>
 
-    {selectedCategory && (
-      <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
-        <!-- Upload form -->
-        <div class="p-4 border-b border-gray-100 dark:border-gray-800">
-          <form id="uploadForm" enctype="multipart/form-data" class="flex gap-3 items-end">
-            <div class="flex-1">
-              <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">File audio (mp3, ogg, wav)</label>
-              <input
-                type="file"
-                name="file"
-                accept="audio/*"
-                class="w-full text-sm text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:bg-primary-600 file:text-white hover:file:bg-primary-700"
-              />
-            </div>
+      <!-- Contenuto -->
+      <div class="flex-1 min-w-0">
+        {selectedCategory ? (
+          <div class="space-y-4">
             <div>
-              <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">Titolo (opzionale)</label>
-              <input
-                type="text"
-                name="caption"
-                placeholder="Titolo clip"
-                class="px-4 py-2 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500 outline-none"
-              />
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{selectedCategory.name}</h2>
+              <p class="text-sm text-gray-500 dark:text-gray-400">{total} file</p>
             </div>
-            <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-xl transition-colors whitespace-nowrap">
-              Carica
-            </button>
-          </form>
-          <div id="uploadStatus" class="hidden mt-2 text-sm"></div>
-        </div>
 
-        <!-- Items list -->
-        <div class="divide-y divide-gray-100 dark:divide-gray-800">
-          {items.length > 0 ? items.map((item: any) => (
-            <div class="p-4 flex items-center justify-between gap-4">
-              <div class="flex-1">
-                <p class="text-gray-900 dark:text-white text-sm font-medium">{item.file_name}</p>
-                <p class="text-gray-400 dark:text-gray-500 text-xs mt-1">
-                  {item.caption ? `"${item.caption}" | ` : ''}
-                  {item.mime_type} | {item.file_size ? `${Math.round(item.file_size / 1024)} KB` : 'N/A'}
-                </p>
-                <p class="text-gray-500 dark:text-gray-500 text-xs">{item.r2_key}</p>
-              </div>
-              <div class="flex gap-2">
-                <span class={`text-xs px-2 py-1 rounded ${item.telegram_file_id ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300' : 'bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300'}`}>
-                  {item.telegram_file_id ? 'Cached' : 'Non cached'}
-                </span>
-                <button
-                  data-delete={item.id}
-                  data-r2key={item.r2_key}
-                  class="text-red-400 hover:text-red-300 text-sm px-3 py-1 rounded bg-red-50 dark:bg-gray-800 hover:bg-red-100 dark:hover:bg-gray-700 transition-colors"
-                >
-                  Elimina
-                </button>
-              </div>
+            <!-- Upload form -->
+            <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4">
+              <form id="uploadForm" enctype="multipart/form-data" class="flex gap-3 items-end flex-wrap">
+                <div class="flex-1 min-w-[200px]">
+                  <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1.5 font-medium">File audio (mp3, ogg, wav)</label>
+                  <input type="file" name="file" accept="audio/*" class="w-full text-sm text-gray-600 dark:text-gray-300 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-medium file:bg-primary-600 file:text-white hover:file:bg-primary-700 file:cursor-pointer" />
+                </div>
+                <div>
+                  <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1.5 font-medium">Titolo (opzionale)</label>
+                  <input type="text" name="caption" placeholder="Titolo clip" class="input-field" />
+                </div>
+                <button type="submit" class="btn-primary whitespace-nowrap">Carica</button>
+              </form>
+              <div id="uploadStatus" class="hidden mt-3 text-sm px-3 py-2 rounded-xl"></div>
             </div>
-          )) : (
-            <div class="p-8 text-center text-gray-400 dark:text-gray-500">
-              Nessun audio in questa categoria. Caricane uno!
-            </div>
-          )}
-        </div>
 
-        {totalPages > 1 && (
-          <div class="p-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
-            <span class="text-gray-500 dark:text-gray-400 text-sm">{total} file totali</span>
-            <div class="flex gap-2">
-              {page > 1 && (
-                <a href={`/content/audio?category=${categoryId}&page=${page - 1}`} class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-700">← Prec</a>
+            <!-- Lista file -->
+            <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
+              {items.length > 0 ? (
+                <div class="divide-y divide-gray-100 dark:divide-gray-800">
+                  {items.map((item: any) => (
+                    <div class="p-4 hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors group">
+                      <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-violet-50 dark:bg-violet-950 flex items-center justify-center text-lg flex-shrink-0">{getFileIcon(item.mime_type)}</div>
+                        <div class="flex-1 min-w-0">
+                          <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{item.caption || item.file_name}</p>
+                          <div class="flex items-center gap-2 mt-1 flex-wrap">
+                            <span class="text-xs text-gray-400 dark:text-gray-500">{item.file_name}</span>
+                            <span class="text-gray-300 dark:text-gray-600">&middot;</span>
+                            <span class="text-xs text-gray-400 dark:text-gray-500">{formatSize(item.file_size)}</span>
+                            <span class="text-gray-300 dark:text-gray-600">&middot;</span>
+                            <span class="text-xs text-gray-400 dark:text-gray-500">{formatDate(item.created_at)}</span>
+                          </div>
+                        </div>
+                        <span class={`text-xs px-2 py-1 rounded-lg font-medium flex-shrink-0 ${item.telegram_file_id ? 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400' : 'bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400'}`}>
+                          {item.telegram_file_id ? 'Cached' : 'Non cached'}
+                        </span>
+                        <button data-delete={item.id} data-r2key={item.r2_key} class="text-xs px-2.5 py-1 rounded-lg text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-950/50 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0">Elimina</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div class="p-12 text-center">
+                  <div class="text-4xl mb-3">🔊</div>
+                  <p class="text-gray-500 dark:text-gray-400 font-medium">Nessun audio in questa categoria</p>
+                  <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">Caricane uno usando il form qui sopra</p>
+                </div>
               )}
-              <span class="px-3 py-1 text-gray-500 dark:text-gray-400">{page}/{totalPages}</span>
-              {page < totalPages && (
-                <a href={`/content/audio?category=${categoryId}&page=${page + 1}`} class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Succ →</a>
+
+              {totalPages > 1 && (
+                <div class="p-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                  <span class="text-gray-500 dark:text-gray-400 text-sm">{total} file</span>
+                  <div class="flex items-center gap-2">
+                    {page > 1 && <a href={`/content/audio?category=${categoryId}&page=${page - 1}`} class="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">&larr; Prec</a>}
+                    <span class="px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 tabular-nums">{page}/{totalPages}</span>
+                    {page < totalPages && <a href={`/content/audio?category=${categoryId}&page=${page + 1}`} class="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Succ &rarr;</a>}
+                  </div>
+                </div>
               )}
             </div>
           </div>
+        ) : (
+          <div class="flex items-center justify-center h-64">
+            <p class="text-gray-400 dark:text-gray-500">Seleziona una categoria dalla sidebar</p>
+          </div>
         )}
       </div>
-    )}
+    </div>
   </div>
 
   <script define:vars={{ categoryId }}>
+    document.getElementById('catSearch')?.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      document.querySelectorAll('#catList a').forEach(el => {
+        el.style.display = (el.getAttribute('data-cat-name') || '').includes(query) ? '' : 'none';
+      });
+    });
+
     document.getElementById('uploadForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const form = e.target;
       const statusEl = document.getElementById('uploadStatus');
-
       const formData = new FormData(form);
       formData.append('category_id', String(categoryId));
-
       statusEl.textContent = 'Caricamento in corso...';
-      statusEl.className = 'mt-2 text-sm text-yellow-400';
-      statusEl.classList.remove('hidden');
-
+      statusEl.className = 'mt-3 text-sm px-3 py-2 rounded-xl bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400';
       const res = await fetch('/api/content/upload', { method: 'POST', body: formData });
       if (res.ok) {
         statusEl.textContent = 'Caricato con successo!';
-        statusEl.className = 'mt-2 text-sm text-green-400';
+        statusEl.className = 'mt-3 text-sm px-3 py-2 rounded-xl bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400';
         setTimeout(() => window.location.reload(), 1000);
       } else {
         const data = await res.json();
         statusEl.textContent = data.error || 'Errore durante il caricamento';
-        statusEl.className = 'mt-2 text-sm text-red-400';
+        statusEl.className = 'mt-3 text-sm px-3 py-2 rounded-xl bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400';
       }
     });
 
     document.querySelectorAll('[data-delete]').forEach(btn => {
       btn.addEventListener('click', async () => {
-        const id = btn.getAttribute('data-delete');
-        const r2key = btn.getAttribute('data-r2key');
         if (!confirm('Sei sicuro di voler eliminare questo file?')) return;
-
-        const res = await fetch(`/api/content/media?id=${id}&r2key=${encodeURIComponent(r2key)}`, { method: 'DELETE' });
+        const res = await fetch(`/api/content/media?id=${btn.getAttribute('data-delete')}&r2key=${encodeURIComponent(btn.getAttribute('data-r2key'))}`, { method: 'DELETE' });
         if (res.ok) window.location.reload();
       });
     });

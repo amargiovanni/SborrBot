@@ -21,91 +21,113 @@ if (env?.DB) {
 }
 
 const totalPages = Math.ceil(total / 50);
+
+const cmdTypeBadge: Record<string, string> = {
+  keyword: 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
+  slash: 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400',
+  control: 'bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400',
+};
+const respTypeBadge: Record<string, string> = {
+  text: 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
+  audio: 'bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400',
+  photo: 'bg-pink-50 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400',
+  sticker: 'bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400',
+};
+
+function formatDate(dateStr: string) {
+  try {
+    const d = new Date(dateStr + 'Z');
+    return d.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+  } catch { return dateStr; }
+}
 ---
 
 <Layout title="Log">
   <div class="space-y-6">
-    <div>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">📋 Log Comandi</h1>
-      <p class="text-gray-500 dark:text-gray-400 mt-1">Storico di tutti i comandi eseguiti</p>
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Log Comandi</h1>
+        <p class="text-gray-500 dark:text-gray-400 mt-1">Storico di tutti i comandi eseguiti</p>
+      </div>
+      <div class="text-sm text-gray-500 dark:text-gray-400 tabular-nums">{total.toLocaleString('it-IT')} log totali</div>
     </div>
 
     <!-- Filters -->
     <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-4">
-      <form class="flex gap-3 flex-wrap" method="GET">
-        <input
-          type="text"
-          name="command"
-          value={filterCommand}
-          placeholder="Filtra per comando..."
-          class="px-4 py-2 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 outline-none"
-        />
-        <input
-          type="text"
-          name="chatId"
-          value={filterChatId}
-          placeholder="Chat ID..."
-          class="px-4 py-2 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 outline-none"
-        />
-        <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg transition-colors">
-          Filtra
-        </button>
+      <form class="flex gap-3 items-end flex-wrap" method="GET">
+        <div>
+          <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1.5 font-medium">Comando</label>
+          <input type="text" name="command" value={filterCommand} placeholder="es. insulta" class="input-field" />
+        </div>
+        <div>
+          <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1.5 font-medium">Chat ID</label>
+          <input type="text" name="chatId" value={filterChatId} placeholder="es. -100123..." class="input-field font-mono" />
+        </div>
+        <button type="submit" class="btn-primary">Filtra</button>
         {(filterCommand || filterChatId) && (
-          <a href="/logs" class="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 px-4 py-2 rounded-lg transition-colors">
-            Reset
-          </a>
+          <a href="/logs" class="btn-secondary">Reset</a>
         )}
       </form>
     </div>
 
     <!-- Logs table -->
     <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
-      <table class="w-full">
-        <thead>
-          <tr class="border-b border-gray-100 dark:border-gray-800 text-left">
-            <th class="px-4 py-3 text-gray-500 dark:text-gray-400 text-xs font-medium">Data</th>
-            <th class="px-4 py-3 text-gray-500 dark:text-gray-400 text-xs font-medium">Utente</th>
-            <th class="px-4 py-3 text-gray-500 dark:text-gray-400 text-xs font-medium">Chat</th>
-            <th class="px-4 py-3 text-gray-500 dark:text-gray-400 text-xs font-medium">Tipo</th>
-            <th class="px-4 py-3 text-gray-500 dark:text-gray-400 text-xs font-medium">Comando</th>
-            <th class="px-4 py-3 text-gray-500 dark:text-gray-400 text-xs font-medium">Target</th>
-            <th class="px-4 py-3 text-gray-500 dark:text-gray-400 text-xs font-medium">Risposta</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-50 dark:divide-gray-800">
-          {logs.length > 0 ? logs.map((log: any) => (
-            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 text-sm">
-              <td class="px-4 py-2 text-gray-500 dark:text-gray-400 text-xs whitespace-nowrap">{log.created_at}</td>
-              <td class="px-4 py-2 text-gray-600 dark:text-gray-300">{log.username ? `@${log.username}` : log.telegram_user_id}</td>
-              <td class="px-4 py-2 text-gray-500 dark:text-gray-400 font-mono text-xs">{log.telegram_chat_id}</td>
-              <td class="px-4 py-2">
-                <span class="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">{log.command_type}</span>
-              </td>
-              <td class="px-4 py-2 text-gray-900 dark:text-white font-medium">{log.command}</td>
-              <td class="px-4 py-2 text-gray-500 dark:text-gray-400">{log.target || '-'}</td>
-              <td class="px-4 py-2 text-gray-500 dark:text-gray-400">{log.response_type || '-'}</td>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-gray-100 dark:border-gray-800 text-left">
+              <th class="px-5 py-3.5 text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Data</th>
+              <th class="px-5 py-3.5 text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Utente</th>
+              <th class="px-5 py-3.5 text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Comando</th>
+              <th class="px-5 py-3.5 text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Target</th>
+              <th class="px-5 py-3.5 text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Tipo</th>
+              <th class="px-5 py-3.5 text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Risposta</th>
             </tr>
-          )) : (
-            <tr>
-              <td colspan="7" class="px-4 py-8 text-center text-gray-500">
-                Nessun log trovato
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody class="divide-y divide-gray-50 dark:divide-gray-800">
+            {logs.length > 0 ? logs.map((log: any, i: number) => (
+              <tr class={`hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors ${i % 2 === 1 ? 'bg-gray-50/50 dark:bg-gray-800/10' : ''}`}>
+                <td class="px-5 py-3 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap tabular-nums">{formatDate(log.created_at)}</td>
+                <td class="px-5 py-3 text-sm">
+                  <span class="text-primary-600 dark:text-primary-400 font-medium">{log.username ? `@${log.username}` : '-'}</span>
+                </td>
+                <td class="px-5 py-3 text-sm font-medium text-gray-900 dark:text-white">{log.command}</td>
+                <td class="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">{log.target || '-'}</td>
+                <td class="px-5 py-3">
+                  <span class={`text-[11px] px-2 py-0.5 rounded-md font-medium ${cmdTypeBadge[log.command_type] || 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'}`}>
+                    {log.command_type}
+                  </span>
+                </td>
+                <td class="px-5 py-3">
+                  {log.response_type ? (
+                    <span class={`text-[11px] px-2 py-0.5 rounded-md font-medium ${respTypeBadge[log.response_type] || 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'}`}>
+                      {log.response_type}
+                    </span>
+                  ) : (
+                    <span class="text-gray-400 dark:text-gray-500 text-sm">-</span>
+                  )}
+                </td>
+              </tr>
+            )) : (
+              <tr>
+                <td colspan="6" class="px-5 py-12 text-center">
+                  <div class="text-4xl mb-3">📋</div>
+                  <p class="text-gray-500 dark:text-gray-400 font-medium">Nessun log trovato</p>
+                  {(filterCommand || filterChatId) && <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">Prova a modificare i filtri</p>}
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
       {totalPages > 1 && (
         <div class="p-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
-          <span class="text-gray-500 dark:text-gray-400 text-sm">{total} log totali</span>
-          <div class="flex gap-2">
-            {page > 1 && (
-              <a href={`/logs?page=${page - 1}&command=${filterCommand}&chatId=${filterChatId}`} class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-700">← Prec</a>
-            )}
-            <span class="px-3 py-1 text-gray-500 dark:text-gray-400">{page}/{totalPages}</span>
-            {page < totalPages && (
-              <a href={`/logs?page=${page + 1}&command=${filterCommand}&chatId=${filterChatId}`} class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Succ →</a>
-            )}
+          <span class="text-gray-500 dark:text-gray-400 text-sm">{total.toLocaleString('it-IT')} risultati</span>
+          <div class="flex items-center gap-2">
+            {page > 1 && <a href={`/logs?page=${page - 1}&command=${filterCommand}&chatId=${filterChatId}`} class="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">&larr; Prec</a>}
+            <span class="px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 tabular-nums">{page}/{totalPages}</span>
+            {page < totalPages && <a href={`/logs?page=${page + 1}&command=${filterCommand}&chatId=${filterChatId}`} class="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Succ &rarr;</a>}
           </div>
         </div>
       )}

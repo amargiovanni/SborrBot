@@ -79,6 +79,8 @@ const PATTERNS: { pattern: RegExp; slug: string; hasTarget: boolean; useSenderNa
   { pattern: /\bricetta\b/i, slug: 'ricetta', hasTarget: false },
   // Segreto (custom: two random group users)
   { pattern: /\bsegreto\b/i, slug: 'segreto', hasTarget: false },
+  // Bollettino (custom: two random group users)
+  { pattern: /\bbollettino\b/i, slug: 'bollettino', hasTarget: false },
   // Complotto (custom: two random group users)
   { pattern: /\bcomplotto\b/i, slug: 'complotto', hasTarget: false },
   // Eredità / Testamento (custom: two random group users)
@@ -197,6 +199,20 @@ async function handleSegreto(chatId: string, env: Env, api: TelegramApi): Promis
   return { handled: true, command: 'segreto' };
 }
 
+async function handleBollettino(chatId: string, env: Env, api: TelegramApi): Promise<CommandResult> {
+  const [name1, name2] = await getTwoRandomGroupUsers(env.DB, chatId);
+  const response = await getRandomTextResponse(env.DB, 'bollettino');
+
+  if (!response) {
+    await api.sendMessage(chatId, 'Non ho bollettini da comunicare... per ora.');
+    return { handled: true, command: 'bollettino' };
+  }
+
+  const finalText = response.replace(/\{name1\}/g, name1).replace(/\{name2\}/g, name2);
+  await api.sendMessage(chatId, finalText, 'Markdown');
+  return { handled: true, command: 'bollettino' };
+}
+
 async function handleComplotto(chatId: string, env: Env, api: TelegramApi): Promise<CommandResult> {
   const [name1, name2] = await getTwoRandomGroupUsers(env.DB, chatId);
   const response = await getRandomTextResponse(env.DB, 'complotto');
@@ -299,6 +315,7 @@ export async function handleTextCommand(
       return handleMeteo(city, chatId, env, api);
     }
     if (slug === 'segreto') return handleSegreto(chatId, env, api);
+    if (slug === 'bollettino') return handleBollettino(chatId, env, api);
     if (slug === 'complotto') return handleComplotto(chatId, env, api);
     if (slug === 'eredita') return handleEredita(chatId, env, api);
     if (slug === 'fact-check') return handleFactCheck(chatId, env, api);

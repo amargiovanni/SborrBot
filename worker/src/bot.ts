@@ -7,6 +7,7 @@ import { handleTextCommand } from './commands/text';
 import { handleMediaCommand } from './commands/media';
 import { handleStickerCommand } from './commands/sticker';
 import { handleControlCommand } from './commands/control';
+import { getRandomTextResponse } from './services/db';
 
 interface TelegramUpdate {
   update_id: number;
@@ -97,5 +98,18 @@ export async function handleUpdate(update: TelegramUpdate, env: Env): Promise<vo
   if (stickerResult.handled) {
     await logBotCommand(env.DB, chatId, userId, username, 'keyword', stickerResult.command!, null, 'sticker');
     return;
+  }
+
+  // CAPS LOCK auto-trigger: if message is mostly uppercase (10+ chars, 70%+ uppercase letters)
+  const letters = text.replace(/[^a-zA-ZÀ-ÿ]/g, '');
+  if (letters.length >= 10) {
+    const upperCount = letters.replace(/[^A-ZÀ-Ö]/g, '').length;
+    if (upperCount / letters.length >= 0.7) {
+      const capsResponse = await getRandomTextResponse(env.DB, 'capslock');
+      if (capsResponse) {
+        await api.sendMessage(chatId, capsResponse);
+        await logBotCommand(env.DB, chatId, userId, username, 'keyword', 'capslock', null, 'text');
+      }
+    }
   }
 }

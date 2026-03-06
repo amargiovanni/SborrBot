@@ -45,6 +45,12 @@ const PATTERNS: { pattern: RegExp; slug: string; hasTarget: boolean; useSenderNa
   { pattern: /^ciao\b/i, slug: 'saluti', hasTarget: false },
   // Anti-Juve
   { pattern: /\b(?:juve|juventus|gobbi|bianconeri)\b/i, slug: 'anti-juve', hasTarget: false, useSenderName: true },
+  // Anti-Roma
+  { pattern: /\b(?:romanista|romanisti|giallorossi|as roma|lupacchiotti|trigoria)\b/i, slug: 'anti-roma', hasTarget: false, useSenderName: true },
+  // Anti-Lazio
+  { pattern: /\b(?:laziale|laziali|biancocelesti|aquilotti|ss lazio|lotito)\b/i, slug: 'anti-lazio', hasTarget: false, useSenderName: true },
+  // Anti-Milan
+  { pattern: /\b(?:milanista|milanisti|rossoneri|ac milan|casciavit)\b/i, slug: 'anti-milan', hasTarget: false, useSenderName: true },
   // Oroscopo
   { pattern: /^oroscopo\s*(.*)/i, slug: 'oroscopo', hasTarget: false },
   // Frasi celebri
@@ -57,6 +63,12 @@ const PATTERNS: { pattern: RegExp; slug: string; hasTarget: boolean; useSenderNa
   { pattern: /^meteo\s+(.+)/i, slug: 'meteo', hasTarget: true },
   // Notizia flash
   { pattern: /\bnotizia\b/i, slug: 'notizie', hasTarget: false },
+  // Giudizio
+  { pattern: /^giudizio\s+(.+)/i, slug: 'giudizio', hasTarget: true },
+  // Consiglio
+  { pattern: /^consiglio\b/i, slug: 'consiglio', hasTarget: false },
+  // Motivazione
+  { pattern: /^(?:motivazione|motivami)\b/i, slug: 'motivazione', hasTarget: false },
   // Fact check
   { pattern: /\bfact check\b/i, slug: 'fact-check', hasTarget: false },
   // Ricetta
@@ -83,6 +95,12 @@ const PATTERNS: { pattern: RegExp; slug: string; hasTarget: boolean; useSenderNa
   {
     pattern: /\b(?:napoli|napoletan[oiae]|vesuvio|pizza|pizzaiolo|mozzarella|sfogliatella|maradona|pulcinella|camorra|gomorra|totò|toto|pino daniele|spaccanapoli|posillipo|vomero|scampia|secondigliano|marechiaro|fuorigrotta|san gennaro|babà|baba|ragù|ragu|friarielli|cuoppo|o sole mio)\b/i,
     slug: 'napoletano',
+    hasTarget: false,
+  },
+  // Palestra / Dieta / Fit (auto-trigger)
+  {
+    pattern: /\b(?:palestra|dieta|fitness|addominali|squat|crossfit|workout|proteine|creatina|allenamento|bodybuilding|pesi|cardio|personal trainer)\b/i,
+    slug: 'palestra',
     hasTarget: false,
   },
 ];

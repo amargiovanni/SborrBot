@@ -68,11 +68,11 @@ const PATTERNS: { pattern: RegExp; slug: string; hasTarget: boolean; useSenderNa
   // Tinder
   { pattern: /^tinder\s+(.+)/i, slug: 'tinder', hasTarget: true },
   // Profezia
-  { pattern: /^profezia\b/i, slug: 'profezia', hasTarget: false, useSenderName: true },
+  { pattern: /\bprofezia\b/i, slug: 'profezia', hasTarget: false, useSenderName: true },
   // Consiglio
-  { pattern: /^consiglio\b/i, slug: 'consiglio', hasTarget: false },
+  { pattern: /\bconsiglio\b/i, slug: 'consiglio', hasTarget: false },
   // Motivazione
-  { pattern: /^(?:motivazione|motivami)\b/i, slug: 'motivazione', hasTarget: false },
+  { pattern: /\b(?:motivazione|motivami)\b/i, slug: 'motivazione', hasTarget: false },
   // Fact check
   { pattern: /\bfact check\b/i, slug: 'fact-check', hasTarget: false },
   // Ricetta

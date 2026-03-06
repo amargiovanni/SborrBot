@@ -65,6 +65,10 @@ const PATTERNS: { pattern: RegExp; slug: string; hasTarget: boolean; useSenderNa
   { pattern: /\bnotizia\b/i, slug: 'notizie', hasTarget: false },
   // Giudizio
   { pattern: /^giudizio\s+(.+)/i, slug: 'giudizio', hasTarget: true },
+  // Tinder
+  { pattern: /^tinder\s+(.+)/i, slug: 'tinder', hasTarget: true },
+  // Profezia
+  { pattern: /^profezia\b/i, slug: 'profezia', hasTarget: false, useSenderName: true },
   // Consiglio
   { pattern: /^consiglio\b/i, slug: 'consiglio', hasTarget: false },
   // Motivazione

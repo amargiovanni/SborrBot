@@ -34,7 +34,7 @@ async function triggerAutoReaction(text: string, chatId: string, messageId: numb
   } else if (BESTEMMIA_PATTERN.test(text)) {
     await api.setMessageReaction(chatId, messageId, '\uD83D\uDE31');
   } else if (NAPOLI_PATTERN.test(text)) {
-    await api.setMessageReaction(chatId, messageId, '\uD83C\uDDEE\uD83C\uDDF9');
+    await api.setMessageReaction(chatId, messageId, '\uD83C\uDF55');
   }
 }
 

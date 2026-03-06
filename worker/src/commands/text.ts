@@ -79,6 +79,12 @@ const PATTERNS: { pattern: RegExp; slug: string; hasTarget: boolean; useSenderNa
     slug: 'lamenti',
     hasTarget: false,
   },
+  // Napoletano (auto-trigger su parole napoletane)
+  {
+    pattern: /\b(?:napoli|napoletan[oiae]|vesuvio|pizza|pizzaiolo|mozzarella|sfogliatella|maradona|pulcinella|camorra|gomorra|totò|toto|pino daniele|spaccanapoli|posillipo|vomero|scampia|secondigliano|marechiaro|fuorigrotta|san gennaro|babà|baba|ragù|ragu|friarielli|cuoppo|o sole mio)\b/i,
+    slug: 'napoletano',
+    hasTarget: false,
+  },
 ];
 
 async function handleOroscopo(text: string, chatId: string, env: Env, api: TelegramApi): Promise<CommandResult> {

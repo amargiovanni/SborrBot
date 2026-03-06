@@ -24,6 +24,7 @@ interface TelegramMessage {
 const JUVE_PATTERN = /\b(?:juve|juventus|gobbi|bianconeri)\b/i;
 const LAMENTI_PATTERN = /\b(?:ho fame|sono stanco|sono stanca|che noia|mi annoio|sono triste|che palle|ho sonno|sono depresso|sono depressa|sto male|non ce la faccio|sono solo|sono sola|ho caldo|ho freddo|sono stressato|sono stressata|mi fa male|che fatica|sono esausto|sono esausta|che barba|sono a pezzi|non ne posso pi[uù]|basta tutto)\b/i;
 const BESTEMMIA_PATTERN = /\bbestemmia\b/i;
+const NAPOLI_PATTERN = /\b(?:napoli|napoletan[oiae]|vesuvio|pizza|pizzaiolo|mozzarella|sfogliatella|maradona|pulcinella|camorra|gomorra|totò|toto|pino daniele|spaccanapoli|posillipo|vomero|scampia|secondigliano|marechiaro|fuorigrotta|san gennaro|babà|baba|ragù|ragu|friarielli|cuoppo|o sole mio)\b/i;
 
 async function triggerAutoReaction(text: string, chatId: string, messageId: number, api: TelegramApi): Promise<void> {
   if (JUVE_PATTERN.test(text)) {
@@ -32,6 +33,8 @@ async function triggerAutoReaction(text: string, chatId: string, messageId: numb
     await api.setMessageReaction(chatId, messageId, '\uD83E\uDD23');
   } else if (BESTEMMIA_PATTERN.test(text)) {
     await api.setMessageReaction(chatId, messageId, '\uD83D\uDE31');
+  } else if (NAPOLI_PATTERN.test(text)) {
+    await api.setMessageReaction(chatId, messageId, '\uD83C\uDDEE\uD83C\uDDF9');
   }
 }
 

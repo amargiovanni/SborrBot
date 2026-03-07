@@ -1,8 +1,16 @@
 import { Env } from './types';
 import { TelegramApi } from './services/telegram';
 import { handleUpdate } from './bot';
+import { purgeOldLogs } from './services/db';
+
+const LOG_RETENTION_DAYS = 90;
 
 export default {
+  async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
+    const deleted = await purgeOldLogs(env.DB, LOG_RETENTION_DAYS);
+    console.log(`Cron: purged ${deleted} logs older than ${LOG_RETENTION_DAYS} days`);
+  },
+
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
 

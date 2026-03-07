@@ -71,7 +71,7 @@ export async function handleUpdate(update: TelegramUpdate, env: Env): Promise<vo
 
   // Slash commands
   if (text.startsWith('/')) {
-    const result = await handleSlashCommand(text, chatId, env, api);
+    const result = await handleSlashCommand(text, chatId, userId, env, api);
     if (result.handled) {
       await logBotCommand(env.DB, chatId, userId, username, 'slash', result.command!, null, 'text');
     }

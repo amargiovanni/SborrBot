@@ -1,6 +1,6 @@
 import { Env } from '../types';
 import { TelegramApi } from '../services/telegram';
-import { getCategoryList } from '../services/db';
+import { getCategoryList, getUserStats, deleteUserData } from '../services/db';
 
 interface CommandResult {
   handled: boolean;
@@ -10,6 +10,7 @@ interface CommandResult {
 export async function handleSlashCommand(
   text: string,
   chatId: string,
+  userId: string,
   env: Env,
   api: TelegramApi
 ): Promise<CommandResult> {
@@ -76,7 +77,11 @@ export async function handleSlashCommand(
         '• `zitto sborrbot` — Metti in pausa\n' +
         '• `sveglia sborrbot` — Riattiva\n\n' +
         '📂 /testo /foto /audio /sticker — Liste per categoria\n' +
-        'ℹ️ /info — Info sul bot',
+        'ℹ️ /info — Info sul bot\n\n' +
+        '🔒 *Privacy (GDPR):*\n' +
+        '• /privacy — Informativa privacy\n' +
+        '• /mydata — Visualizza i tuoi dati\n' +
+        '• /deleteme — Cancella tutti i tuoi dati',
         'Markdown'
       );
       return { handled: true, command: '/help' };
@@ -135,6 +140,63 @@ export async function handleSlashCommand(
         'Markdown'
       );
       return { handled: true, command: '/sticker' };
+    }
+
+    case '/privacy':
+      await api.sendMessage(chatId,
+        '🔒 *Informativa Privacy — SborrBot*\n\n' +
+        '*Dati raccolti:*\n' +
+        '• ID Telegram (chat e utente)\n' +
+        '• Username (se disponibile)\n' +
+        '• Comandi inviati e tipo di risposta\n' +
+        '• Data e ora di ogni interazione\n\n' +
+        '*Finalità:* funzionamento del bot e statistiche di utilizzo.\n' +
+        '*Conservazione:* i log vengono eliminati automaticamente dopo 90 giorni.\n' +
+        '*Base giuridica:* legittimo interesse (Art. 6.1.f GDPR).\n\n' +
+        '*I tuoi diritti (GDPR):*\n' +
+        '• /mydata — Visualizza i dati raccolti su di te\n' +
+        '• /deleteme — Cancella tutti i tuoi dati\n\n' +
+        '_Titolare: il gestore del bot. Per richieste: contatta l\'admin del gruppo._',
+        'Markdown'
+      );
+      return { handled: true, command: '/privacy' };
+
+    case '/mydata': {
+      const stats = await getUserStats(env.DB, userId);
+      if (!stats) {
+        await api.sendMessage(chatId,
+          '📊 *I tuoi dati*\n\nNon ho dati registrati su di te.',
+          'Markdown'
+        );
+      } else {
+        await api.sendMessage(chatId,
+          '📊 *I tuoi dati su SborrBot*\n\n' +
+          `• *Comandi registrati:* ${stats.totalCommands}\n` +
+          `• *Prima interazione:* ${stats.firstSeen}\n` +
+          `• *Ultima interazione:* ${stats.lastSeen}\n\n` +
+          '_Usa /deleteme per cancellare tutti i tuoi dati._',
+          'Markdown'
+        );
+      }
+      return { handled: true, command: '/mydata' };
+    }
+
+    case '/deleteme': {
+      const deleted = await deleteUserData(env.DB, userId);
+      if (deleted === 0) {
+        await api.sendMessage(chatId,
+          '🗑️ *Cancellazione dati*\n\nNon avevi dati da cancellare.',
+          'Markdown'
+        );
+      } else {
+        await api.sendMessage(chatId,
+          '🗑️ *Cancellazione dati completata*\n\n' +
+          `Ho eliminato *${deleted}* record associati al tuo account.\n` +
+          '_I tuoi dati sono stati rimossi in conformità all\'Art. 17 GDPR._',
+          'Markdown'
+        );
+      }
+      return { handled: true, command: '/deleteme' };
     }
 
     default:

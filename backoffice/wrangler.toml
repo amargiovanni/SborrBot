@@ -11,6 +11,6 @@ binding = "MEDIA_BUCKET"
 bucket_name = "sborrbot-media"
 
 # Secrets (set via Cloudflare Dashboard → Settings → Variables and Secrets):
-# ADMIN_USERNAME, ADMIN_PASSWORD, SESSION_SECRET
+# ADMIN_USERNAME, ADMIN_PASSWORD
 # TURNSTILE_SECRET_KEY  → Turnstile secret key (secret)
 # TURNSTILE_SITE_KEY    → Turnstile site key (variabile normale, non secret)

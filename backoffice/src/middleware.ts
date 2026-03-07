@@ -4,7 +4,7 @@ import { validateSession } from './lib/auth';
 const PUBLIC_PATHS = ['/', '/login', '/api/auth/login', '/api/auth/logout'];
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  const path = new URL(context.request.url).pathname;
+  const path = new URL(context.request.url).pathname.replace(/\/+/g, '/');
 
   // Allow public paths
   if (PUBLIC_PATHS.some(p => path === p || path.startsWith(p + '/'))) {

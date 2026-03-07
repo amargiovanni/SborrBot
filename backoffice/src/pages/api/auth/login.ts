@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { generateSessionToken, createSession } from '../../../lib/auth';
+import { generateSessionToken, createSession, constantTimeEqual } from '../../../lib/auth';
 
 export const POST: APIRoute = async ({ request, cookies, locals }) => {
   const env = (locals as any).runtime?.env;
@@ -33,7 +33,9 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     }
   }
 
-  if (username !== env.ADMIN_USERNAME || password !== env.ADMIN_PASSWORD) {
+  const usernameMatch = await constantTimeEqual(username ?? '', env.ADMIN_USERNAME);
+  const passwordMatch = await constantTimeEqual(password ?? '', env.ADMIN_PASSWORD);
+  if (!usernameMatch || !passwordMatch) {
     return new Response(JSON.stringify({ error: 'Credenziali non valide' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' },

@@ -164,8 +164,16 @@ export async function getDashboardStats(db: D1Database) {
   };
 }
 
+const ALLOWED_TABLES: Record<string, string> = {
+  text: 'text_responses',
+  photo: 'media',
+  audio: 'media',
+  sticker: 'media',
+};
+
 export async function getCategoriesWithCounts(db: D1Database, type: string) {
-  const table = type === 'text' ? 'text_responses' : 'media';
+  const table = ALLOWED_TABLES[type];
+  if (!table) throw new Error(`Invalid category type: ${type}`);
   return db.prepare(
     `SELECT c.*, COALESCE(cnt.count, 0) as item_count
      FROM categories c

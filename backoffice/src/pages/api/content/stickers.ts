@@ -4,7 +4,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const env = (locals as any).runtime?.env;
   if (!env?.DB) return new Response('Server error', { status: 500 });
 
-  const { category_id, telegram_file_id, caption } = await request.json();
+  let body: any;
+  try {
+    body = await request.json();
+  } catch {
+    return new Response(JSON.stringify({ error: 'Invalid JSON' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+  }
+  const { category_id, telegram_file_id, caption } = body;
   if (!category_id || !telegram_file_id) {
     return new Response(JSON.stringify({ error: 'category_id e telegram_file_id sono obbligatori' }), { status: 400 });
   }

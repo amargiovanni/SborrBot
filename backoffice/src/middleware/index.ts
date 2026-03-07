@@ -3,9 +3,10 @@ import { validateSession } from '../lib/auth';
 
 export const onRequest = defineMiddleware(async (context, next) => {
   const url = new URL(context.request.url);
+  const path = url.pathname.replace(/\/+/g, '/');
 
   // Allow access to login page and auth API
-  if (url.pathname === '/login' || url.pathname.startsWith('/api/auth/')) {
+  if (path === '/login' || path.startsWith('/api/auth/')) {
     return next();
   }
 

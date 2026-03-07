@@ -5,7 +5,6 @@ type Runtime = import('@astrojs/cloudflare').Runtime<{
   MEDIA_BUCKET: R2Bucket;
   ADMIN_USERNAME: string;
   ADMIN_PASSWORD: string;
-  SESSION_SECRET: string;
 }>;
 
 declare namespace App {

@@ -92,12 +92,13 @@ function formatDate(dateStr: string) {
             </div>
 
             <!-- Form aggiungi -->
-            <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4">
+            <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 space-y-3">
               <form id="addForm" class="flex gap-3">
                 <input type="hidden" name="category_id" value={categoryId} />
                 <input
                   type="text"
                   name="content"
+                  id="contentInput"
                   placeholder="Nuova frase... (usa {name} come placeholder per il nome)"
                   class="flex-1 input-field"
                 />
@@ -105,6 +106,43 @@ function formatDate(dateStr: string) {
                   Aggiungi
                 </button>
               </form>
+              <!-- Telegram Preview -->
+              <div id="preview-box" class="hidden">
+                <div class="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1.5">Anteprima Telegram:</div>
+                <div class="bg-[#1a2236] rounded-xl px-4 py-3 max-w-md">
+                  <div class="text-xs text-blue-400 font-medium mb-1">SborrBot</div>
+                  <div id="preview-text" class="text-sm text-white/90 leading-relaxed whitespace-pre-wrap"></div>
+                </div>
+              </div>
+              <!-- Bulk import toggle -->
+              <div class="flex items-center gap-2 pt-1">
+                <button type="button" id="btn-bulk" class="text-xs text-primary-500 dark:text-primary-400 hover:text-primary-600 dark:hover:text-primary-300 font-medium transition-colors">
+                  Importa in blocco (CSV/JSON)
+                </button>
+              </div>
+              <!-- Bulk import form -->
+              <div id="bulk-form" class="hidden space-y-3 border-t border-gray-100 dark:border-gray-800 pt-3">
+                <div class="flex items-center gap-3">
+                  <label class="text-xs text-gray-500 dark:text-gray-400 font-medium">Formato:</label>
+                  <label class="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300">
+                    <input type="radio" name="bulkFormat" value="text" checked class="accent-primary-500" /> Una frase per riga
+                  </label>
+                  <label class="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300">
+                    <input type="radio" name="bulkFormat" value="json" class="accent-primary-500" /> JSON array
+                  </label>
+                </div>
+                <textarea
+                  id="bulkContent"
+                  rows="6"
+                  placeholder="Incolla le frasi qui (una per riga)&#10;oppure un array JSON: [&quot;frase 1&quot;, &quot;frase 2&quot;]"
+                  class="w-full input-field font-mono text-xs"
+                ></textarea>
+                <div class="flex items-center justify-between">
+                  <span id="bulk-count" class="text-xs text-gray-400 dark:text-gray-500">0 frasi rilevate</span>
+                  <button type="button" id="btn-bulk-import" class="btn-primary text-sm">Importa tutto</button>
+                </div>
+                <div id="bulk-status" class="hidden text-sm px-3 py-2 rounded-xl"></div>
+              </div>
             </div>
 
             <!-- Lista frasi -->
@@ -178,6 +216,22 @@ function formatDate(dateStr: string) {
       });
     });
 
+    // Telegram Preview
+    const contentInput = document.getElementById('contentInput');
+    const previewBox = document.getElementById('preview-box');
+    const previewText = document.getElementById('preview-text');
+    if (contentInput && previewBox && previewText) {
+      contentInput.addEventListener('input', () => {
+        const val = contentInput.value.trim();
+        if (!val) { previewBox.classList.add('hidden'); return; }
+        previewBox.classList.remove('hidden');
+        previewText.textContent = val
+          .replace(/\{name\}/g, 'Mario')
+          .replace(/\{name1\}/g, 'Luigi')
+          .replace(/\{name2\}/g, 'Peach');
+      });
+    }
+
     // Aggiungi frase
     document.getElementById('addForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -190,6 +244,69 @@ function formatDate(dateStr: string) {
         body: JSON.stringify({ category_id: categoryId, content }),
       });
       if (res.ok) window.location.reload();
+    });
+
+    // Bulk import toggle
+    const btnBulk = document.getElementById('btn-bulk');
+    const bulkForm = document.getElementById('bulk-form');
+    if (btnBulk && bulkForm) {
+      btnBulk.addEventListener('click', () => {
+        bulkForm.classList.toggle('hidden');
+      });
+    }
+
+    // Bulk import: count lines
+    const bulkContent = document.getElementById('bulkContent');
+    const bulkCount = document.getElementById('bulk-count');
+    if (bulkContent && bulkCount) {
+      bulkContent.addEventListener('input', () => {
+        const format = document.querySelector('input[name="bulkFormat"]:checked')?.value;
+        let count = 0;
+        try {
+          if (format === 'json') {
+            const arr = JSON.parse(bulkContent.value);
+            count = Array.isArray(arr) ? arr.filter(s => typeof s === 'string' && s.trim()).length : 0;
+          } else {
+            count = bulkContent.value.split('\n').filter(s => s.trim()).length;
+          }
+        } catch { count = 0; }
+        bulkCount.textContent = count + ' frasi rilevate';
+      });
+    }
+
+    // Bulk import: submit
+    document.getElementById('btn-bulk-import')?.addEventListener('click', async () => {
+      const format = document.querySelector('input[name="bulkFormat"]:checked')?.value || 'text';
+      const raw = bulkContent?.value?.trim();
+      if (!raw) return;
+      const statusEl = document.getElementById('bulk-status');
+
+      let items;
+      if (format === 'json') {
+        try { items = JSON.parse(raw); } catch { statusEl.textContent = 'JSON non valido'; statusEl.className = 'text-sm px-3 py-2 rounded-xl bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400'; return; }
+      } else {
+        items = raw;
+      }
+
+      statusEl.textContent = 'Importazione in corso...';
+      statusEl.className = 'text-sm px-3 py-2 rounded-xl bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400';
+
+      const res = await fetch('/api/content/bulk-import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ category_id: categoryId, items, format }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        statusEl.textContent = `Importate ${data.imported} frasi con successo!`;
+        statusEl.className = 'text-sm px-3 py-2 rounded-xl bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400';
+        setTimeout(() => window.location.reload(), 1500);
+      } else {
+        const data = await res.json();
+        statusEl.textContent = data.error || 'Errore durante importazione';
+        statusEl.className = 'text-sm px-3 py-2 rounded-xl bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400';
+      }
     });
 
     // Elimina

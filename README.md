@@ -1,4 +1,4 @@
-# 🤖💦 SborrBot
+# SborrBot
 
 <p align="center">
   <a href="https://t.me/SborrrrBot_bot?startgroup=true">
@@ -6,39 +6,77 @@
   </a>
 </p>
 
-**Il bot Telegram più sborrante che esista.** Ispirato al leggendario SpacoBot, ma più cattivo, più scurrile e con un pannello admin che te lo sogni.
+**Il bot Telegram piu sborrante che esista.** Ispirato al leggendario SpacoBot, ma piu cattivo, piu scurrile e con un pannello admin che te lo sogni.
 
-Insulta i tuoi amici, mandali affanculo con stile, bestemmia come Germano Mosconi e fai piovere tette e culi nelle chat di gruppo. Tutto su Cloudflare, perché anche le porcherie meritano un'infrastruttura seria.
+Insulta i tuoi amici, mandali affanculo con stile, bestemmia come Germano Mosconi e fai piovere tette e culi nelle chat di gruppo. Tutto su Cloudflare, perche anche le porcherie meritano un'infrastruttura seria.
+
+**Landing page**: [sborrbot.pages.dev](https://sborrbot.pages.dev)
 
 ---
 
-## 🍆 Che cazzo fa questo bot?
+## Che cazzo fa questo bot?
 
-SborrBot è un bot di intrattenimento per gruppi Telegram che risponde a keyword naturali (niente slash del cazzo per i comandi principali). Scrivi "insulta Mario" e il bot gli fa il culo a strisce. Scrivi "bestemmia" e ti parte un porco dio che Germano Mosconi si gira nella tomba.
+SborrBot e un bot di intrattenimento per gruppi Telegram che risponde a keyword naturali (niente slash del cazzo per i comandi principali). Scrivi "insulta Mario" e il bot gli fa il culo a strisce. Scrivi "bestemmia" e ti parte un porco dio che Germano Mosconi si gira nella tomba.
 
 ### Comandi Testuali (scrivi e godi)
 
 | Comando | Che fa |
 |---------|--------|
 | `insulta [nome]` | Genera un insulto personalizzato per la vittima designata |
+| `insulta combo [nome]` | Triplo insulto devastante. FATALITY. |
 | `minaccia [nome]` | Minaccia di morte (scherzosa... forse) il malcapitato |
-| `bestemmia` | Una bella bestemmia fresca fresca. Dio porco. |
+| `necrologio [nome]` | Elogio funebre del designato |
+| `processo [nome]` | Processo penale al malcapitato |
+| `cv [nome]` | Curriculum vitae (devastante) della vittima |
+| `complimento [nome]` | Un complimento... a modo nostro |
+| `autopsia [nome]` | Referto autoptico dettagliato |
+| `diagnosi [nome]` | Diagnosi medica impietosa |
+| `chi e [nome]` | Presentazione del soggetto |
+| `giudizio [nome]` | Giudizio insindacabile |
+| `tinder [nome]` | Profilo Tinder della vittima |
+| `bestemmia` | Una bella bestemmia fresca fresca |
 | `come diceva mio nonno` | Saggezza popolare rivisitata in chiave scurrile |
-| `buongiorno` | Un buongiorno dei nostri |
-| `buonanotte` | Augurio della buonanotte col cuore |
-| `ciao` | Saluto personalizzato dallo Sborratore |
+| `buongiorno` / `buonanotte` / `ciao` | Saluti personalizzati dallo Sborratore |
+| `oroscopo [segno]` | Oroscopo osceno (random se non specifichi il segno) |
+| `meteo [citta]` | Meteo reale + commento da stronzi (via OpenWeatherMap) |
+| `notizia` | Fake news coinvolgendo membri random del gruppo |
+| `segreto` | Rivela un segreto tra due membri random del gruppo |
+| `bollettino` | Bollettino ufficiale del gruppo |
+| `complotto` | Complotto rivelato tra membri del gruppo |
+| `eredita` / `testamento` | Testamento aperto con beneficiari random |
+| `profezia` | Profezia personalizzata per chi scrive |
+| `consiglio` | Consiglio (non) utile |
+| `motivazione` | Frase motivazionale... a modo nostro |
+| `fact check` | Fact check del cazzo |
+| `ricetta` | Ricetta dello chef |
+| `frase celebre` / `citazione` | Perla di saggezza |
+| `grazie` | Ringraziamento con la delicatezza che ci contraddistingue |
+| `auguri` / `buon compleanno` | Auguri personalizzati |
 
-### Comandi Foto (NSFW, cazzo) 📸
+### Auto-trigger (risposte automatiche)
+
+Il bot risponde automaticamente quando rileva queste keyword nel testo:
+
+| Keyword | Che fa |
+|---------|--------|
+| Squadre di calcio (`juve`, `roma`, `lazio`, `milan`) | Insulti mirati alla squadra |
+| Lamenti (`ho fame`, `sono stanco`, `che palle`, ...) | Presa per il culo |
+| Ego (`sono il migliore`, `sono forte`, ...) | Ridimensionamento |
+| Napoletano (`napoli`, `pizza`, `maradona`, ...) | Stereotipi napoletani |
+| Palestra (`palestra`, `dieta`, `crossfit`, ...) | Prese per il culo fitness |
+
+### Comandi Foto (NSFW)
 
 | Comando | Che fa |
 |---------|--------|
-| `fica` | Invia una foto di fica random. Sì, proprio quello che pensi. |
+| `fica` | Invia una foto di fica random |
 | `culo` | Culi. Tanti culi. |
 | `tette` | Tette. Che domande. |
+| `degrado` | Il peggio del peggio |
 
-> ⚠️ Ovviamente i contenuti NSFW li devi caricare tu dal backoffice, coglione. Il bot non genera porno da solo.
+> I contenuti NSFW li devi caricare tu dal backoffice. Il bot non genera porno da solo.
 
-### Comandi Audio 🔊
+### Comandi Audio
 
 | Comando | Chi parla |
 |---------|-----------|
@@ -49,7 +87,7 @@ SborrBot è un bot di intrattenimento per gruppi Telegram che risponde a keyword
 | `richard benson` | IL GRANDE RICHARD BENSON |
 | `effetti sonori` | Effetti sonori vari per ogni occasione |
 
-### Sticker 🎨
+### Sticker
 
 | Comando | Sticker |
 |---------|---------|
@@ -57,14 +95,14 @@ SborrBot è un bot di intrattenimento per gruppi Telegram che risponde a keyword
 | `banana` / `minion` | Minion del cazzo |
 | `non ci sono` | Sticker di disapprovazione totale |
 
-### Controllo ⚙️
+### Controllo
 
 | Comando | Effetto |
 |---------|---------|
 | `zitto sborrbot` | Metti a cuccia il bot nel gruppo (sta zitto ma non se ne va) |
 | `sveglia sborrbot` | Risveglia la bestia |
 
-### Slash Commands (per i boomer)
+### Slash Commands
 
 | Comando | Descrizione |
 |---------|-------------|
@@ -75,28 +113,32 @@ SborrBot è un bot di intrattenimento per gruppi Telegram che risponde a keyword
 | `/foto` | Lista categorie foto |
 | `/audio` | Lista categorie audio |
 | `/sticker` | Lista categorie sticker |
+| `/privacy` | Informativa privacy (GDPR Art. 13) |
+| `/mydata` | Visualizza i tuoi dati (GDPR Art. 15) |
+| `/deleteme` | Cancella tutti i tuoi dati (GDPR Art. 17) |
 
 ---
 
-## 🏗️ Architettura (roba seria, per una volta)
+## Architettura
 
 ```
-┌──────────────────┐
-│  Telegram API    │
-└────────┬─────────┘
-         │ Webhook POST
-         ▼
-┌──────────────────┐     ┌─────────┐     ┌─────────┐
-│ Cloudflare Worker│────▶│   D1    │◀────│  Astro  │
-│   (Bot Handler)  │     │Database │     │Backoffice│
-│                  │────▶│         │     │  + TW   │
-└──────────────────┘     └─────────┘     └─────────┘
-         │                                    │
-         ▼                                    ▼
-    ┌─────────┐                          ┌─────────┐
-    │   R2    │◀─────────────────────────│  Upload │
-    │ Storage │                          │  Media  │
-    └─────────┘                          └─────────┘
+                        +------------------+
+                        |  Telegram API    |
+                        +--------+---------+
+                                 | Webhook POST
+                                 v
++------------------+     +-------+--------+     +------------------+
+|   Astro SSR      |     | CF Worker      |     | OpenWeatherMap   |
+|   Backoffice     |     | (Bot Handler)  |     | API              |
+|   + Tailwind     |     +--+-------+-----+     +------------------+
++--------+---------+        |       |
+         |                  v       v
+         |            +-----+--+ +--+------+
+         +----------->|   D1   | |   R2    |
+                      |Database| | Storage |
+                      +--------+ +---------+
+
+Cron Trigger (03:00 UTC) --> Worker --> Purge logs > 90 giorni
 ```
 
 ### Stack Tecnologico
@@ -106,8 +148,11 @@ SborrBot è un bot di intrattenimento per gruppi Telegram che risponde a keyword
 | **Bot** | Cloudflare Worker (TypeScript) |
 | **Database** | Cloudflare D1 (SQLite at the edge) |
 | **Media Storage** | Cloudflare R2 (S3-compatible) |
-| **Backoffice** | Astro 5 + Tailwind CSS su Cloudflare Pages |
-| **Auth** | Session cookie + credenziali da env vars Cloudflare |
+| **Backoffice** | Astro 5 + Tailwind CSS su Cloudflare Pages (auto-deploy da Git) |
+| **Landing Page** | Astro SSR su Cloudflare Pages |
+| **Auth** | Session cookie + D1 + Cloudflare Turnstile |
+| **Meteo** | OpenWeatherMap API |
+| **Cron** | Cloudflare Cron Triggers (purge log 90 giorni) |
 
 ### Struttura del Progetto
 
@@ -115,35 +160,45 @@ SborrBot è un bot di intrattenimento per gruppi Telegram che risponde a keyword
 SborrBot/
 ├── worker/                 # Il cervello del bot (Cloudflare Worker)
 │   ├── src/
-│   │   ├── index.ts        # Entry point: webhook + register
+│   │   ├── index.ts        # Entry point: webhook + cron scheduler
 │   │   ├── bot.ts          # Dispatcher principale
+│   │   ├── types.ts        # Env interface
 │   │   ├── commands/
-│   │   │   ├── slash.ts    # /start, /help, /info, etc.
-│   │   │   ├── text.ts     # insulta, minaccia, bestemmia, nonno, saluti
-│   │   │   ├── media.ts    # Audio e foto (R2 → Telegram)
+│   │   │   ├── slash.ts    # /start, /help, /privacy, /mydata, /deleteme
+│   │   │   ├── text.ts     # 30+ comandi testuali + auto-trigger
+│   │   │   ├── media.ts    # Audio e foto (R2 -> Telegram)
 │   │   │   ├── sticker.ts  # Sticker per file_id
 │   │   │   └── control.ts  # zitto/sveglia
 │   │   ├── middleware/
-│   │   │   ├── group-check.ts  # Verifica se il bot è attivo nel gruppo
+│   │   │   ├── group-check.ts  # Verifica se il bot e attivo nel gruppo
 │   │   │   └── logger.ts       # Logga ogni comando su D1
 │   │   └── services/
-│   │       ├── db.ts        # Query D1
+│   │       ├── db.ts        # Query D1 (GDPR: getUserStats, deleteUserData, purgeOldLogs)
 │   │       ├── storage.ts   # Lettura R2
-│   │       └── telegram.ts  # Client API Telegram
+│   │       ├── telegram.ts  # Client API Telegram
+│   │       └── weather.ts   # Client OpenWeatherMap
 │   └── wrangler.toml
 │
-├── backoffice/             # Pannello admin (Astro + Tailwind)
+├── backoffice/             # Pannello admin + landing page (Astro + Tailwind)
 │   ├── src/
 │   │   ├── layouts/Layout.astro    # Layout dark con sidebar
+│   │   ├── middleware.ts           # Auth guard (session + D1)
 │   │   ├── pages/
-│   │   │   ├── login.astro         # Login (credenziali da env)
-│   │   │   ├── dashboard.astro     # Statistiche fighe
+│   │   │   ├── index.astro         # Landing page pubblica
+│   │   │   ├── login.astro         # Login (Turnstile + credenziali da env)
+│   │   │   ├── dashboard.astro     # Statistiche
 │   │   │   ├── content/            # CRUD testi, audio, foto, sticker
 │   │   │   ├── groups.astro        # Gestione gruppi
 │   │   │   ├── logs.astro          # Log comandi searchable
 │   │   │   └── settings.astro      # Configurazione bot
-│   │   ├── middleware/index.ts     # Auth guard
-│   │   └── lib/                    # Helpers D1 e auth
+│   │   └── lib/
+│   │       ├── auth.ts             # Constant-time comparison, session CRUD
+│   │       └── db.ts               # Query D1 per backoffice
+│   ├── public/
+│   │   ├── _headers                # Security headers (CSP, HSTS, etc.)
+│   │   ├── .well-known/security.txt
+│   │   ├── robots.txt
+│   │   └── sitemap.xml
 │   └── wrangler.toml
 │
 ├── migrations/             # Schema D1
@@ -155,7 +210,12 @@ SborrBot/
 │   ├── 0005_new_features.sql
 │   ├── 0006_media_uploads.sql
 │   ├── 0007_new_features_2.sql
-│   └── 0008_new_features_3.sql
+│   ├── 0008_new_features_3.sql
+│   ├── 0009_extreme_features.sql
+│   ├── 0010_napoletano.sql
+│   ├── 0011_new_triggers.sql
+│   ├── 0012_tinder_profezia.sql
+│   └── 0013_bollettino_capslock.sql
 │
 ├── shared/                 # Tipi TypeScript condivisi
 │   └── types.ts
@@ -165,19 +225,19 @@ SborrBot/
 
 ---
 
-## 🚀 Setup (per i non ritardati)
+## Setup
 
 ### Prerequisiti
 
 - Node.js 18+
-- Un account Cloudflare (gratis, tirchio del cazzo)
-- Un bot Telegram (crealo su [@BotFather](https://t.me/BotFather), è gratis pure quello)
+- Un account Cloudflare (gratis)
+- Un bot Telegram (crealo su [@BotFather](https://t.me/BotFather))
 - `wrangler` CLI installato (`npm install -g wrangler`)
 
 ### 1. Clona e installa
 
 ```bash
-git clone https://github.com/tuorepo/SborrBot.git
+git clone https://github.com/amargiovanni/SborrBot.git
 cd SborrBot
 npm install
 cd worker && npm install && cd ..
@@ -187,12 +247,11 @@ cd backoffice && npm install && cd ..
 ### 2. Crea le risorse Cloudflare
 
 ```bash
-# Logga su Cloudflare
 wrangler login
 
 # Crea il database D1
 wrangler d1 create sborrbot-db
-# → Copia il database_id e mettilo in worker/wrangler.toml E backoffice/wrangler.toml
+# -> Copia il database_id e mettilo in worker/wrangler.toml E backoffice/wrangler.toml
 
 # Crea il bucket R2
 wrangler r2 bucket create sborrbot-media
@@ -200,9 +259,9 @@ wrangler r2 bucket create sborrbot-media
 
 ### 3. Aggiorna i wrangler.toml
 
-Prendi il `database_id` dall'output del comando precedente e sostituiscilo in entrambi i file:
-- `worker/wrangler.toml` → sostituisci il valore di `database_id` con il tuo
-- `backoffice/wrangler.toml` → stessa cosa
+Prendi il `database_id` dall'output del comando precedente e sostituiscilo in:
+- `worker/wrangler.toml`
+- `backoffice/wrangler.toml`
 
 ### 4. Esegui le migrazioni
 
@@ -210,53 +269,34 @@ Prendi il `database_id` dall'output del comando precedente e sostituiscilo in en
 cd worker
 
 # Locale (per sviluppo)
-for f in ../migrations/0001_initial_schema.sql \
-         ../migrations/0002_seed_data.sql \
-         ../migrations/0003_bulk_content.sql \
-         ../migrations/0003_anti_juve.sql \
-         ../migrations/0004_extra_dirty_content.sql \
-         ../migrations/0005_new_features.sql \
-         ../migrations/0006_media_uploads.sql \
-         ../migrations/0007_new_features_2.sql \
-         ../migrations/0008_new_features_3.sql; do
+for f in ../migrations/*.sql; do
   npx wrangler d1 execute sborrbot-db --local --file="$f"
 done
 
-# Remoto (per produzione) — stessi file con --remote
-for f in ../migrations/0001_initial_schema.sql \
-         ../migrations/0002_seed_data.sql \
-         ../migrations/0003_bulk_content.sql \
-         ../migrations/0003_anti_juve.sql \
-         ../migrations/0004_extra_dirty_content.sql \
-         ../migrations/0005_new_features.sql \
-         ../migrations/0006_media_uploads.sql \
-         ../migrations/0007_new_features_2.sql \
-         ../migrations/0008_new_features_3.sql; do
+# Remoto (per produzione)
+for f in ../migrations/*.sql; do
   npx wrangler d1 execute sborrbot-db --remote --file="$f"
 done
 
 cd ..
 ```
 
-> **Nota sui media:** Le migrazioni creano lo schema, i testi di esempio e le categorie. La migration `0006_media_uploads.sql` inserisce anche record di esempio per foto, ma questi puntano a file R2 che **non sono inclusi nel repo** (vanno caricati tramite il backoffice). Se non hai file nel tuo bucket R2, puoi saltare la `0006` o eseguirla comunque — i record orfani non causano crash, il bot semplicemente risponderà che non ci sono contenuti disponibili per quella categoria. I comandi testuali (insulti, minacce, bestemmie, ecc.) funzionano subito dopo le migrazioni.
+> **Nota sui media:** Le migrazioni creano schema, testi di esempio e categorie. I record media puntano a file R2 che **non sono inclusi nel repo** (vanno caricati tramite il backoffice). I comandi testuali funzionano subito dopo le migrazioni.
 
 ### 5. Configura i secrets
 
 ```bash
-# Worker — token del bot e secret per il webhook
+# Worker
 cd worker
-wrangler secret put BOT_TOKEN
-# → Incolla il token di BotFather
-
-wrangler secret put BOT_SECRET
-# → Scegli una stringa casuale, serve per validare le richieste webhook da Telegram
-
-cd ../backoffice
-# Backoffice — credenziali admin
-wrangler secret put ADMIN_USERNAME
-wrangler secret put ADMIN_PASSWORD
-wrangler secret put SESSION_SECRET
+wrangler secret put BOT_TOKEN           # Token da BotFather
+wrangler secret put BOT_SECRET          # Stringa casuale per validare webhook
+wrangler secret put OPENWEATHERMAP_API_KEY  # API key da openweathermap.org (per il meteo)
 cd ..
+
+# Backoffice (via Cloudflare Dashboard -> Pages -> Settings -> Environment Variables)
+# ADMIN_USERNAME    — username per il login
+# ADMIN_PASSWORD    — password per il login
+# TURNSTILE_SECRET_KEY — secret key da Cloudflare Turnstile
 ```
 
 ### 6. Deploy
@@ -265,93 +305,134 @@ cd ..
 # Deploy il worker
 cd worker
 npx wrangler deploy
-# → Ti darà un URL tipo: https://sborrbot-worker.tuousername.workers.dev
+# -> URL: https://sborrbot-worker.tuousername.workers.dev
 
-# Deploy il backoffice
-cd ../backoffice
-npx astro build
-npx wrangler pages deploy dist
-# → Ti darà un URL tipo: https://sborrbot-backoffice.pages.dev
+# Il backoffice fa auto-deploy da Git (Cloudflare Pages con Git provider)
+# Ogni push su main deploya automaticamente
 ```
 
 ### 7. Registra il webhook
 
-Apri nel browser:
-```
-https://sborrbot-worker.tuousername.workers.dev/register
+```bash
+curl -H "Authorization: Bearer TUO_BOT_SECRET" \
+  https://sborrbot-worker.tuousername.workers.dev/register
 ```
 
-Se vedi `{"ok":true}` sei a posto. Il bot è vivo e pronto a sborrare.
+Se vedi `{"ok":true}` sei a posto. Il bot e vivo e pronto a sborrare.
 
 ---
 
-## 🖥️ Backoffice
+## Backoffice
 
-Il pannello admin è una figata. Dark theme, sidebar, tutto responsive.
+Il pannello admin e una figata. Dark theme, sidebar, tutto responsive.
 
 ### Come accedere
 
-1. Vai su `https://sborrbot-backoffice.pages.dev/login`
-2. Inserisci le credenziali che hai impostato come secrets
-3. Goditi il pannello
+1. Vai su `https://sborrbot.pages.dev/login`
+2. Inserisci le credenziali configurate nelle environment variables
+3. Supera il CAPTCHA Turnstile
+4. Goditi il pannello
 
 ### Cosa puoi fare
 
-- **Dashboard** — Vedi quanti comandi sono stati eseguiti, i gruppi attivi, i comandi più usati, il trend degli ultimi 7 giorni
-- **Testi** — Aggiungi/elimina frasi per ogni categoria (insulti, minacce, bestemmie, nonno, saluti). Usa `{name}` come placeholder per il nome della vittima
+- **Dashboard** — Statistiche: comandi eseguiti, gruppi attivi, comandi piu usati, trend 7/30 giorni, attivita oraria, top gruppi/utenti
+- **Testi** — Aggiungi/elimina frasi per ogni categoria. Usa `{name}` come placeholder per il nome della vittima, `{name1}`/`{name2}` per comandi con due target
 - **Audio** — Carica file audio (mp3, ogg) per ogni personaggio. Il bot li scarica da R2 e li manda su Telegram
-- **Foto** — Carica foto per le categorie NSFW. Stessa roba dell'audio
-- **Sticker** — Aggiungi sticker tramite `file_id` di Telegram (usa [@RawDataBot](https://t.me/RawDataBot) per trovare i file_id)
-- **Gruppi** — Vedi tutti i gruppi, mettili in pausa o bannali se rompono il cazzo
+- **Foto** — Carica foto per le categorie NSFW
+- **Sticker** — Aggiungi sticker tramite `file_id` di Telegram
+- **Gruppi** — Vedi tutti i gruppi, mettili in pausa o bannali
 - **Log** — Cerca e filtra ogni singolo comando eseguito dal bot
-- **Settings** — Cambia il rate limit, attiva/disattiva NSFW, eccetera
+- **Settings** — Configurazione bot
 
 ---
 
-## 🗄️ Database
+## Privacy e GDPR
+
+SborrBot prende la privacy sul serio (no, davvero).
+
+### Dati raccolti
+
+Il bot raccoglie il minimo indispensabile per funzionare:
+- **Telegram user ID** (numerico)
+- **Username** (pubblico su Telegram)
+- **Comando inviato** e timestamp
+- **ID del gruppo** in cui e stato usato
+
+### Diritti dell'utente
+
+| Comando | GDPR | Cosa fa |
+|---------|------|---------|
+| `/privacy` | Art. 13 | Mostra informativa completa sulla raccolta dati |
+| `/mydata` | Art. 15 | Mostra i dati raccolti sull'utente (totale comandi, prima/ultima interazione) |
+| `/deleteme` | Art. 17 | Cancella TUTTI i dati dell'utente dal database |
+
+### Retention automatica
+
+Un cron trigger gira ogni giorno alle 03:00 UTC e cancella automaticamente tutti i log piu vecchi di **90 giorni** (Art. 5.1.e — limitazione della conservazione).
+
+---
+
+## Sicurezza
+
+### Misure implementate
+
+- **Auth backoffice**: Session cookie + D1, comparazione password constant-time (HMAC), token 32 byte da `crypto.getRandomValues()`
+- **CAPTCHA**: Cloudflare Turnstile sul login
+- **Webhook validation**: Secret token su ogni richiesta da Telegram
+- **SQL injection**: Zero. Tutte le query D1 usano parametri con `.bind()`
+- **Security headers**: CSP, HSTS, X-Frame-Options DENY, X-Content-Type-Options, Referrer-Policy, Permissions-Policy (`public/_headers`)
+- **security.txt**: `/.well-known/security.txt` con contatto per vulnerability disclosure
+- **Secrets**: Tutti esternalizzati via `wrangler secret put` o Cloudflare Dashboard. Niente in codice o wrangler.toml.
+- **Path normalization**: Middleware normalizza double-slash per prevenire auth bypass
+- **R2 deletion**: Key verificata da D1, non dal client
+
+---
+
+## Database
 
 8 tabelle in D1 (SQLite at the edge):
 
 | Tabella | Che ci sta dentro |
 |---------|-------------------|
-| `categories` | Le 18 categorie di contenuti (insulti, audio Mosconi, foto culo, ecc.) |
-| `text_responses` | Frasi per le categorie testuali. `{name}` come placeholder |
+| `categories` | Categorie di contenuti (insulti, audio Mosconi, foto, ecc.) |
+| `text_responses` | Frasi per le categorie testuali. `{name}` / `{name1}` / `{name2}` come placeholder |
 | `media` | Metadata dei file su R2 (audio, foto, sticker) + cache telegram_file_id |
 | `groups` | Gruppi Telegram tracciati (attivo/pausa/bannato) |
 | `group_settings` | Impostazioni per gruppo |
-| `command_logs` | Log di ogni singolo comando (chi, dove, quando, che ha chiesto) |
+| `command_logs` | Log di ogni comando (chi, dove, quando, che ha chiesto) — purge automatico 90gg |
 | `bot_config` | Configurazione globale key-value |
-| `sessions` | Sessioni login backoffice |
+| `sessions` | Sessioni login backoffice (24h expiry, cleanup automatico) |
 
 ---
 
-## 📦 Storage R2
+## Storage R2
 
 ```
 sborrbot-media/
 ├── audio/
-│   ├── germano-mosconi/     # PORCO DIO.mp3
-│   ├── christian-de-sica/   # vacanze_di_natale.ogg
-│   ├── homer-simpson/       # doh.mp3
+│   ├── germano-mosconi/
+│   ├── christian-de-sica/
+│   ├── homer-simpson/
 │   ├── soliti-idioti/
 │   ├── richard-benson/
 │   ├── effetti-sonori/
 │   └── audio-vari/
 ├── photos/
-│   ├── fica/                # ...
-│   ├── culo/                # ...
-│   └── tette/               # ...
+│   ├── fica/
+│   ├── culo/
+│   ├── tette/
+│   └── degrado/
 └── stickers/
     ├── apple/
     ├── minion/
     └── disapprovazione/
 ```
 
-I file vengono caricati dal backoffice e serviti dal worker. La prima volta che il bot invia un file su Telegram, salva il `telegram_file_id` in D1 per non dover re-uploadare ogni volta (risparmio di banda e tempo, non siamo coglioni).
+I file vengono caricati dal backoffice e serviti dal worker. La prima volta che il bot invia un file su Telegram, salva il `telegram_file_id` in D1 per non dover re-uploadare ogni volta.
 
 ---
 
-## 🔧 Sviluppo Locale
+## Sviluppo Locale
 
 ```bash
 # Worker
@@ -369,9 +450,6 @@ npm run dev
 ### Dev con tunnel (per testare il webhook)
 
 ```bash
-# Installa cloudflared
-# https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/
-
 # In un terminale
 cd worker && npx wrangler dev
 
@@ -379,51 +457,50 @@ cd worker && npx wrangler dev
 cloudflared tunnel --url http://localhost:8787
 
 # Prendi l'URL del tunnel e registra il webhook
-curl "https://TUNNEL-URL/register"
+curl -H "Authorization: Bearer TUO_BOT_SECRET" "https://TUNNEL-URL/register"
 ```
 
 ---
 
-## ⚡ Performance e Caching
+## Performance e Caching
 
 - **Cloudflare Workers**: il bot gira al edge, latenza bassissima ovunque nel mondo
 - **D1**: SQLite distribuito, query veloci per contenuti random (`ORDER BY RANDOM() LIMIT 1`)
-- **telegram_file_id caching**: dopo il primo invio di un media, il bot salva l'ID Telegram. Le volte successive usa l'ID invece di ri-scaricare da R2. Geniale, lo so.
-- **R2**: storage a basso costo, niente egress fees. Perfetto per tonnellate di audio di bestemmie.
+- **telegram_file_id caching**: dopo il primo invio di un media, il bot salva l'ID Telegram. Le volte successive usa l'ID invece di ri-scaricare da R2
+- **R2**: storage a basso costo, niente egress fees
 
 ---
 
-## 🤝 Contribuire
+## Contribuire
 
 Vuoi aggiungere features? Fork, branch, PR. Le solite cose.
 
 Idee per il futuro:
-- Inline mode completo (non solo testi)
+- Inline mode completo
 - Comandi personalizzabili per gruppo
 - Generazione dinamica di insulti con AI
-- Oroscopo del cazzo
 - Quiz e giochi in chat
-- Classifica degli utenti più sborranti
+- Classifica degli utenti piu sborranti
 
 ---
 
-## ⚠️ Disclaimer
+## Disclaimer
 
-SborrBot è un progetto di intrattenimento. Il bot è pensato per essere usato tra amici in chat private/di gruppo per fare cazzate e ridere. Non siamo responsabili se:
+SborrBot e un progetto di intrattenimento. Il bot e pensato per essere usato tra amici in chat private/di gruppo per fare cazzate e ridere. Non siamo responsabili se:
 
 - Il tuo prete ti scomunica dopo aver letto le bestemmie
 - Tua madre legge la chat e ti toglie il WiFi
 - Qualcuno si offende per un insulto generato da un bot
-- Telegram ti banna perché hai uploadato troppo porno
+- Telegram ti banna perche hai uploadato troppo porno
 
 **Usalo con criterio.** O senza, chissenefotte.
 
 ---
 
-## 📜 Licenza
+## Licenza
 
 MIT License — fai quello cazzo che vuoi. Vedi [LICENSE](LICENSE).
 
 ---
 
-*Fatto con amore, bestemmie e tanto caffè. Powered by Cloudflare.* ☁️💦
+*Fatto con amore, bestemmie e tanto caffe. Powered by Cloudflare.*

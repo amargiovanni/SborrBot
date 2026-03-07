@@ -12,6 +12,9 @@ migrations_dir = "../migrations"
 binding = "MEDIA_BUCKET"
 bucket_name = "sborrbot-media"
 
+[triggers]
+crons = ["0 3 * * *"]  # Every day at 03:00 UTC — purge logs older than 90 days
+
 # BOT_TOKEN → wrangler secret put BOT_TOKEN
 # BOT_SECRET → wrangler secret put BOT_SECRET
 # OPENWEATHERMAP_API_KEY → wrangler secret put OPENWEATHERMAP_API_KEY

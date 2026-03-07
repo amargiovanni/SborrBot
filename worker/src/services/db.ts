@@ -128,3 +128,41 @@ export async function getCategoryList(db: D1Database, type: string): Promise<{ s
     .all<{ slug: string; name: string }>();
   return result.results;
 }
+
+export async function getUserStats(db: D1Database, userId: string): Promise<{
+  totalCommands: number;
+  firstSeen: string | null;
+  lastSeen: string | null;
+} | null> {
+  const result = await db
+    .prepare(
+      `SELECT COUNT(*) as total_commands,
+              MIN(created_at) as first_seen,
+              MAX(created_at) as last_seen
+       FROM command_logs WHERE telegram_user_id = ?`
+    )
+    .bind(userId)
+    .first<{ total_commands: number; first_seen: string | null; last_seen: string | null }>();
+  if (!result || result.total_commands === 0) return null;
+  return {
+    totalCommands: result.total_commands,
+    firstSeen: result.first_seen,
+    lastSeen: result.last_seen,
+  };
+}
+
+export async function deleteUserData(db: D1Database, userId: string): Promise<number> {
+  const result = await db
+    .prepare('DELETE FROM command_logs WHERE telegram_user_id = ?')
+    .bind(userId)
+    .run();
+  return result.meta.changes ?? 0;
+}
+
+export async function purgeOldLogs(db: D1Database, retentionDays: number): Promise<number> {
+  const result = await db
+    .prepare("DELETE FROM command_logs WHERE created_at <= datetime('now', ? || ' days')")
+    .bind(-retentionDays)
+    .run();
+  return result.meta.changes ?? 0;
+}

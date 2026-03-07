@@ -13,6 +13,9 @@ export default {
 
     // Register webhook
     if (url.pathname === '/register' && request.method === 'GET') {
+      if (request.headers.get('Authorization') !== `Bearer ${env.BOT_SECRET}`) {
+        return new Response('Unauthorized', { status: 403 });
+      }
       const api = new TelegramApi(env.BOT_TOKEN);
       const webhookUrl = `${url.origin}/webhook`;
       const result = await api.setWebhook(webhookUrl, env.BOT_SECRET);
@@ -21,6 +24,9 @@ export default {
 
     // Unregister webhook
     if (url.pathname === '/unregister' && request.method === 'GET') {
+      if (request.headers.get('Authorization') !== `Bearer ${env.BOT_SECRET}`) {
+        return new Response('Unauthorized', { status: 403 });
+      }
       const api = new TelegramApi(env.BOT_TOKEN);
       const result = await api.deleteWebhook();
       return Response.json(result);

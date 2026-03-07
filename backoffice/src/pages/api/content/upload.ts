@@ -1,5 +1,11 @@
 import type { APIRoute } from 'astro';
 
+const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+const ALLOWED_MIME_TYPES = [
+  'audio/mpeg', 'audio/ogg', 'audio/wav', 'audio/mp4',
+  'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+];
+
 export const POST: APIRoute = async ({ request, locals }) => {
   const env = (locals as any).runtime?.env;
   if (!env?.DB || !env?.MEDIA_BUCKET) {
@@ -13,6 +19,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   if (!file || !categoryId) {
     return new Response(JSON.stringify({ error: 'File e category_id sono obbligatori' }), { status: 400 });
+  }
+
+  if (file.size > MAX_FILE_SIZE) {
+    return new Response(JSON.stringify({ error: 'File troppo grande (max 50MB)' }), { status: 413, headers: { 'Content-Type': 'application/json' } });
+  }
+
+  if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+    return new Response(JSON.stringify({ error: 'Tipo file non supportato' }), { status: 415, headers: { 'Content-Type': 'application/json' } });
   }
 
   // Get category to determine type and slug for R2 path

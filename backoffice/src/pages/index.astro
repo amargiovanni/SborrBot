@@ -322,6 +322,66 @@
   </div>
 </section>
 
+<!-- ═══════════════════════ PRIVACY ═══════════════════════ -->
+<section class="privacy" id="privacy">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-badge">PRIVACY DEL CAZZO</span>
+      <h2 class="section-title">Psicopatici della privacy</h2>
+      <p class="section-desc">Siamo stronzi, non criminali. I tuoi dati li trattiamo meglio di come trattiamo i tuoi amici.</p>
+    </div>
+
+    <div class="privacy-grid">
+      <div class="feat-card">
+        <div class="feat-icon-wrap"><span class="feat-icon">🔒</span></div>
+        <h3 class="feat-name">Zero tracking, zero cazzate</h3>
+        <p class="feat-desc">Niente cookie di profilazione, niente analytics di terze parti, niente pixel di tracciamento. Non sappiamo chi cazzo sei e ci va benissimo cosi.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon-wrap"><span class="feat-icon">🗑️</span></div>
+        <h3 class="feat-name">I log si auto-distruggono</h3>
+        <p class="feat-desc">Salviamo solo i comandi che mandi al bot. Dopo 90 giorni vengono cancellati automaticamente. Come le tue relazioni, ma piu affidabile.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon-wrap"><span class="feat-icon">💣</span></div>
+        <h3 class="feat-name">Diritto all'oblio istantaneo</h3>
+        <p class="feat-desc">Scrivi <code>/deleteme</code> e cancelliamo ogni traccia di te. Sparisci come se non fossi mai esistito. Un po' come nella vita reale, ma piu veloce.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon-wrap"><span class="feat-icon">📊</span></div>
+        <h3 class="feat-name">I tuoi dati? Guardali</h3>
+        <p class="feat-desc">Scrivi <code>/mydata</code> e ti mostriamo tutto quello che abbiamo su di te. Spoiler: sono quattro stronzate. Non siamo mica Facebook.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon-wrap"><span class="feat-icon">📖</span></div>
+        <h3 class="feat-name">Open source, porco dio</h3>
+        <p class="feat-desc">Il codice e tutto su GitHub. Puoi verificare tu stesso che non facciamo porcherie con i tuoi dati. Trasparenza totale, come le tue bugie.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon-wrap"><span class="feat-icon">🇪🇺</span></div>
+        <h3 class="feat-name">GDPR compliant, stronzi</h3>
+        <p class="feat-desc">Art. 13 (informativa), Art. 15 (accesso), Art. 17 (cancellazione). Li rispettiamo tutti. Perche la legge e l'unica cosa che ci fa piu paura di tua madre.</p>
+      </div>
+    </div>
+
+    <div class="privacy-commands">
+      <p class="privacy-cmd-title">Comandi privacy nel bot:</p>
+      <div class="privacy-cmd-list">
+        <code>/privacy</code> &mdash; Informativa completa
+        <span class="privacy-cmd-sep">&middot;</span>
+        <code>/mydata</code> &mdash; Vedi i tuoi dati
+        <span class="privacy-cmd-sep">&middot;</span>
+        <code>/deleteme</code> &mdash; Cancella tutto
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ═══════════════════════ FINAL CTA ═══════════════════════ -->
 <section class="final-cta">
   <div class="section-inner">
@@ -349,6 +409,7 @@
       <div class="footer-links">
         <a href="https://t.me/SborrrrBot_bot" target="_blank" rel="noopener">Telegram</a>
         <a href="https://github.com/amargiovanni/SborrBot" target="_blank" rel="noopener">GitHub</a>
+        <a href="#privacy">Privacy</a>
         <a href="/dashboard">Dashboard</a>
       </div>
     </div>
@@ -1262,6 +1323,58 @@
   .c-bool { color: #f87171; }
   .c-func { color: #60a5fa; }
 
+  /* ─────────────────── PRIVACY ─────────────────── */
+
+  .privacy {
+    padding: 6rem 0;
+    background: var(--bg-alt);
+  }
+
+  .privacy-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .privacy-commands {
+    margin-top: 3rem;
+    text-align: center;
+    padding: 2rem;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+  }
+
+  .privacy-cmd-title {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+  }
+
+  .privacy-cmd-list {
+    font-size: 1rem;
+    color: var(--text);
+    line-height: 2;
+  }
+
+  .privacy-cmd-list code {
+    background: var(--code-bg);
+    padding: 0.2em 0.5em;
+    border-radius: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.9em;
+    color: var(--primary-light);
+  }
+
+  .privacy-cmd-sep {
+    margin: 0 0.5rem;
+    color: var(--text-faint);
+  }
+
   /* ─────────────────── FINAL CTA ─────────────────── */
 
   .final-cta {
@@ -1358,7 +1471,7 @@
   /* ─────────────────── RESPONSIVE ─────────────────── */
 
   @media (max-width: 900px) {
-    .feat-grid {
+    .feat-grid, .privacy-grid {
       grid-template-columns: repeat(2, 1fr);
     }
 
@@ -1390,8 +1503,18 @@
   }
 
   @media (max-width: 600px) {
-    .feat-grid {
+    .feat-grid, .privacy-grid {
       grid-template-columns: 1fr;
+    }
+
+    .privacy-cmd-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .privacy-cmd-sep {
+      display: none;
     }
 
     .feat-card-lg {

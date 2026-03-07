@@ -166,3 +166,69 @@ export async function purgeOldLogs(db: D1Database, retentionDays: number): Promi
     .run();
   return result.meta.changes ?? 0;
 }
+
+// --- Scheduled Messages ---
+
+interface ScheduledMessage {
+  id: number;
+  message_text: string;
+  target_group_id: string | null;
+  schedule_type: string;
+  scheduled_at: string;
+  day_of_week: number | null;
+}
+
+export async function getDueScheduledMessages(db: D1Database): Promise<ScheduledMessage[]> {
+  const now = new Date();
+  const currentTime = now.toISOString().slice(11, 16); // HH:MM
+  const currentDay = now.getUTCDay(); // 0-6
+  const nowISO = now.toISOString().slice(0, 16); // YYYY-MM-DDTHH:MM
+
+  // Once: scheduled_at <= now and not yet sent
+  const once = await db.prepare(
+    `SELECT * FROM scheduled_messages
+     WHERE is_active = 1 AND schedule_type = 'once'
+     AND scheduled_at <= ? AND last_sent_at IS NULL`
+  ).bind(nowISO).all<ScheduledMessage>();
+
+  // Daily: current HH:MM matches and not sent today
+  const daily = await db.prepare(
+    `SELECT * FROM scheduled_messages
+     WHERE is_active = 1 AND schedule_type = 'daily'
+     AND scheduled_at = ?
+     AND (last_sent_at IS NULL OR DATE(last_sent_at) < DATE('now'))`
+  ).bind(currentTime).all<ScheduledMessage>();
+
+  // Weekly: current day + HH:MM matches and not sent this week-day
+  const weekly = await db.prepare(
+    `SELECT * FROM scheduled_messages
+     WHERE is_active = 1 AND schedule_type = 'weekly'
+     AND day_of_week = ? AND scheduled_at = ?
+     AND (last_sent_at IS NULL OR DATE(last_sent_at) < DATE('now'))`
+  ).bind(currentDay, currentTime).all<ScheduledMessage>();
+
+  return [
+    ...(once.results ?? []),
+    ...(daily.results ?? []),
+    ...(weekly.results ?? []),
+  ];
+}
+
+export async function markScheduledMessageSent(db: D1Database, id: number, deactivate: boolean): Promise<void> {
+  if (deactivate) {
+    await db.prepare(
+      "UPDATE scheduled_messages SET last_sent_at = datetime('now'), is_active = 0 WHERE id = ?"
+    ).bind(id).run();
+  } else {
+    await db.prepare(
+      "UPDATE scheduled_messages SET last_sent_at = datetime('now') WHERE id = ?"
+    ).bind(id).run();
+  }
+}
+
+export async function getActiveGroupChatIds(db: D1Database): Promise<string[]> {
+  const result = await db.prepare(
+    'SELECT telegram_chat_id FROM groups WHERE is_active = 1 AND is_banned = 0'
+  ).all<{ telegram_chat_id: string }>();
+  return result.results.map(r => r.telegram_chat_id);
+}

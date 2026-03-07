@@ -13,7 +13,7 @@ binding = "MEDIA_BUCKET"
 bucket_name = "sborrbot-media"
 
 [triggers]
-crons = ["0 3 * * *"]  # Every day at 03:00 UTC — purge logs older than 90 days
+crons = ["* * * * *", "0 3 * * *"]  # Every minute: scheduled messages | Daily 03:00 UTC: purge old logs
 
 # BOT_TOKEN → wrangler secret put BOT_TOKEN
 # BOT_SECRET → wrangler secret put BOT_SECRET

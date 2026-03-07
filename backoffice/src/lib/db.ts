@@ -205,3 +205,83 @@ export async function updateBotConfig(db: D1Database, key: string, value: string
     'INSERT INTO bot_config (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = ?'
   ).bind(key, value, value).run();
 }
+
+// --- Scheduled Messages ---
+
+export async function getScheduledMessages(db: D1Database) {
+  return db.prepare(
+    `SELECT sm.*, g.title as group_title
+     FROM scheduled_messages sm
+     LEFT JOIN groups g ON sm.target_group_id = g.telegram_chat_id
+     ORDER BY sm.created_at DESC`
+  ).all();
+}
+
+export async function getScheduledMessage(db: D1Database, id: number) {
+  return db.prepare('SELECT * FROM scheduled_messages WHERE id = ?').bind(id).first();
+}
+
+export async function createScheduledMessage(db: D1Database, data: {
+  message_text: string;
+  target_group_id: string | null;
+  schedule_type: string;
+  scheduled_at: string;
+  day_of_week: number | null;
+}) {
+  return db.prepare(
+    `INSERT INTO scheduled_messages (message_text, target_group_id, schedule_type, scheduled_at, day_of_week)
+     VALUES (?, ?, ?, ?, ?)`
+  ).bind(data.message_text, data.target_group_id, data.schedule_type, data.scheduled_at, data.day_of_week).run();
+}
+
+export async function updateScheduledMessage(db: D1Database, id: number, data: {
+  message_text: string;
+  target_group_id: string | null;
+  schedule_type: string;
+  scheduled_at: string;
+  day_of_week: number | null;
+  is_active: number;
+}) {
+  return db.prepare(
+    `UPDATE scheduled_messages
+     SET message_text = ?, target_group_id = ?, schedule_type = ?, scheduled_at = ?, day_of_week = ?, is_active = ?, updated_at = datetime('now')
+     WHERE id = ?`
+  ).bind(data.message_text, data.target_group_id, data.schedule_type, data.scheduled_at, data.day_of_week, data.is_active, id).run();
+}
+
+export async function deleteScheduledMessage(db: D1Database, id: number) {
+  return db.prepare('DELETE FROM scheduled_messages WHERE id = ?').bind(id).run();
+}
+
+// --- Global Search ---
+
+export async function globalSearch(db: D1Database, query: string) {
+  const like = `%${query}%`;
+  const [commands, texts, groups, categories] = await Promise.all([
+    db.prepare(
+      `SELECT 'command' as type, command as title, username as subtitle, created_at
+       FROM command_logs WHERE command LIKE ? ORDER BY created_at DESC LIMIT 5`
+    ).bind(like).all(),
+    db.prepare(
+      `SELECT 'text' as type, SUBSTR(content, 1, 80) as title, c.name as subtitle, tr.created_at
+       FROM text_responses tr
+       JOIN categories c ON tr.category_id = c.id
+       WHERE tr.content LIKE ? ORDER BY tr.created_at DESC LIMIT 5`
+    ).bind(like).all(),
+    db.prepare(
+      `SELECT 'group' as type, title, telegram_chat_id as subtitle, updated_at as created_at
+       FROM groups WHERE title LIKE ? OR telegram_chat_id LIKE ? ORDER BY updated_at DESC LIMIT 5`
+    ).bind(like, like).all(),
+    db.prepare(
+      `SELECT 'category' as type, name as title, type as subtitle, created_at
+       FROM categories WHERE name LIKE ? OR slug LIKE ? ORDER BY name LIMIT 5`
+    ).bind(like, like).all(),
+  ]);
+
+  return [
+    ...(commands.results ?? []),
+    ...(texts.results ?? []),
+    ...(groups.results ?? []),
+    ...(categories.results ?? []),
+  ];
+}

@@ -15,6 +15,7 @@ const navItems = [
   { href: '/content/photos', label: 'Foto', icon: '📸' },
   { href: '/content/stickers', label: 'Sticker', icon: '🎨' },
   { href: '/groups', label: 'Gruppi', icon: '👥' },
+  { href: '/scheduler', label: 'Scheduler', icon: '📅' },
   { href: '/logs', label: 'Log', icon: '📋' },
   { href: '/settings', label: 'Impostazioni', icon: '⚙️' },
 ];
@@ -57,24 +58,138 @@ const navItems = [
             </a>
           ))}
         </nav>
-        <div class="p-3 border-t border-gray-100 dark:border-gray-800">
-          <form action="/api/auth/logout" method="POST">
-            <button type="submit" class="w-full text-left text-sm text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition-all duration-150 px-3 py-2.5 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/50 font-medium">
-              🚪 Logout
-            </button>
-          </form>
-        </div>
       </aside>
 
       <!-- Main content -->
-      <main class="flex-1 p-8 lg:p-10 overflow-auto bg-gray-50 dark:bg-gray-950">
-        <slot />
-      </main>
+      <div class="flex-1 flex flex-col overflow-auto bg-gray-50 dark:bg-gray-950">
+        <header class="flex items-center justify-end gap-2 px-8 lg:px-10 pt-6">
+          <button
+            id="search-trigger"
+            class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-400 dark:text-gray-500 text-sm hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-600 dark:hover:text-gray-300 transition-all duration-150"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <span>Cerca...</span>
+            <kbd class="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 rounded">&#8984;K</kbd>
+          </button>
+          <form action="/api/auth/logout" method="POST">
+            <button type="submit" class="flex items-center gap-1.5 text-sm text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition-all duration-150 px-3 py-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/50 font-medium">
+              🚪 Logout
+            </button>
+          </form>
+        </header>
+        <main class="flex-1 px-8 lg:px-10 pb-8 lg:pb-10">
+          <slot />
+        </main>
+      </div>
     </div>
   ) : (
     <main>
       <slot />
     </main>
   )}
+
+  <!-- Global Search Modal (Cmd+K) -->
+  <div id="search-modal" class="fixed inset-0 z-[100] hidden items-start justify-center pt-[15vh] bg-black/40 backdrop-blur-sm">
+    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 w-full max-w-xl mx-4 overflow-hidden">
+      <div class="flex items-center gap-3 px-5 py-4 border-b border-gray-100 dark:border-gray-800">
+        <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <input
+          id="search-input"
+          type="text"
+          placeholder="Cerca comandi, contenuti, gruppi..."
+          class="flex-1 bg-transparent text-gray-900 dark:text-white text-sm outline-none placeholder-gray-400 dark:placeholder-gray-500"
+          autocomplete="off"
+        />
+        <kbd class="text-[10px] font-mono px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded">ESC</kbd>
+      </div>
+      <div id="search-results" class="max-h-80 overflow-y-auto p-2">
+        <div class="px-3 py-8 text-center text-sm text-gray-400 dark:text-gray-500">Digita almeno 2 caratteri per cercare</div>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline>
+    (function() {
+      var modal = document.getElementById('search-modal');
+      var input = document.getElementById('search-input');
+      var results = document.getElementById('search-results');
+      var trigger = document.getElementById('search-trigger');
+      var debounceTimer;
+
+      var typeIcons = { command: '&#9889;', text: '&#128221;', group: '&#128101;', category: '&#128193;' };
+      var typeLabels = { command: 'Comando', text: 'Testo', group: 'Gruppo', category: 'Categoria' };
+      var typeLinks = {
+        command: '/logs',
+        text: '/content/texts',
+        group: '/groups',
+        category: '/content/texts',
+      };
+
+      function open() {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        input.value = '';
+        results.innerHTML = '<div class="px-3 py-8 text-center text-sm text-gray-400 dark:text-gray-500">Digita almeno 2 caratteri per cercare</div>';
+        setTimeout(function() { input.focus(); }, 50);
+      }
+
+      function close() {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+
+      if (trigger) trigger.addEventListener('click', open);
+
+      document.addEventListener('keydown', function(e) {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+          e.preventDefault();
+          if (modal.classList.contains('hidden')) { open(); } else { close(); }
+        }
+        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+          close();
+        }
+      });
+
+      modal.addEventListener('click', function(e) { if (e.target === modal) close(); });
+
+      input.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        var q = input.value.trim();
+        if (q.length < 2) {
+          results.innerHTML = '<div class="px-3 py-8 text-center text-sm text-gray-400 dark:text-gray-500">Digita almeno 2 caratteri per cercare</div>';
+          return;
+        }
+        results.innerHTML = '<div class="px-3 py-4 text-center text-sm text-gray-400 dark:text-gray-500">Ricerca...</div>';
+        debounceTimer = setTimeout(function() { doSearch(q); }, 250);
+      });
+
+      async function doSearch(q) {
+        try {
+          var res = await fetch('/api/search?q=' + encodeURIComponent(q));
+          var data = await res.json();
+          if (!data.results || data.results.length === 0) {
+            results.innerHTML = '<div class="px-3 py-8 text-center text-sm text-gray-400 dark:text-gray-500">Nessun risultato per &ldquo;' + q.replace(/</g, '&lt;') + '&rdquo;</div>';
+            return;
+          }
+          var html = '';
+          data.results.forEach(function(r) {
+            var icon = typeIcons[r.type] || '&#128196;';
+            var label = typeLabels[r.type] || r.type;
+            var link = typeLinks[r.type] || '/dashboard';
+            html += '<a href="' + link + '" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group">';
+            html += '<span class="text-lg flex-shrink-0">' + icon + '</span>';
+            html += '<div class="flex-1 min-w-0">';
+            html += '<div class="text-sm font-medium text-gray-900 dark:text-white truncate">' + (r.title || '-').replace(/</g, '&lt;') + '</div>';
+            html += '<div class="text-xs text-gray-400 dark:text-gray-500 truncate">' + label + (r.subtitle ? ' &middot; ' + r.subtitle.replace(/</g, '&lt;') : '') + '</div>';
+            html += '</div>';
+            html += '</a>';
+          });
+          results.innerHTML = html;
+        } catch(e) {
+          results.innerHTML = '<div class="px-3 py-4 text-center text-sm text-red-500">Errore nella ricerca</div>';
+        }
+      }
+    })();
+  </script>
 </body>
 </html>

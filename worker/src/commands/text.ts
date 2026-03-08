@@ -109,6 +109,28 @@ const PATTERNS: { pattern: RegExp; slug: string; hasTarget: boolean; useSenderNa
     slug: 'palestra',
     hasTarget: false,
   },
+  // Televendita
+  { pattern: /^televendita\s+(.+)/i, slug: 'televendita', hasTarget: true },
+  // Asta
+  { pattern: /^asta\s+(.+)/i, slug: 'asta', hasTarget: true },
+  // Esorcismo
+  { pattern: /^esorcismo\s+(.+)/i, slug: 'esorcismo', hasTarget: true },
+  // Intercettazione (custom: two random group users)
+  { pattern: /\bintercettazione\b/i, slug: 'intercettazione', hasTarget: false },
+  // Ex (auto-trigger)
+  {
+    pattern: /\b(?:la mia ex|il mio ex|mia ex|mio ex|ex ragazza|ex fidanzata|ex fidanzato|ex moglie|ex marito|ex morosa|ex moroso)\b/i,
+    slug: 'ex',
+    hasTarget: false,
+    useSenderName: true,
+  },
+  // Terapia / Psicologo (auto-trigger)
+  {
+    pattern: /\b(?:terapia|psicologo|psicologa|psichiatra|psicanalisi|psicanalista|vado dallo psicologo|seduta dallo psicologo|lo psicologo)\b/i,
+    slug: 'terapia',
+    hasTarget: false,
+    useSenderName: true,
+  },
 ];
 
 async function handleOroscopo(text: string, chatId: string, env: Env, api: TelegramApi): Promise<CommandResult> {
@@ -241,6 +263,20 @@ async function handleEredita(chatId: string, env: Env, api: TelegramApi): Promis
   return { handled: true, command: 'eredita' };
 }
 
+async function handleIntercettazione(chatId: string, env: Env, api: TelegramApi): Promise<CommandResult> {
+  const [name1, name2] = await getTwoRandomGroupUsers(env.DB, chatId);
+  const response = await getRandomTextResponse(env.DB, 'intercettazione');
+
+  if (!response) {
+    await api.sendMessage(chatId, 'Non ho intercettazioni disponibili... le cimici sono scariche.');
+    return { handled: true, command: 'intercettazione' };
+  }
+
+  const finalText = response.replace(/\{name1\}/g, name1).replace(/\{name2\}/g, name2);
+  await api.sendMessage(chatId, finalText, 'Markdown');
+  return { handled: true, command: 'intercettazione' };
+}
+
 async function handleFactCheck(chatId: string, env: Env, api: TelegramApi): Promise<CommandResult> {
   const response = await getRandomTextResponse(env.DB, 'fact-check');
   if (!response) {
@@ -318,6 +354,7 @@ export async function handleTextCommand(
     if (slug === 'bollettino') return handleBollettino(chatId, env, api);
     if (slug === 'complotto') return handleComplotto(chatId, env, api);
     if (slug === 'eredita') return handleEredita(chatId, env, api);
+    if (slug === 'intercettazione') return handleIntercettazione(chatId, env, api);
     if (slug === 'fact-check') return handleFactCheck(chatId, env, api);
     if (slug === 'ricetta') return handleRicetta(chatId, env, api);
     if (slug === 'autopsia') {

@@ -41,9 +41,13 @@ export async function handleSlashCommand(
         '• `dottore [nome]` / `diagnosi [nome]` — Referto medico assurdo\n' +
         '• `chi è [nome]` / `presentami [nome]` — Bio inventata e volgare\n' +
         '• `autopsia [nome]` — Referto autoptico volgare\n' +
+        '• `televendita [nome]` — Televendita stile Mastrota\n' +
+        '• `asta [nome]` — Asta eBay devastante\n' +
+        '• `esorcismo [nome]` — Rituale d\'esorcismo\n' +
         '• `notizia` — Notizia flash su un membro del gruppo\n' +
         '• `segreto` — Storia torbida tra due membri del gruppo\n' +
         '• `complotto` — Teoria del complotto su due membri\n' +
+        '• `intercettazione` — Intercettazione telefonica tra due membri\n' +
         '• `eredità` / `testamento` — Testamento assurdo con due membri\n' +
         '• `fact check` — Fact check inventato e assurdo\n' +
         '• `ricetta` — Ricetta disgustosa dello chef\n' +
@@ -59,6 +63,8 @@ export async function handleSlashCommand(
         '• Scrivi `auguri` / `buon compleanno` — auguri del cazzo\n' +
         '• Scrivi `sono il migliore` / `sono forte` / `sono bravo` — demolizione ego\n' +
         '• Scrivi "ho fame", "sono stanco/a" ecc. — risposta sarcastica\n' +
+        '• Scrivi "la mia ex" / "il mio ex" — messaggio dall\'ex 💔\n' +
+        '• Scrivi "terapia" / "psicologo" — seduta di terapia 🧠\n' +
         '• Scrivi "juve" / "juventus" — reazione immediata 💩\n\n' +
         '📸 *Foto:*\n' +
         '• `fica` / `culo` / `tette` — Foto hot\n' +

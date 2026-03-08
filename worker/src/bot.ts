@@ -27,6 +27,8 @@ const LAMENTI_PATTERN = /\b(?:ho fame|sono stanco|sono stanca|che noia|mi annoio
 const BESTEMMIA_PATTERN = /\bbestemmia\b/i;
 const NAPOLI_PATTERN = /\b(?:napoli|napoletan[oiae]|vesuvio|pizza|pizzaiolo|mozzarella|sfogliatella|maradona|pulcinella|camorra|gomorra|totò|toto|pino daniele|spaccanapoli|posillipo|vomero|scampia|secondigliano|marechiaro|fuorigrotta|san gennaro|babà|baba|ragù|ragu|friarielli|cuoppo|o sole mio)\b/i;
 const CALCIO_PATTERN = /\b(?:romanista|romanisti|giallorossi|as roma|lupacchiotti|trigoria|laziale|laziali|biancocelesti|aquilotti|ss lazio|lotito|milanista|milanisti|rossoneri|ac milan|casciavit)\b/i;
+const EX_PATTERN = /\b(?:la mia ex|il mio ex|mia ex|mio ex|ex ragazza|ex fidanzata|ex fidanzato|ex moglie|ex marito|ex morosa|ex moroso)\b/i;
+const TERAPIA_PATTERN = /\b(?:terapia|psicologo|psicologa|psichiatra|psicanalisi|psicanalista|vado dallo psicologo|seduta dallo psicologo|lo psicologo)\b/i;
 
 async function triggerAutoReaction(text: string, chatId: string, messageId: number, api: TelegramApi): Promise<void> {
   if (JUVE_PATTERN.test(text)) {
@@ -39,6 +41,10 @@ async function triggerAutoReaction(text: string, chatId: string, messageId: numb
     await api.setMessageReaction(chatId, messageId, '\uD83C\uDF55');
   } else if (CALCIO_PATTERN.test(text)) {
     await api.setMessageReaction(chatId, messageId, '\uD83E\uDD21');
+  } else if (EX_PATTERN.test(text)) {
+    await api.setMessageReaction(chatId, messageId, '\uD83D\uDC94');
+  } else if (TERAPIA_PATTERN.test(text)) {
+    await api.setMessageReaction(chatId, messageId, '\uD83E\uDDE0');
   }
 }
 

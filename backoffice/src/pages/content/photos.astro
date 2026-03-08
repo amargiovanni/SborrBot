@@ -176,9 +176,9 @@ function formatDate(dateStr: string) {
                 <div class="p-4 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between">
                   <span class="text-theme-sm text-gray-500 dark:text-gray-400">{total} file</span>
                   <div class="flex items-center gap-2">
-                    {page > 1 && <a href={`/content/photos?category=${categoryId}&page=${page - 1}`} class="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">&larr; Prec</a>}
+                    {page > 1 && <a href={`/content/photos?category=${categoryId}&page=${page - 1}`} class="btn-secondary text-sm !px-3 !py-1.5">&larr; Prec</a>}
                     <span class="px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 tabular-nums">{page}/{totalPages}</span>
-                    {page < totalPages && <a href={`/content/photos?category=${categoryId}&page=${page + 1}`} class="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Succ &rarr;</a>}
+                    {page < totalPages && <a href={`/content/photos?category=${categoryId}&page=${page + 1}`} class="btn-secondary text-sm !px-3 !py-1.5">Succ &rarr;</a>}
                   </div>
                 </div>
               )}
@@ -207,7 +207,7 @@ function formatDate(dateStr: string) {
     const gridView = document.getElementById('grid-view');
     const listView = document.getElementById('list-view');
     if (gridBtn && listBtn && gridView && listView) {
-      const activeClass = 'bg-white dark:bg-gray-700 text-gray-800 dark:text-white/90 shadow-sm';
+      const activeClass = 'bg-white dark:bg-gray-700 text-gray-800 dark:text-white/90 shadow-theme-xs';
       const inactiveClass = 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200';
       gridBtn.addEventListener('click', () => {
         gridView.classList.remove('hidden'); listView.classList.add('hidden');

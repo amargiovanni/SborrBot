@@ -51,16 +51,16 @@ function getFileIcon(mime: string) {
 <Layout title="Audio">
   <div class="space-y-6">
     <div>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Gestione Audio</h1>
-      <p class="text-gray-500 dark:text-gray-400 mt-1">Audio clip per ogni categoria</p>
+      <h1 class="text-2xl font-semibold text-gray-800 dark:text-white/90">Gestione Audio</h1>
+      <p class="text-theme-sm text-gray-500 dark:text-gray-400 mt-1">Audio clip per ogni categoria</p>
     </div>
 
     <div class="flex gap-6 min-h-[600px]">
       <!-- Sidebar categorie -->
       <div class="w-56 flex-shrink-0">
-        <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm sticky top-6">
-          <div class="p-3 border-b border-gray-100 dark:border-gray-800">
-            <input type="text" id="catSearch" placeholder="Cerca categoria..." class="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500/40 outline-none" />
+        <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] sticky top-6">
+          <div class="p-3 border-b border-gray-200 dark:border-gray-800">
+            <input type="text" id="catSearch" placeholder="Cerca categoria..." class="input-field !py-2 text-sm" />
           </div>
           <nav class="p-2 max-h-[520px] overflow-y-auto" id="catList">
             {categories.map((cat: any) => (
@@ -69,12 +69,12 @@ function getFileIcon(mime: string) {
                 data-cat-name={cat.name.toLowerCase()}
                 class={`flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-colors ${
                   cat.id === categoryId
-                    ? 'bg-primary-50 dark:bg-primary-950 text-primary-700 dark:text-primary-400 font-medium'
+                    ? 'bg-brand-50 dark:bg-brand-950 text-brand-700 dark:text-brand-400 font-medium'
                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                 }`}
               >
                 <span class="truncate">{cat.name}</span>
-                <span class={`text-xs tabular-nums ml-2 flex-shrink-0 ${cat.id === categoryId ? 'text-primary-500 dark:text-primary-400' : 'text-gray-400 dark:text-gray-500'}`}>{cat.item_count}</span>
+                <span class={`text-xs tabular-nums ml-2 flex-shrink-0 ${cat.id === categoryId ? 'text-brand-500 dark:text-brand-400' : 'text-gray-400 dark:text-gray-500'}`}>{cat.item_count}</span>
               </a>
             ))}
           </nav>
@@ -86,19 +86,19 @@ function getFileIcon(mime: string) {
         {selectedCategory ? (
           <div class="space-y-4">
             <div>
-              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{selectedCategory.name}</h2>
-              <p class="text-sm text-gray-500 dark:text-gray-400">{total} file</p>
+              <h2 class="text-lg font-semibold text-gray-800 dark:text-white/90">{selectedCategory.name}</h2>
+              <p class="text-theme-sm text-gray-500 dark:text-gray-400">{total} file</p>
             </div>
 
             <!-- Upload form -->
-            <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4">
+            <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
               <form id="uploadForm" enctype="multipart/form-data" class="flex gap-3 items-end flex-wrap">
                 <div class="flex-1 min-w-[200px]">
-                  <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1.5 font-medium">File audio (mp3, ogg, wav)</label>
-                  <input type="file" name="file" accept="audio/*" class="w-full text-sm text-gray-600 dark:text-gray-300 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-medium file:bg-primary-600 file:text-white hover:file:bg-primary-700 file:cursor-pointer" />
+                  <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">File audio (mp3, ogg, wav)</label>
+                  <input type="file" name="file" accept="audio/*" class="w-full text-sm text-gray-600 dark:text-gray-300 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-medium file:bg-brand-600 file:text-white hover:file:bg-brand-700 file:cursor-pointer" />
                 </div>
                 <div>
-                  <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1.5 font-medium">Titolo (opzionale)</label>
+                  <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Titolo (opzionale)</label>
                   <input type="text" name="caption" placeholder="Titolo clip" class="input-field" />
                 </div>
                 <button type="submit" class="btn-primary whitespace-nowrap">Carica</button>
@@ -107,27 +107,27 @@ function getFileIcon(mime: string) {
             </div>
 
             <!-- Lista file -->
-            <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
+            <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] overflow-hidden">
               {items.length > 0 ? (
-                <div class="divide-y divide-gray-100 dark:divide-gray-800">
+                <div class="divide-y divide-gray-200 dark:divide-gray-800">
                   {items.map((item: any) => (
                     <div class="p-4 hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors group">
                       <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-xl bg-violet-50 dark:bg-violet-950 flex items-center justify-center text-lg flex-shrink-0">{getFileIcon(item.mime_type)}</div>
                         <div class="flex-1 min-w-0">
-                          <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{item.caption || item.file_name}</p>
+                          <p class="text-sm font-medium text-gray-800 dark:text-white/90 truncate">{item.caption || item.file_name}</p>
                           <div class="flex items-center gap-2 mt-1 flex-wrap">
-                            <span class="text-xs text-gray-400 dark:text-gray-500">{item.file_name}</span>
+                            <span class="text-theme-sm text-gray-500 dark:text-gray-400">{item.file_name}</span>
                             <span class="text-gray-300 dark:text-gray-600">&middot;</span>
-                            <span class="text-xs text-gray-400 dark:text-gray-500">{formatSize(item.file_size)}</span>
+                            <span class="text-theme-sm text-gray-500 dark:text-gray-400">{formatSize(item.file_size)}</span>
                             <span class="text-gray-300 dark:text-gray-600">&middot;</span>
-                            <span class="text-xs text-gray-400 dark:text-gray-500">{formatDate(item.created_at)}</span>
+                            <span class="text-theme-sm text-gray-500 dark:text-gray-400">{formatDate(item.created_at)}</span>
                           </div>
                         </div>
                         <span class={`text-xs px-2 py-1 rounded-lg font-medium flex-shrink-0 ${item.telegram_file_id ? 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400' : 'bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400'}`}>
                           {item.telegram_file_id ? 'Cached' : 'Non cached'}
                         </span>
-                        <button data-delete={item.id} data-r2key={item.r2_key} class="text-xs px-2.5 py-1 rounded-lg text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-950/50 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0">Elimina</button>
+                        <button data-delete={item.id} data-r2key={item.r2_key} class="btn-danger text-xs !px-2.5 !py-1 opacity-0 group-hover:opacity-100 flex-shrink-0">Elimina</button>
                       </div>
                     </div>
                   ))}
@@ -136,17 +136,17 @@ function getFileIcon(mime: string) {
                 <div class="p-12 text-center">
                   <div class="text-4xl mb-3">🔊</div>
                   <p class="text-gray-500 dark:text-gray-400 font-medium">Nessun audio in questa categoria</p>
-                  <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">Caricane uno usando il form qui sopra</p>
+                  <p class="text-theme-sm text-gray-500 dark:text-gray-400 mt-1">Caricane uno usando il form qui sopra</p>
                 </div>
               )}
 
               {totalPages > 1 && (
-                <div class="p-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                  <span class="text-gray-500 dark:text-gray-400 text-sm">{total} file</span>
+                <div class="p-4 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between">
+                  <span class="text-theme-sm text-gray-500 dark:text-gray-400">{total} file</span>
                   <div class="flex items-center gap-2">
-                    {page > 1 && <a href={`/content/audio?category=${categoryId}&page=${page - 1}`} class="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">&larr; Prec</a>}
+                    {page > 1 && <a href={`/content/audio?category=${categoryId}&page=${page - 1}`} class="btn-secondary text-sm !px-3 !py-1.5">&larr; Prec</a>}
                     <span class="px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 tabular-nums">{page}/{totalPages}</span>
-                    {page < totalPages && <a href={`/content/audio?category=${categoryId}&page=${page + 1}`} class="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Succ &rarr;</a>}
+                    {page < totalPages && <a href={`/content/audio?category=${categoryId}&page=${page + 1}`} class="btn-secondary text-sm !px-3 !py-1.5">Succ &rarr;</a>}
                   </div>
                 </div>
               )}

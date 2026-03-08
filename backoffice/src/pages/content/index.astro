@@ -33,12 +33,12 @@ const typeLabels: Record<string, { label: string; icon: string; href: string }> 
     </div>
 
     {Object.entries(grouped).map(([type, cats]) => (
-      <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm">
+      <div class="card">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
             {typeLabels[type]?.icon} {typeLabels[type]?.label}
           </h2>
-          <a href={typeLabels[type]?.href} class="text-primary-400 hover:text-primary-300 text-sm">
+          <a href={typeLabels[type]?.href} class="text-brand-400 hover:text-brand-300 text-sm">
             Gestisci tutto →
           </a>
         </div>
@@ -46,13 +46,13 @@ const typeLabels: Record<string, { label: string; icon: string; href: string }> 
           {(cats as any[]).map((cat: any) => (
             <a
               href={`${typeLabels[type]?.href}?category=${cat.id}`}
-              class="flex items-center justify-between p-3 bg-gray-100 dark:bg-gray-800 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
               <div>
                 <div class="text-gray-900 dark:text-white font-medium text-sm">{cat.name}</div>
                 <div class="text-gray-500 dark:text-gray-400 text-xs">{cat.slug}</div>
               </div>
-              <span class={`text-xs px-2 py-1 rounded ${cat.is_active ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300' : 'bg-red-900 text-red-300'}`}>
+              <span class={`text-xs px-2 py-0.5 rounded-full font-medium ${cat.is_active ? 'badge-success' : 'badge-error'}`}>
                 {cat.is_active ? 'Attiva' : 'Disattivata'}
               </span>
             </a>

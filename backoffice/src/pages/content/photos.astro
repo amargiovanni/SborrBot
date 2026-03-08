@@ -45,16 +45,16 @@ function formatDate(dateStr: string) {
 <Layout title="Foto">
   <div class="space-y-6">
     <div>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Gestione Foto</h1>
-      <p class="text-gray-500 dark:text-gray-400 mt-1">Foto per ogni categoria</p>
+      <h1 class="text-2xl font-semibold text-gray-800 dark:text-white/90">Gestione Foto</h1>
+      <p class="text-theme-sm text-gray-500 dark:text-gray-400 mt-1">Foto per ogni categoria</p>
     </div>
 
     <div class="flex gap-6 min-h-[600px]">
       <!-- Sidebar categorie -->
       <div class="w-56 flex-shrink-0">
-        <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm sticky top-6">
-          <div class="p-3 border-b border-gray-100 dark:border-gray-800">
-            <input type="text" id="catSearch" placeholder="Cerca categoria..." class="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500/40 outline-none" />
+        <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] sticky top-6">
+          <div class="p-3 border-b border-gray-200 dark:border-gray-800">
+            <input type="text" id="catSearch" placeholder="Cerca categoria..." class="input-field !py-2 text-sm" />
           </div>
           <nav class="p-2 max-h-[520px] overflow-y-auto" id="catList">
             {categories.map((cat: any) => (
@@ -63,12 +63,12 @@ function formatDate(dateStr: string) {
                 data-cat-name={cat.name.toLowerCase()}
                 class={`flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-colors ${
                   cat.id === categoryId
-                    ? 'bg-primary-50 dark:bg-primary-950 text-primary-700 dark:text-primary-400 font-medium'
+                    ? 'bg-brand-50 dark:bg-brand-500/[0.12] text-brand-700 dark:text-brand-400 font-medium'
                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                 }`}
               >
                 <span class="truncate">{cat.name}</span>
-                <span class={`text-xs tabular-nums ml-2 flex-shrink-0 ${cat.id === categoryId ? 'text-primary-500 dark:text-primary-400' : 'text-gray-400 dark:text-gray-500'}`}>{cat.item_count}</span>
+                <span class={`text-xs tabular-nums ml-2 flex-shrink-0 ${cat.id === categoryId ? 'text-brand-500 dark:text-brand-400' : 'text-gray-400 dark:text-gray-500'}`}>{cat.item_count}</span>
               </a>
             ))}
           </nav>
@@ -80,19 +80,19 @@ function formatDate(dateStr: string) {
         {selectedCategory ? (
           <div class="space-y-4">
             <div>
-              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{selectedCategory.name}</h2>
-              <p class="text-sm text-gray-500 dark:text-gray-400">{total} file</p>
+              <h2 class="text-lg font-semibold text-gray-800 dark:text-white/90">{selectedCategory.name}</h2>
+              <p class="text-theme-sm text-gray-500 dark:text-gray-400">{total} file</p>
             </div>
 
             <!-- Upload form -->
-            <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4">
+            <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
               <form id="uploadForm" enctype="multipart/form-data" class="flex gap-3 items-end flex-wrap">
                 <div class="flex-1 min-w-[200px]">
-                  <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1.5 font-medium">File immagine (jpg, png, gif)</label>
-                  <input type="file" name="file" accept="image/*" class="w-full text-sm text-gray-600 dark:text-gray-300 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-medium file:bg-primary-600 file:text-white hover:file:bg-primary-700 file:cursor-pointer" />
+                  <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">File immagine (jpg, png, gif)</label>
+                  <input type="file" name="file" accept="image/*" class="w-full text-sm text-gray-600 dark:text-gray-300 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-medium file:bg-brand-500 file:text-white hover:file:bg-brand-600 file:cursor-pointer" />
                 </div>
                 <div>
-                  <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1.5 font-medium">Didascalia (opzionale)</label>
+                  <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Didascalia (opzionale)</label>
                   <input type="text" name="caption" placeholder="Didascalia" class="input-field" />
                 </div>
                 <button type="submit" class="btn-primary whitespace-nowrap">Carica</button>
@@ -101,13 +101,13 @@ function formatDate(dateStr: string) {
             </div>
 
             <!-- Gallery -->
-            <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
+            <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] overflow-hidden">
               {items.length > 0 ? (
                 <>
                   <!-- View toggle -->
-                  <div class="px-4 py-2.5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-end">
+                  <div class="px-4 py-2.5 border-b border-gray-200 dark:border-gray-800 flex items-center justify-end">
                     <div class="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5">
-                      <button id="view-grid" class="px-2.5 py-1 text-xs rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm transition-all">Griglia</button>
+                      <button id="view-grid" class="px-2.5 py-1 text-xs rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white/90 shadow-sm transition-all">Griglia</button>
                       <button id="view-list" class="px-2.5 py-1 text-xs rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-all">Lista</button>
                     </div>
                   </div>
@@ -115,7 +115,7 @@ function formatDate(dateStr: string) {
                   <!-- Grid view (default) -->
                   <div id="grid-view" class="p-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                     {items.map((item: any) => (
-                      <div class="group relative rounded-xl overflow-hidden border border-gray-100 dark:border-gray-800 bg-gray-100 dark:bg-gray-800/50 aspect-square">
+                      <div class="group relative rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-800/50 aspect-square">
                         <img
                           src={`/api/content/serve-media?id=${item.id}`}
                           alt={item.caption || item.file_name}
@@ -140,13 +140,13 @@ function formatDate(dateStr: string) {
                   </div>
 
                   <!-- List view -->
-                  <div id="list-view" class="hidden divide-y divide-gray-100 dark:divide-gray-800">
+                  <div id="list-view" class="hidden divide-y divide-gray-200 dark:divide-gray-800">
                     {items.map((item: any) => (
                       <div class="p-4 hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors group">
                         <div class="flex items-center gap-3">
                           <img src={`/api/content/serve-media?id=${item.id}`} alt="" loading="lazy" class="w-12 h-12 rounded-xl object-cover flex-shrink-0 bg-gray-100 dark:bg-gray-800" />
                           <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{item.caption || item.file_name}</p>
+                            <p class="text-sm font-medium text-gray-800 dark:text-white/90 truncate">{item.caption || item.file_name}</p>
                             <div class="flex items-center gap-2 mt-1 flex-wrap">
                               <span class="text-xs text-gray-400 dark:text-gray-500">{item.file_name}</span>
                               <span class="text-gray-300 dark:text-gray-600">&middot;</span>
@@ -173,7 +173,7 @@ function formatDate(dateStr: string) {
               )}
 
               {totalPages > 1 && (
-                <div class="p-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                <div class="p-4 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between">
                   <span class="text-gray-500 dark:text-gray-400 text-sm">{total} file</span>
                   <div class="flex items-center gap-2">
                     {page > 1 && <a href={`/content/photos?category=${categoryId}&page=${page - 1}`} class="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">&larr; Prec</a>}
@@ -207,7 +207,7 @@ function formatDate(dateStr: string) {
     const gridView = document.getElementById('grid-view');
     const listView = document.getElementById('list-view');
     if (gridBtn && listBtn && gridView && listView) {
-      const activeClass = 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm';
+      const activeClass = 'bg-white dark:bg-gray-700 text-gray-800 dark:text-white/90 shadow-sm';
       const inactiveClass = 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200';
       gridBtn.addEventListener('click', () => {
         gridView.classList.remove('hidden'); listView.classList.add('hidden');

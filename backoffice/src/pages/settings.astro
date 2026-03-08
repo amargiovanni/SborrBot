@@ -33,20 +33,20 @@ function getConfigBySection(sectionKey: string) {
 <Layout title="Impostazioni">
   <div class="space-y-6">
     <div>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Impostazioni</h1>
-      <p class="text-gray-500 dark:text-gray-400 mt-1">Configurazione globale del bot</p>
+      <h1 class="text-2xl font-semibold text-gray-800 dark:text-white/90">Impostazioni</h1>
+      <p class="text-theme-sm text-gray-500 dark:text-gray-400 mt-1">Configurazione globale del bot</p>
     </div>
 
     {sections.map(section => {
       const sectionItems = getConfigBySection(section.key);
       if (sectionItems.length === 0) return null;
       return (
-        <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
-          <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800">
-            <h2 class="text-base font-semibold text-gray-900 dark:text-white">{section.title}</h2>
-            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{section.description}</p>
+        <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] overflow-hidden">
+          <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-800">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-white/90">{section.title}</h2>
+            <p class="text-theme-sm text-gray-500 dark:text-gray-400 mt-0.5">{section.description}</p>
           </div>
-          <div class="divide-y divide-gray-100 dark:divide-gray-800">
+          <div class="divide-y divide-gray-200 dark:divide-gray-800">
             {sectionItems.map((item: any) => {
               const meta = configMeta[item.key];
               return (
@@ -54,8 +54,8 @@ function getConfigBySection(sectionKey: string) {
                   <div class="flex items-center gap-4">
                     <div class="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-lg flex-shrink-0">{meta?.icon || '⚙️'}</div>
                     <div>
-                      <div class="text-sm font-medium text-gray-900 dark:text-white">{meta?.label || item.key}</div>
-                      <div class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{meta?.description || `Chiave: ${item.key}`}</div>
+                      <div class="text-sm font-medium text-gray-800 dark:text-white/90">{meta?.label || item.key}</div>
+                      <div class="text-theme-sm text-gray-500 dark:text-gray-400 mt-0.5">{meta?.description || `Chiave: ${item.key}`}</div>
                     </div>
                   </div>
                   <div class="flex items-center gap-3 flex-shrink-0">
@@ -64,10 +64,10 @@ function getConfigBySection(sectionKey: string) {
                         data-toggle-config={item.key}
                         data-value={item.value}
                         class={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors cursor-pointer ${
-                          item.value === 'true' ? 'bg-primary-600' : 'bg-gray-300 dark:bg-gray-600'
+                          item.value === 'true' ? 'bg-brand-600' : 'bg-gray-300 dark:bg-gray-600'
                         }`}
                       >
-                        <span class={`inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${
+                        <span class={`inline-block h-5 w-5 rounded-full bg-white shadow-theme-xs transition-transform ${
                           item.value === 'true' ? 'translate-x-6' : 'translate-x-1'
                         }`} />
                       </button>
@@ -77,7 +77,7 @@ function getConfigBySection(sectionKey: string) {
                           type={(meta?.type || 'text') as any}
                           value={item.value}
                           data-input-config={item.key}
-                          class="px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white text-sm w-48 focus:ring-2 focus:ring-primary-500/40 outline-none transition-all"
+                          class="input-field w-48"
                         />
                         <button
                           data-save-config={item.key}
@@ -98,19 +98,19 @@ function getConfigBySection(sectionKey: string) {
 
     <!-- Impostazioni non riconosciute -->
     {config.filter((item: any) => !configMeta[item.key]).length > 0 && (
-      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800">
-          <h2 class="text-base font-semibold text-gray-900 dark:text-white">Altro</h2>
-          <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Impostazioni aggiuntive</p>
+      <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-800">
+          <h2 class="text-lg font-semibold text-gray-800 dark:text-white/90">Altro</h2>
+          <p class="text-theme-sm text-gray-500 dark:text-gray-400 mt-0.5">Impostazioni aggiuntive</p>
         </div>
-        <div class="divide-y divide-gray-100 dark:divide-gray-800">
+        <div class="divide-y divide-gray-200 dark:divide-gray-800">
           {config.filter((item: any) => !configMeta[item.key]).map((item: any) => (
             <div class="px-6 py-4 flex items-center justify-between gap-4" data-config-key={item.key}>
               <div class="flex items-center gap-4">
                 <div class="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-lg flex-shrink-0">⚙️</div>
                 <div>
-                  <div class="text-sm font-medium text-gray-900 dark:text-white font-mono">{item.key}</div>
-                  <div class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Chiave custom</div>
+                  <div class="text-sm font-medium text-gray-800 dark:text-white/90 font-mono">{item.key}</div>
+                  <div class="text-theme-sm text-gray-500 dark:text-gray-400 mt-0.5">Chiave custom</div>
                 </div>
               </div>
               <div class="flex gap-2 items-center flex-shrink-0">
@@ -118,7 +118,7 @@ function getConfigBySection(sectionKey: string) {
                   type="text"
                   value={item.value}
                   data-input-config={item.key}
-                  class="px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white text-sm w-48 focus:ring-2 focus:ring-primary-500/40 outline-none"
+                  class="input-field w-48"
                 />
                 <button data-save-config={item.key} class="btn-primary text-sm !py-2 !px-4">Salva</button>
               </div>
@@ -157,12 +157,12 @@ function getConfigBySection(sectionKey: string) {
         });
         if (res.ok) {
           btn.textContent = 'Salvato!';
-          btn.classList.remove('bg-primary-600', 'hover:bg-primary-700');
+          btn.classList.remove('bg-brand-600', 'hover:bg-brand-700');
           btn.classList.add('bg-green-600', 'hover:bg-green-700');
           setTimeout(() => {
             btn.textContent = 'Salva';
             btn.classList.remove('bg-green-600', 'hover:bg-green-700');
-            btn.classList.add('bg-primary-600', 'hover:bg-primary-700');
+            btn.classList.add('bg-brand-600', 'hover:bg-brand-700');
           }, 2000);
         }
       });

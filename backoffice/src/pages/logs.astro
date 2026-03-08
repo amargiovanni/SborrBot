@@ -23,15 +23,15 @@ if (env?.DB) {
 const totalPages = Math.ceil(total / 50);
 
 const cmdTypeBadge: Record<string, string> = {
-  keyword: 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
-  slash: 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400',
-  control: 'bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400',
+  keyword: 'bg-blue-50 dark:bg-blue-500/15 text-blue-600 dark:text-blue-400',
+  slash: 'bg-success-50 dark:bg-success-500/15 text-success-600 dark:text-success-500',
+  control: 'bg-warning-50 dark:bg-warning-500/15 text-warning-600 dark:text-warning-500',
 };
 const respTypeBadge: Record<string, string> = {
-  text: 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
-  audio: 'bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400',
-  photo: 'bg-pink-50 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400',
-  sticker: 'bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400',
+  text: 'bg-blue-50 dark:bg-blue-500/15 text-blue-600 dark:text-blue-400',
+  audio: 'bg-violet-50 dark:bg-violet-500/15 text-violet-600 dark:text-violet-400',
+  photo: 'bg-pink-50 dark:bg-pink-500/15 text-pink-600 dark:text-pink-400',
+  sticker: 'bg-orange-50 dark:bg-orange-500/15 text-orange-600 dark:text-orange-400',
 };
 
 function formatDate(dateStr: string) {
@@ -46,21 +46,21 @@ function formatDate(dateStr: string) {
   <div class="space-y-6">
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Log Comandi</h1>
-        <p class="text-gray-500 dark:text-gray-400 mt-1">Storico di tutti i comandi eseguiti</p>
+        <h1 class="text-2xl font-semibold text-gray-800 dark:text-white/90">Log Comandi</h1>
+        <p class="text-theme-sm text-gray-500 dark:text-gray-400 mt-1">Storico di tutti i comandi eseguiti</p>
       </div>
-      <div class="text-sm text-gray-500 dark:text-gray-400 tabular-nums">{total.toLocaleString('it-IT')} log totali</div>
+      <div class="text-theme-sm text-gray-500 dark:text-gray-400 tabular-nums">{total.toLocaleString('it-IT')} log totali</div>
     </div>
 
     <!-- Filters -->
-    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-4">
+    <div class="rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
       <form class="flex gap-3 items-end flex-wrap" method="GET">
         <div>
-          <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1.5 font-medium">Comando</label>
+          <label class="block text-theme-xs text-gray-500 dark:text-gray-400 mb-1.5 font-medium">Comando</label>
           <input type="text" name="command" value={filterCommand} placeholder="es. insulta" class="input-field" />
         </div>
         <div>
-          <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1.5 font-medium">Chat ID</label>
+          <label class="block text-theme-xs text-gray-500 dark:text-gray-400 mb-1.5 font-medium">Chat ID</label>
           <input type="text" name="chatId" value={filterChatId} placeholder="es. -100123..." class="input-field font-mono" />
         </div>
         <button type="submit" class="btn-primary">Filtra</button>
@@ -71,49 +71,49 @@ function formatDate(dateStr: string) {
     </div>
 
     <!-- Logs table -->
-    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
+    <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
       <div class="overflow-x-auto">
         <table class="w-full">
           <thead>
-            <tr class="border-b border-gray-100 dark:border-gray-800 text-left">
-              <th class="px-5 py-3.5 text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Data</th>
-              <th class="px-5 py-3.5 text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Utente</th>
-              <th class="px-5 py-3.5 text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Comando</th>
-              <th class="px-5 py-3.5 text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Target</th>
-              <th class="px-5 py-3.5 text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Tipo</th>
-              <th class="px-5 py-3.5 text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Risposta</th>
+            <tr class="border-y border-gray-100 dark:border-gray-800">
+              <th class="py-3 text-left font-medium text-gray-500 text-theme-xs dark:text-gray-400">Data</th>
+              <th class="py-3 text-left font-medium text-gray-500 text-theme-xs dark:text-gray-400">Utente</th>
+              <th class="py-3 text-left font-medium text-gray-500 text-theme-xs dark:text-gray-400">Comando</th>
+              <th class="py-3 text-left font-medium text-gray-500 text-theme-xs dark:text-gray-400">Target</th>
+              <th class="py-3 text-left font-medium text-gray-500 text-theme-xs dark:text-gray-400">Tipo</th>
+              <th class="py-3 text-left font-medium text-gray-500 text-theme-xs dark:text-gray-400">Risposta</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-50 dark:divide-gray-800">
-            {logs.length > 0 ? logs.map((log: any, i: number) => (
-              <tr class={`hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors ${i % 2 === 1 ? 'bg-gray-50/50 dark:bg-gray-800/10' : ''}`}>
-                <td class="px-5 py-3 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap tabular-nums">{formatDate(log.created_at)}</td>
-                <td class="px-5 py-3 text-sm">
-                  <span class="text-primary-600 dark:text-primary-400 font-medium">{log.username ? `@${log.username}` : '-'}</span>
+          <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+            {logs.length > 0 ? logs.map((log: any) => (
+              <tr class="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors">
+                <td class="py-3 text-theme-xs text-gray-500 dark:text-gray-400 whitespace-nowrap tabular-nums">{formatDate(log.created_at)}</td>
+                <td class="py-3 text-theme-sm">
+                  <span class="text-brand-500 dark:text-brand-400 font-medium">{log.username ? `@${log.username}` : '-'}</span>
                 </td>
-                <td class="px-5 py-3 text-sm font-medium text-gray-900 dark:text-white">{log.command}</td>
-                <td class="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">{log.target || '-'}</td>
-                <td class="px-5 py-3">
-                  <span class={`text-[11px] px-2 py-0.5 rounded-md font-medium ${cmdTypeBadge[log.command_type] || 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'}`}>
+                <td class="py-3 text-theme-sm font-medium text-gray-800 dark:text-white/90">{log.command}</td>
+                <td class="py-3 text-theme-sm text-gray-500 dark:text-gray-400">{log.target || '-'}</td>
+                <td class="py-3">
+                  <span class={`rounded-full px-2 py-0.5 text-theme-xs font-medium ${cmdTypeBadge[log.command_type] || 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'}`}>
                     {log.command_type}
                   </span>
                 </td>
-                <td class="px-5 py-3">
+                <td class="py-3">
                   {log.response_type ? (
-                    <span class={`text-[11px] px-2 py-0.5 rounded-md font-medium ${respTypeBadge[log.response_type] || 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'}`}>
+                    <span class={`rounded-full px-2 py-0.5 text-theme-xs font-medium ${respTypeBadge[log.response_type] || 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'}`}>
                       {log.response_type}
                     </span>
                   ) : (
-                    <span class="text-gray-400 dark:text-gray-500 text-sm">-</span>
+                    <span class="text-gray-400 dark:text-gray-500 text-theme-sm">-</span>
                   )}
                 </td>
               </tr>
             )) : (
               <tr>
-                <td colspan="6" class="px-5 py-12 text-center">
+                <td colspan="6" class="py-12 text-center">
                   <div class="text-4xl mb-3">📋</div>
                   <p class="text-gray-500 dark:text-gray-400 font-medium">Nessun log trovato</p>
-                  {(filterCommand || filterChatId) && <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">Prova a modificare i filtri</p>}
+                  {(filterCommand || filterChatId) && <p class="text-gray-400 dark:text-gray-500 text-theme-sm mt-1">Prova a modificare i filtri</p>}
                 </td>
               </tr>
             )}
@@ -122,12 +122,12 @@ function formatDate(dateStr: string) {
       </div>
 
       {totalPages > 1 && (
-        <div class="p-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
-          <span class="text-gray-500 dark:text-gray-400 text-sm">{total.toLocaleString('it-IT')} risultati</span>
+        <div class="pt-3 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between">
+          <span class="text-gray-500 dark:text-gray-400 text-theme-sm">{total.toLocaleString('it-IT')} risultati</span>
           <div class="flex items-center gap-2">
-            {page > 1 && <a href={`/logs?page=${page - 1}&command=${filterCommand}&chatId=${filterChatId}`} class="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">&larr; Prec</a>}
-            <span class="px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 tabular-nums">{page}/{totalPages}</span>
-            {page < totalPages && <a href={`/logs?page=${page + 1}&command=${filterCommand}&chatId=${filterChatId}`} class="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Succ &rarr;</a>}
+            {page > 1 && <a href={`/logs?page=${page - 1}&command=${filterCommand}&chatId=${filterChatId}`} class="px-3 py-1.5 text-theme-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">&larr; Prec</a>}
+            <span class="px-3 py-1.5 text-theme-sm text-gray-500 dark:text-gray-400 tabular-nums">{page}/{totalPages}</span>
+            {page < totalPages && <a href={`/logs?page=${page + 1}&command=${filterCommand}&chatId=${filterChatId}`} class="px-3 py-1.5 text-theme-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Succ &rarr;</a>}
           </div>
         </div>
       )}

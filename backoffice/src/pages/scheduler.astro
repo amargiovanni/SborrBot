@@ -30,12 +30,12 @@ function formatSchedule(msg: any) {
   <div class="space-y-6">
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Scheduler</h1>
-        <p class="text-gray-500 dark:text-gray-400 mt-1">Programma messaggi broadcast ai gruppi</p>
+        <h1 class="text-2xl font-semibold text-gray-800 dark:text-white/90">Scheduler</h1>
+        <p class="text-theme-sm text-gray-500 dark:text-gray-400 mt-1">Programma messaggi broadcast ai gruppi</p>
       </div>
       <button
         id="btn-new"
-        class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-xl transition-colors"
+        class="btn-primary"
       >
         + Nuovo Messaggio
       </button>
@@ -43,109 +43,133 @@ function formatSchedule(msg: any) {
 
     <!-- Stats -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-5 border border-gray-100 dark:border-gray-800 border-l-4 border-l-blue-500">
-        <div class="text-2xl font-bold text-gray-900 dark:text-white">{messages.length}</div>
-        <div class="text-gray-500 dark:text-gray-400 text-xs mt-1">Messaggi totali</div>
+      <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6 border-l-4 border-l-brand-500">
+        <div class="text-2xl font-bold text-gray-800 dark:text-white/90">{messages.length}</div>
+        <div class="text-gray-500 dark:text-gray-400 text-theme-xs mt-1">Messaggi totali</div>
       </div>
-      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-5 border border-gray-100 dark:border-gray-800 border-l-4 border-l-emerald-500">
-        <div class="text-2xl font-bold text-gray-900 dark:text-white">{messages.filter((m: any) => m.is_active).length}</div>
-        <div class="text-gray-500 dark:text-gray-400 text-xs mt-1">Attivi</div>
+      <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6 border-l-4 border-l-success-500">
+        <div class="text-2xl font-bold text-gray-800 dark:text-white/90">{messages.filter((m: any) => m.is_active).length}</div>
+        <div class="text-gray-500 dark:text-gray-400 text-theme-xs mt-1">Attivi</div>
       </div>
-      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-5 border border-gray-100 dark:border-gray-800 border-l-4 border-l-violet-500">
-        <div class="text-2xl font-bold text-gray-900 dark:text-white">{messages.filter((m: any) => m.schedule_type !== 'once').length}</div>
-        <div class="text-gray-500 dark:text-gray-400 text-xs mt-1">Ricorrenti</div>
+      <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6 border-l-4 border-l-violet-500">
+        <div class="text-2xl font-bold text-gray-800 dark:text-white/90">{messages.filter((m: any) => m.schedule_type !== 'once').length}</div>
+        <div class="text-gray-500 dark:text-gray-400 text-theme-xs mt-1">Ricorrenti</div>
       </div>
     </div>
 
     <!-- Table -->
-    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
-      <table class="w-full">
-        <thead>
-          <tr class="border-b border-gray-100 dark:border-gray-800 text-left">
-            <th class="px-5 py-3.5 text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Messaggio</th>
-            <th class="px-5 py-3.5 text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Destinatario</th>
-            <th class="px-5 py-3.5 text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Pianificazione</th>
-            <th class="px-5 py-3.5 text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Stato</th>
-            <th class="px-5 py-3.5 text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider text-right">Azioni</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-50 dark:divide-gray-800">
-          {messages.length > 0 ? messages.map((msg: any) => (
-            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors" data-msg={JSON.stringify(msg)}>
-              <td class="px-5 py-4">
-                <div class="text-sm text-gray-900 dark:text-white max-w-xs truncate">{msg.message_text}</div>
-              </td>
-              <td class="px-5 py-4">
-                <span class="text-sm text-gray-600 dark:text-gray-400">
-                  {msg.group_title ?? (msg.target_group_id ? msg.target_group_id : 'Tutti i gruppi')}
-                </span>
-              </td>
-              <td class="px-5 py-4">
-                <div class="flex items-center gap-2">
-                  <span class={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
-                    msg.schedule_type === 'once' ? 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400' :
-                    msg.schedule_type === 'daily' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' :
-                    'bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400'
-                  }`}>
-                    {scheduleLabels[msg.schedule_type] ?? msg.schedule_type}
-                  </span>
-                  <span class="text-sm text-gray-500 dark:text-gray-400">{formatSchedule(msg)}</span>
-                </div>
-              </td>
-              <td class="px-5 py-4">
-                {msg.is_active ? (
-                  <span class="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg font-medium bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400">
-                    <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Attivo
-                  </span>
-                ) : (
-                  <span class="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg font-medium bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
-                    <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> Inattivo
-                  </span>
-                )}
-              </td>
-              <td class="px-5 py-4 text-right">
-                <div class="flex gap-2 justify-end">
-                  <button data-edit={msg.id} class="text-xs px-3 py-1.5 rounded-lg font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                    Modifica
-                  </button>
-                  <button data-toggle-active={msg.id} data-current-active={msg.is_active} class="text-xs px-3 py-1.5 rounded-lg font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                    {msg.is_active ? 'Pausa' : 'Attiva'}
-                  </button>
-                  <button data-delete={msg.id} class="text-xs px-3 py-1.5 rounded-lg font-medium bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-800/40 transition-colors">
-                    Elimina
-                  </button>
-                </div>
-              </td>
+    <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
+      <div class="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+          Messaggi Programmati
+        </h3>
+      </div>
+
+      <div class="w-full overflow-x-auto">
+        <table class="min-w-full">
+          <thead>
+            <tr class="border-gray-200 border-y dark:border-gray-800">
+              <th class="py-3 text-left">
+                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Messaggio</p>
+              </th>
+              <th class="py-3 text-left">
+                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Destinatario</p>
+              </th>
+              <th class="py-3 text-left">
+                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Pianificazione</p>
+              </th>
+              <th class="py-3 text-left">
+                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Stato</p>
+              </th>
+              <th class="py-3 text-right">
+                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Azioni</p>
+              </th>
             </tr>
-          )) : (
-            <tr>
-              <td colspan="5" class="px-5 py-12 text-center">
-                <div class="text-4xl mb-3">&#128197;</div>
-                <p class="text-gray-500 dark:text-gray-400 font-medium">Nessun messaggio programmato</p>
-                <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">Crea il primo messaggio schedulato</p>
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+            {messages.length > 0 ? messages.map((msg: any) => (
+              <tr class="hover:bg-gray-100 dark:hover:bg-white/5 transition-colors" data-msg={JSON.stringify(msg)}>
+                <td class="py-3">
+                  <div class="flex items-center">
+                    <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90 max-w-xs truncate">{msg.message_text}</p>
+                  </div>
+                </td>
+                <td class="py-3">
+                  <div class="flex items-center">
+                    <p class="text-gray-500 text-theme-sm dark:text-gray-400">
+                      {msg.group_title ?? (msg.target_group_id ? msg.target_group_id : 'Tutti i gruppi')}
+                    </p>
+                  </div>
+                </td>
+                <td class="py-3">
+                  <div class="flex items-center gap-2">
+                    <span class={`rounded-full px-2 py-0.5 text-theme-xs font-medium ${
+                      msg.schedule_type === 'once' ? 'bg-warning-50 px-2 py-0.5 text-warning-600 dark:bg-warning-500/15 dark:text-warning-500' :
+                      msg.schedule_type === 'daily' ? 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-500' :
+                      'bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-400'
+                    }`}>
+                      {scheduleLabels[msg.schedule_type] ?? msg.schedule_type}
+                    </span>
+                    <span class="text-theme-sm text-gray-500 dark:text-gray-400">{formatSchedule(msg)}</span>
+                  </div>
+                </td>
+                <td class="py-3">
+                  <div class="flex items-center">
+                    {msg.is_active ? (
+                      <p class="rounded-full bg-success-50 px-2 py-0.5 text-theme-xs font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500 inline-flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-success-500"></span> Attivo
+                      </p>
+                    ) : (
+                      <p class="rounded-full bg-gray-100 px-2 py-0.5 text-theme-xs font-medium text-gray-500 dark:bg-gray-800 dark:text-gray-400 inline-flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> Inattivo
+                      </p>
+                    )}
+                  </div>
+                </td>
+                <td class="py-3 text-right">
+                  <div class="flex gap-2 justify-end">
+                    <button data-edit={msg.id} class="btn-secondary text-theme-xs px-3 py-1.5">
+                      Modifica
+                    </button>
+                    <button data-toggle-active={msg.id} data-current-active={msg.is_active} class="btn-secondary text-theme-xs px-3 py-1.5">
+                      {msg.is_active ? 'Pausa' : 'Attiva'}
+                    </button>
+                    <button data-delete={msg.id} class="btn-danger text-theme-xs px-3 py-1.5">
+                      Elimina
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            )) : (
+              <tr>
+                <td colspan="5" class="px-5 py-12 text-center">
+                  <div class="text-4xl mb-3">&#128197;</div>
+                  <p class="text-gray-500 dark:text-gray-400 font-medium">Nessun messaggio programmato</p>
+                  <p class="text-gray-400 dark:text-gray-500 text-theme-sm mt-1">Crea il primo messaggio schedulato</p>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
   <!-- Modal -->
   <div id="modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 backdrop-blur-sm">
-    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800 w-full max-w-lg mx-4 p-6">
-      <h2 id="modal-title" class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Nuovo Messaggio Schedulato</h2>
+    <div class="rounded-2xl border border-gray-200 bg-white shadow-theme-xl dark:border-gray-800 dark:bg-gray-900 w-full max-w-lg mx-4 p-5 md:p-6">
+      <h2 id="modal-title" class="text-lg font-semibold text-gray-800 dark:text-white/90 mb-5">Nuovo Messaggio Schedulato</h2>
       <form id="scheduler-form" class="space-y-4">
         <input type="hidden" id="form-id" />
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Messaggio</label>
-          <textarea id="form-text" rows="3" required class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none resize-none" placeholder="Testo del messaggio..."></textarea>
+          <label class="block text-theme-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Messaggio</label>
+          <textarea id="form-text" rows="3" required class="w-full input-field resize-none" placeholder="Testo del messaggio..."></textarea>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Destinatario</label>
-          <select id="form-group" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+          <label class="block text-theme-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Destinatario</label>
+          <select id="form-group" class="w-full input-field">
             <option value="">Tutti i gruppi attivi</option>
             {groups.map((g: any) => (
               <option value={g.telegram_chat_id}>{g.title || g.telegram_chat_id}</option>
@@ -155,8 +179,8 @@ function formatSchedule(msg: any) {
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Tipo</label>
-            <select id="form-type" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+            <label class="block text-theme-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Tipo</label>
+            <select id="form-type" class="w-full input-field">
               <option value="once">Una volta</option>
               <option value="daily">Giornaliero</option>
               <option value="weekly">Settimanale</option>
@@ -164,8 +188,8 @@ function formatSchedule(msg: any) {
           </div>
 
           <div id="day-field" class="hidden">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Giorno</label>
-            <select id="form-day" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+            <label class="block text-theme-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Giorno</label>
+            <select id="form-day" class="w-full input-field">
               <option value="1">Lunedi</option>
               <option value="2">Martedi</option>
               <option value="3">Mercoledi</option>
@@ -178,16 +202,16 @@ function formatSchedule(msg: any) {
         </div>
 
         <div id="datetime-field">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5" id="schedule-label">Data e ora</label>
-          <input type="datetime-local" id="form-datetime" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none" />
-          <input type="time" id="form-time" class="hidden w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none" />
+          <label class="block text-theme-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5" id="schedule-label">Data e ora</label>
+          <input type="datetime-local" id="form-datetime" class="w-full input-field" />
+          <input type="time" id="form-time" class="hidden w-full input-field" />
         </div>
 
         <div class="flex gap-3 pt-2">
-          <button type="submit" class="flex-1 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-xl transition-colors">
+          <button type="submit" class="btn-primary flex-1">
             Salva
           </button>
-          <button type="button" id="btn-cancel" class="px-4 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-sm font-medium rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+          <button type="button" id="btn-cancel" class="btn-secondary">
             Annulla
           </button>
         </div>

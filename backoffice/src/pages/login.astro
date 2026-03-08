@@ -7,11 +7,93 @@ const turnstileSiteKey: string = env?.TURNSTILE_SITE_KEY ?? '';
 <Layout title="Login" showSidebar={false}>
 <Fragment slot="head">
   <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
 </Fragment>
-<div class="login-root">
 
-  <!-- ═══ LEFT: CHAOS PANEL ═══ -->
-  <div class="chaos-panel">
+<div class="relative flex flex-col justify-center w-full min-h-screen bg-white dark:bg-gray-900 lg:flex-row">
+
+  <!-- ═══ LEFT: LOGIN FORM ═══ -->
+  <div class="flex flex-col flex-1 w-full lg:w-1/2">
+    <div class="flex flex-col justify-center flex-1 w-full max-w-md px-6 mx-auto sm:px-0">
+      <div>
+        <!-- Header -->
+        <div class="mb-5 sm:mb-8">
+          <span class="mb-3 inline-block font-mono text-[0.58rem] font-medium uppercase tracking-[0.18em] text-brand-500 bg-brand-500/10 border border-brand-500/20 rounded px-2.5 py-1">
+            PANNELLO DI CONTROLLO
+          </span>
+          <h1 class="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md" style="font-family: 'Anton', sans-serif; letter-spacing: 0.02em; line-height: 1.05;">
+            Bentornato,<br/>stronzo.
+          </h1>
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            Accesso riservato ai degenerati autorizzati.
+          </p>
+        </div>
+
+        <!-- Form -->
+        <form id="loginForm">
+          <div class="space-y-5">
+            <!-- Username -->
+            <div>
+              <label for="username" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                Username
+              </label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                required
+                autocomplete="username"
+                placeholder="admin"
+                class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
+              />
+            </div>
+
+            <!-- Password -->
+            <div>
+              <label for="password" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                required
+                autocomplete="current-password"
+                placeholder="••••••••"
+                class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
+              />
+            </div>
+
+            <!-- Error -->
+            <div id="error" class="hidden rounded-lg border border-error-300 bg-error-50 px-4 py-3 text-sm font-medium text-error-600 dark:border-error-500/30 dark:bg-error-500/10 dark:text-error-400"></div>
+
+            <!-- Turnstile -->
+            <div class="cf-turnstile flex justify-center" data-sitekey={turnstileSiteKey} data-theme="auto" data-language="it"></div>
+
+            <!-- Submit -->
+            <div>
+              <button type="submit" id="submitBtn" class="flex w-full items-center justify-center rounded-lg bg-brand-500 px-4 py-3 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600 disabled:opacity-65 disabled:cursor-not-allowed">
+                <span id="btnText">Entra nel pannello</span>
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <div class="mt-5">
+          <p class="text-sm font-normal text-center text-gray-500 dark:text-gray-400 font-mono tracking-wide">
+            Niente cazzate. Sei stato avvertito.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ RIGHT: BRANDED CHAOS PANEL ═══ -->
+  <div class="relative hidden w-full h-full bg-brand-950 dark:bg-white/5 lg:grid lg:w-1/2 overflow-hidden items-center justify-center">
+
+    <!-- Animated backgrounds -->
     <div class="chaos-bg"></div>
     <div class="scanlines"></div>
     <div class="particles" aria-hidden="true">
@@ -21,13 +103,16 @@ const turnstileSiteKey: string = env?.TURNSTILE_SITE_KEY ?? '';
       <span></span><span></span><span></span><span></span>
     </div>
 
-    <div class="chaos-content">
+    <!-- Content -->
+    <div class="relative z-10 flex flex-col items-center max-w-[540px] w-full px-8 py-10 text-center">
+      <!-- Avatar -->
       <div class="avatar-wrap">
         <div class="avatar-ring"></div>
         <div class="avatar-ring ring2"></div>
         <img src="/sborrbot.jpeg" alt="SborrBot" class="avatar" />
       </div>
 
+      <!-- Title with glitch effect -->
       <div class="name-wrap">
         <h1 class="bot-name" data-text="SborrBot">SborrBot</h1>
         <div class="name-underline"></div>
@@ -37,6 +122,7 @@ const turnstileSiteKey: string = env?.TURNSTILE_SITE_KEY ?? '';
         <span class="typing-text">il bot più sborrante del web</span><span class="cursor-blink">█</span>
       </p>
 
+      <!-- Feature grid -->
       <div class="feature-grid">
         <div class="feat">
           <span class="feat-icon">💀</span>
@@ -82,6 +168,7 @@ const turnstileSiteKey: string = env?.TURNSTILE_SITE_KEY ?? '';
         </div>
       </div>
 
+      <!-- Telegram CTA -->
       <a href="https://t.me/SborrrrBot_bot" target="_blank" rel="noopener noreferrer" class="tg-btn">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.018 9.51c-.148.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.116 14.37 4.15 13.45c-.65-.203-.662-.65.136-.963l10.892-4.197c.54-.195 1.016.12.84.958h-.456z"/></svg>
         <span>Aggiungi SborrBot al tuo gruppo</span>
@@ -92,74 +179,18 @@ const turnstileSiteKey: string = env?.TURNSTILE_SITE_KEY ?? '';
     </div>
   </div>
 
-  <!-- ═══ RIGHT: LOGIN PANEL ═══ -->
-  <div class="login-panel">
-    <div class="login-content">
-      <div class="login-top">
-        <div class="admin-badge">PANNELLO DI CONTROLLO</div>
-        <h2 class="login-title">Bentornato,<br/>stronzo.</h2>
-        <p class="login-sub">Accesso riservato ai degenerati autorizzati.</p>
-      </div>
-
-      <form id="loginForm" class="login-form">
-        <div class="field-wrap">
-          <label for="username" class="field-label">Username</label>
-          <input type="text" id="username" name="username" required autocomplete="username" placeholder="admin" class="field-input" />
-        </div>
-        <div class="field-wrap">
-          <label for="password" class="field-label">Password</label>
-          <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="••••••••" class="field-input" />
-        </div>
-        <div id="error" class="error-box" style="display:none;"></div>
-        <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="auto" data-language="it"></div>
-        <button type="submit" id="submitBtn" class="submit-btn">
-          <span class="btn-text">Entra nel pannello</span>
-          <span class="btn-arrow">→</span>
-        </button>
-      </form>
-
-      <p class="login-footer">Niente cazzate. Sei stato avvertito.</p>
-    </div>
-  </div>
-
 </div>
 
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Anton&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  .login-root {
-    display: flex;
-    min-height: 100vh;
-    font-family: 'DM Sans', sans-serif;
-  }
-
-  /* ─────────────────────────────────── LEFT PANEL ─────────────────────────────────── */
-
-  .chaos-panel {
-    flex: 1;
-    position: relative;
-    background: #04060f;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: slideInLeft 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  @keyframes slideInLeft {
-    from { opacity: 0; transform: translateX(-50px); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
+  /* ─────────────────────────────────── RIGHT PANEL ANIMATIONS ─────────────────────────────────── */
 
   /* Grid background */
   .chaos-bg {
     position: absolute;
     inset: 0;
     background-image:
-      linear-gradient(rgba(37, 99, 235, 0.055) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(37, 99, 235, 0.055) 1px, transparent 1px);
+      linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
     background-size: 44px 44px;
     animation: gridDrift 25s linear infinite;
   }
@@ -225,19 +256,6 @@ const turnstileSiteKey: string = env?.TURNSTILE_SITE_KEY ?? '';
     8%   { opacity: 0.9; }
     90%  { opacity: 0.5; }
     100% { transform: translateY(-105vh) scale(0.4); opacity: 0; }
-  }
-
-  /* Content */
-  .chaos-content {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 2.5rem 2rem;
-    max-width: 540px;
-    width: 100%;
   }
 
   /* Avatar */
@@ -407,8 +425,8 @@ const turnstileSiteKey: string = env?.TURNSTILE_SITE_KEY ?? '';
     display: flex;
     align-items: flex-start;
     gap: 0.55rem;
-    background: rgba(37, 99, 235, 0.06);
-    border: 1px solid rgba(37, 99, 235, 0.14);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-left: 2px solid rgba(37, 99, 235, 0.4);
     border-radius: 8px;
     padding: 0.65rem 0.75rem;
@@ -417,8 +435,8 @@ const turnstileSiteKey: string = env?.TURNSTILE_SITE_KEY ?? '';
   }
 
   .feat:hover {
-    background: rgba(37, 99, 235, 0.11);
-    border-color: rgba(37, 99, 235, 0.28);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
     border-left-color: #2563eb;
   }
 
@@ -446,232 +464,12 @@ const turnstileSiteKey: string = env?.TURNSTILE_SITE_KEY ?? '';
 
   .feat small {
     font-size: 0.66rem;
-    color: #475569;
+    color: rgba(255, 255, 255, 0.4);
     font-family: 'DM Mono', monospace;
     line-height: 1.35;
   }
 
-  /* Powered */
-  .powered {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.6rem;
-    color: #1e3a5f;
-    letter-spacing: 0.06em;
-    border-top: 1px solid rgba(37, 99, 235, 0.09);
-    padding-top: 1rem;
-    width: 100%;
-    text-align: center;
-    animation: fadeUp 0.5s ease 1.7s both;
-  }
-
-  /* ─────────────────────────────────── RIGHT PANEL ─────────────────────────────────── */
-
-  .login-panel {
-    width: min(460px, 43%);
-    background: #f8fafc;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem 2.5rem;
-    position: relative;
-    animation: slideInRight 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
-    border-left: 1px solid rgba(37, 99, 235, 0.1);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .login-panel {
-      background: #0d1117;
-      border-left-color: rgba(37, 99, 235, 0.08);
-    }
-  }
-
-  @keyframes slideInRight {
-    from { opacity: 0; transform: translateX(50px); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
-
-  .login-content {
-    width: 100%;
-    max-width: 320px;
-  }
-
-  .login-top { margin-bottom: 2.25rem; }
-
-  .admin-badge {
-    display: inline-block;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.58rem;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    color: #2563eb;
-    background: rgba(37, 99, 235, 0.08);
-    border: 1px solid rgba(37, 99, 235, 0.18);
-    border-radius: 4px;
-    padding: 3px 9px;
-    margin-bottom: 1.1rem;
-  }
-
-  .login-title {
-    font-family: 'Anton', sans-serif;
-    font-size: clamp(2.2rem, 4vw, 3rem);
-    letter-spacing: 0.02em;
-    color: #0f172a;
-    line-height: 1.05;
-    margin-bottom: 0.6rem;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .login-title { color: #f1f5f9; }
-  }
-
-  .login-sub {
-    font-size: 0.82rem;
-    color: #64748b;
-    line-height: 1.5;
-  }
-
-  /* Form */
-  .login-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.1rem;
-  }
-
-  .field-wrap {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-  }
-
-  .field-label {
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: #475569;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    font-family: 'DM Mono', monospace;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .field-label { color: #64748b; }
-  }
-
-  .field-input {
-    width: 100%;
-    padding: 0.78rem 1rem;
-    background: white;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 9px;
-    font-size: 0.88rem;
-    font-family: 'DM Sans', sans-serif;
-    color: #0f172a;
-    outline: none;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-    -webkit-appearance: none;
-  }
-
-  .field-input::placeholder { color: #94a3b8; }
-
-  .field-input:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-    background: #fafcff;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .field-input {
-      background: #161d2b;
-      border-color: #1e2d42;
-      color: #f1f5f9;
-    }
-    .field-input::placeholder { color: #334155; }
-    .field-input:focus {
-      background: #1a2538;
-      border-color: #2563eb;
-    }
-  }
-
-  /* Error */
-  .error-box {
-    background: #fff0f0;
-    border: 1px solid #fecaca;
-    border-radius: 7px;
-    padding: 0.65rem 0.9rem;
-    font-size: 0.78rem;
-    color: #dc2626;
-    font-family: 'DM Mono', monospace;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .error-box {
-      background: rgba(220, 38, 38, 0.08);
-      border-color: rgba(220, 38, 38, 0.25);
-      color: #f87171;
-    }
-  }
-
-  /* Turnstile widget */
-  .cf-turnstile {
-    display: flex;
-    justify-content: center;
-  }
-
-  /* Submit button */
-  .submit-btn {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    padding: 0.85rem 1.2rem;
-    background: #2563eb;
-    color: white;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 600;
-    font-size: 0.88rem;
-    border: none;
-    border-radius: 9px;
-    cursor: pointer;
-    transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
-    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.32);
-    margin-top: 0.2rem;
-  }
-
-  .submit-btn:hover:not(:disabled) {
-    background: #1d4ed8;
-    box-shadow: 0 6px 22px rgba(37, 99, 235, 0.48);
-    transform: translateY(-1px);
-  }
-
-  .submit-btn:active:not(:disabled) {
-    transform: translateY(0);
-    box-shadow: 0 3px 10px rgba(37, 99, 235, 0.3);
-  }
-
-  .submit-btn:disabled {
-    opacity: 0.65;
-    cursor: not-allowed;
-  }
-
-  .btn-arrow {
-    font-size: 1rem;
-    transition: transform 0.2s ease;
-  }
-
-  .submit-btn:hover:not(:disabled) .btn-arrow {
-    transform: translateX(4px);
-  }
-
-  /* Footer */
-  .login-footer {
-    margin-top: 1.75rem;
-    font-size: 0.68rem;
-    color: #94a3b8;
-    text-align: center;
-    font-family: 'DM Mono', monospace;
-    letter-spacing: 0.03em;
-  }
-
-  /* Telegram CTA button (left panel) */
+  /* Telegram CTA button */
   .tg-btn {
     display: flex;
     align-items: center;
@@ -716,19 +514,24 @@ const turnstileSiteKey: string = env?.TURNSTILE_SITE_KEY ?? '';
     transform: translateX(4px);
   }
 
-  /* ─────────────────────────────────── RESPONSIVE ─────────────────────────────────── */
-
-  @media (max-width: 820px) {
-    .login-root { flex-direction: column; }
-    .chaos-panel { min-height: 55vh; }
-    .login-panel { width: 100%; padding: 2.5rem 1.5rem; }
-    .chaos-content { padding: 2rem 1.5rem; }
+  /* Powered */
+  .powered {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: rgba(255, 255, 255, 0.2);
+    letter-spacing: 0.06em;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding-top: 1rem;
+    width: 100%;
+    text-align: center;
+    animation: fadeUp 0.5s ease 1.7s both;
   }
+
+  /* ─────────────────────────────────── RESPONSIVE ─────────────────────────────────── */
 
   @media (max-width: 500px) {
     .feature-grid { grid-template-columns: 1fr; }
     .bot-name { font-size: 3.2rem; }
-    .login-title { font-size: 2.2rem; }
   }
 </style>
 
@@ -736,11 +539,12 @@ const turnstileSiteKey: string = env?.TURNSTILE_SITE_KEY ?? '';
   const form = document.getElementById('loginForm') as HTMLFormElement;
   const errorEl = document.getElementById('error') as HTMLDivElement;
   const submitBtn = document.getElementById('submitBtn') as HTMLButtonElement;
-  const btnText = submitBtn.querySelector('.btn-text') as HTMLSpanElement;
+  const btnText = document.getElementById('btnText') as HTMLSpanElement;
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     errorEl.style.display = 'none';
+    errorEl.classList.add('hidden');
     submitBtn.disabled = true;
     btnText.textContent = 'Accesso in corso...';
 
@@ -758,12 +562,14 @@ const turnstileSiteKey: string = env?.TURNSTILE_SITE_KEY ?? '';
         const data = await res.json() as { error?: string };
         errorEl.textContent = data.error || 'Credenziali non valide';
         errorEl.style.display = 'block';
+        errorEl.classList.remove('hidden');
         submitBtn.disabled = false;
         btnText.textContent = 'Entra nel pannello';
       }
     } catch {
       errorEl.textContent = 'Errore di connessione';
       errorEl.style.display = 'block';
+      errorEl.classList.remove('hidden');
       submitBtn.disabled = false;
       btnText.textContent = 'Entra nel pannello';
     }

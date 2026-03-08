@@ -40,20 +40,20 @@ function formatDate(dateStr: string) {
 <Layout title="Testi">
   <div class="space-y-6">
     <div>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Gestione Testi</h1>
-      <p class="text-gray-500 dark:text-gray-400 mt-1">Frasi per insulti, minacce, bestemmie, nonno e saluti</p>
+      <h1 class="text-2xl font-semibold text-gray-800 dark:text-white/90">Gestione Testi</h1>
+      <p class="text-theme-sm text-gray-500 dark:text-gray-400 mt-1">Frasi per insulti, minacce, bestemmie, nonno e saluti</p>
     </div>
 
     <div class="flex gap-6 min-h-[600px]">
       <!-- Sidebar categorie -->
       <div class="w-56 flex-shrink-0">
-        <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm sticky top-6">
-          <div class="p-3 border-b border-gray-100 dark:border-gray-800">
+        <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] sticky top-6">
+          <div class="p-3 border-b border-gray-200 dark:border-gray-800">
             <input
               type="text"
               id="catSearch"
               placeholder="Cerca categoria..."
-              class="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500/40 outline-none"
+              class="input-field !py-2 text-sm"
             />
           </div>
           <nav class="p-2 max-h-[520px] overflow-y-auto" id="catList">
@@ -63,14 +63,14 @@ function formatDate(dateStr: string) {
                 data-cat-name={cat.name.toLowerCase()}
                 class={`flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-colors ${
                   cat.id === categoryId
-                    ? 'bg-primary-50 dark:bg-primary-950 text-primary-700 dark:text-primary-400 font-medium'
+                    ? 'bg-brand-50 dark:bg-brand-950 text-brand-700 dark:text-brand-400 font-medium'
                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                 }`}
               >
                 <span class="truncate">{cat.name}</span>
                 <span class={`text-xs tabular-nums ml-2 flex-shrink-0 ${
                   cat.id === categoryId
-                    ? 'text-primary-500 dark:text-primary-400'
+                    ? 'text-brand-500 dark:text-brand-400'
                     : 'text-gray-400 dark:text-gray-500'
                 }`}>{cat.item_count}</span>
               </a>
@@ -86,13 +86,13 @@ function formatDate(dateStr: string) {
             <!-- Header categoria -->
             <div class="flex items-center justify-between">
               <div>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{selectedCategory.name}</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400">{total} {total === 1 ? 'frase' : 'frasi'}</p>
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-white/90">{selectedCategory.name}</h2>
+                <p class="text-theme-sm text-gray-500 dark:text-gray-400">{total} {total === 1 ? 'frase' : 'frasi'}</p>
               </div>
             </div>
 
             <!-- Form aggiungi -->
-            <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 space-y-3">
+            <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6 space-y-3">
               <form id="addForm" class="flex gap-3">
                 <input type="hidden" name="category_id" value={categoryId} />
                 <input
@@ -108,7 +108,7 @@ function formatDate(dateStr: string) {
               </form>
               <!-- Telegram Preview -->
               <div id="preview-box" class="hidden">
-                <div class="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1.5">Anteprima Telegram:</div>
+                <div class="text-theme-sm text-gray-500 dark:text-gray-400 font-medium mb-1.5">Anteprima Telegram:</div>
                 <div class="bg-[#1a2236] rounded-xl px-4 py-3 max-w-md">
                   <div class="text-xs text-blue-400 font-medium mb-1">SborrBot</div>
                   <div id="preview-text" class="text-sm text-white/90 leading-relaxed whitespace-pre-wrap"></div>
@@ -116,19 +116,19 @@ function formatDate(dateStr: string) {
               </div>
               <!-- Bulk import toggle -->
               <div class="flex items-center gap-2 pt-1">
-                <button type="button" id="btn-bulk" class="text-xs text-primary-500 dark:text-primary-400 hover:text-primary-600 dark:hover:text-primary-300 font-medium transition-colors">
+                <button type="button" id="btn-bulk" class="text-xs text-brand-500 dark:text-brand-400 hover:text-brand-600 dark:hover:text-brand-300 font-medium transition-colors">
                   Importa in blocco (CSV/JSON)
                 </button>
               </div>
               <!-- Bulk import form -->
-              <div id="bulk-form" class="hidden space-y-3 border-t border-gray-100 dark:border-gray-800 pt-3">
+              <div id="bulk-form" class="hidden space-y-3 border-t border-gray-200 dark:border-gray-800 pt-3">
                 <div class="flex items-center gap-3">
-                  <label class="text-xs text-gray-500 dark:text-gray-400 font-medium">Formato:</label>
+                  <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Formato:</label>
                   <label class="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300">
-                    <input type="radio" name="bulkFormat" value="text" checked class="accent-primary-500" /> Una frase per riga
+                    <input type="radio" name="bulkFormat" value="text" checked class="accent-brand-500" /> Una frase per riga
                   </label>
                   <label class="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300">
-                    <input type="radio" name="bulkFormat" value="json" class="accent-primary-500" /> JSON array
+                    <input type="radio" name="bulkFormat" value="json" class="accent-brand-500" /> JSON array
                   </label>
                 </div>
                 <textarea
@@ -138,7 +138,7 @@ function formatDate(dateStr: string) {
                   class="w-full input-field font-mono text-xs"
                 ></textarea>
                 <div class="flex items-center justify-between">
-                  <span id="bulk-count" class="text-xs text-gray-400 dark:text-gray-500">0 frasi rilevate</span>
+                  <span id="bulk-count" class="text-theme-sm text-gray-500 dark:text-gray-400">0 frasi rilevate</span>
                   <button type="button" id="btn-bulk-import" class="btn-primary text-sm">Importa tutto</button>
                 </div>
                 <div id="bulk-status" class="hidden text-sm px-3 py-2 rounded-xl"></div>
@@ -146,22 +146,22 @@ function formatDate(dateStr: string) {
             </div>
 
             <!-- Lista frasi -->
-            <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
+            <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] overflow-hidden">
               {items.length > 0 ? (
-                <div class="divide-y divide-gray-100 dark:divide-gray-800">
+                <div class="divide-y divide-gray-200 dark:divide-gray-800">
                   {items.map((item: any, i: number) => (
                     <div class="p-4 hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors group">
                       <div class="flex items-start gap-3">
                         <span class="text-xs text-gray-400 dark:text-gray-500 tabular-nums pt-0.5 w-6 text-right flex-shrink-0">{startIndex + i + 1}.</span>
                         <div class="flex-1 min-w-0">
-                          <p class="text-sm text-gray-900 dark:text-white leading-relaxed">{item.content}</p>
-                          <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5">
+                          <p class="text-sm text-gray-800 dark:text-white/90 leading-relaxed">{item.content}</p>
+                          <p class="text-theme-sm text-gray-500 dark:text-gray-400 mt-1.5">
                             ID: {item.id} &middot; {formatDate(item.created_at)}
                           </p>
                         </div>
                         <button
                           data-delete={item.id}
-                          class="text-xs px-2.5 py-1 rounded-lg text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-950/50 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0"
+                          class="btn-danger text-xs !px-2.5 !py-1 opacity-0 group-hover:opacity-100 flex-shrink-0"
                         >
                           Elimina
                         </button>
@@ -173,22 +173,22 @@ function formatDate(dateStr: string) {
                 <div class="p-12 text-center">
                   <div class="text-4xl mb-3">📝</div>
                   <p class="text-gray-500 dark:text-gray-400 font-medium">Nessuna frase in questa categoria</p>
-                  <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">Aggiungine una usando il form qui sopra</p>
+                  <p class="text-theme-sm text-gray-500 dark:text-gray-400 mt-1">Aggiungine una usando il form qui sopra</p>
                 </div>
               )}
 
               {totalPages > 1 && (
-                <div class="p-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                  <span class="text-gray-500 dark:text-gray-400 text-sm">{total} elementi</span>
+                <div class="p-4 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between">
+                  <span class="text-theme-sm text-gray-500 dark:text-gray-400">{total} elementi</span>
                   <div class="flex items-center gap-2">
                     {page > 1 && (
-                      <a href={`/content/texts?category=${categoryId}&page=${page - 1}`} class="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                      <a href={`/content/texts?category=${categoryId}&page=${page - 1}`} class="btn-secondary text-sm !px-3 !py-1.5">
                         &larr; Prec
                       </a>
                     )}
                     <span class="px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 tabular-nums">{page}/{totalPages}</span>
                     {page < totalPages && (
-                      <a href={`/content/texts?category=${categoryId}&page=${page + 1}`} class="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                      <a href={`/content/texts?category=${categoryId}&page=${page + 1}`} class="btn-secondary text-sm !px-3 !py-1.5">
                         Succ &rarr;
                       </a>
                     )}

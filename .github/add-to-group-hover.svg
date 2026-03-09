@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="380" height="32" viewBox="0 0 380 32">
+  <defs>
+    <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1a1a1a"/>
+      <stop offset="100%" style="stop-color:#333333"/>
+    </linearGradient>
+  </defs>
+  <rect width="380" height="32" rx="6" ry="6" fill="url(#bg2)"/>
+  <rect width="380" height="32" rx="6" ry="6" fill="none" stroke="#ffd700" stroke-width="1.5"/>
+  <text x="190" y="21" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="13" fill="#ffd700" letter-spacing="2">
+    CHE ASPETTI? HAI PAURA? CAGASOTTO.
+  </text>
+</svg>

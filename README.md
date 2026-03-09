@@ -3,14 +3,14 @@
 <p align="center">
   <br>
   <a href="https://t.me/SborrrrBot_bot?startgroup=true">
-    <img src="https://img.shields.io/badge/%F0%9F%8D%86%F0%9F%92%A6_FICCALO_NEL_GRUPPO_ADESSO-PREMI_QUI_BRUTTO_PORCO-ff1493?style=for-the-badge&logo=telegram&logoColor=white&labelColor=8b0000&link=https://t.me/SborrrrBot_bot?startgroup=true" alt="FICCALO NEL GRUPPO" height="70">
-  </a>
-  <br><br>
-  <a href="https://t.me/SborrrrBot_bot?startgroup=true">
-    <img src="https://img.shields.io/badge/CHE_ASPETTI%3F-HAI_PAURA%3F_CAGASOTTO-ffd700?style=flat-square&labelColor=000000" alt="Che aspetti?" height="25">
+    <img src=".github/add-to-group.svg" alt="FICCALO NEL GRUPPO — PREMI QUI, BRUTTO PORCO" width="620">
   </a>
   <br>
-  <sub><i>Clicca il bottone qua sopra, non fare il timido del cazzo. Il tuo gruppo ha bisogno di essere devastato.</i></sub>
+  <a href="https://t.me/SborrrrBot_bot?startgroup=true">
+    <img src=".github/add-to-group-hover.svg" alt="CHE ASPETTI? HAI PAURA? CAGASOTTO." width="380">
+  </a>
+  <br>
+  <sub><b>Clicca il bottone qua sopra, non fare il timido del cazzo. Il tuo gruppo ha bisogno di essere devastato.</b></sub>
   <br><br>
 </p>
 

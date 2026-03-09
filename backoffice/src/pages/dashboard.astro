@@ -358,8 +358,8 @@ function formatTime(dateStr: string) {
     document.addEventListener('DOMContentLoaded', function() {
       if (typeof Chart === 'undefined') return;
 
-      var isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      var gridColor = isDark ? '#1f2937' : '#f3f4f6';
+      var isDark = document.documentElement.classList.contains('dark');
+      var gridColor = isDark ? 'rgba(255, 255, 255, 0.06)' : '#f3f4f6';
       var textColor = isDark ? '#9ca3af' : '#6b7280';
 
       Chart.defaults.color = textColor;

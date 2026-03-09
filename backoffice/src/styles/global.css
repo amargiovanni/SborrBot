@@ -63,6 +63,11 @@
     @apply text-gray-700 dark:text-gray-300;
   }
 
+  /* SVG paths with fill="" need explicit currentColor to inherit text color */
+  .menu-item-icon path {
+    fill: currentColor;
+  }
+
   /* ===== Badges (TailAdmin style) ===== */
   .badge-success {
     @apply rounded-full bg-success-50 px-2.5 py-0.5 text-xs font-medium text-success-700 dark:bg-success-500/15 dark:text-success-500;

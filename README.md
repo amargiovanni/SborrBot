@@ -1,9 +1,17 @@
 # SborrBot
 
 <p align="center">
+  <br>
   <a href="https://t.me/SborrrrBot_bot?startgroup=true">
-    <img src="https://img.shields.io/badge/%F0%9F%92%A6%20AGGIUNGI%20SBORRBOT%20AL%20TUO%20GRUPPO-blue?style=for-the-badge&logo=telegram&logoColor=white&labelColor=0088cc&color=0088cc&link=https://t.me/SborrrrBot_bot?startgroup=true" alt="Aggiungi SborrBot al tuo gruppo" height="60">
+    <img src="https://img.shields.io/badge/%F0%9F%8D%86%F0%9F%92%A6_FICCALO_NEL_GRUPPO_ADESSO-PREMI_QUI_BRUTTO_PORCO-ff1493?style=for-the-badge&logo=telegram&logoColor=white&labelColor=8b0000&link=https://t.me/SborrrrBot_bot?startgroup=true" alt="FICCALO NEL GRUPPO" height="70">
   </a>
+  <br><br>
+  <a href="https://t.me/SborrrrBot_bot?startgroup=true">
+    <img src="https://img.shields.io/badge/CHE_ASPETTI%3F-HAI_PAURA%3F_CAGASOTTO-ffd700?style=flat-square&labelColor=000000" alt="Che aspetti?" height="25">
+  </a>
+  <br>
+  <sub><i>Clicca il bottone qua sopra, non fare il timido del cazzo. Il tuo gruppo ha bisogno di essere devastato.</i></sub>
+  <br><br>
 </p>
 
 **Il bot Telegram piu sborrante che esista.** Ispirato al leggendario SpacoBot, ma piu cattivo, piu scurrile, piu bastardo e con un pannello admin che manco la NASA. Oltre **3000 frasi** precaricate nel database, tutte scritte con l'odio e la poesia di chi ha visto cose che voi umani non potete immaginare.

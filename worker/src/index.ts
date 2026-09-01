@@ -17,6 +17,14 @@ export async function processScheduledMessages(env: Env): Promise<number> {
       ? [msg.target_group_id]
       : await getActiveGroupChatIds(env.DB);
 
+    // Claim before sending: a broadcast can span multiple minutes for a large
+    // group list, and marking it sent only after the loop leaves the message
+    // eligible for `getDueScheduledMessages` again if an overlapping cron run
+    // starts in the meantime, causing a double send. Marking it sent first
+    // makes delivery at-most-once (acceptable for this bot) instead of
+    // at-least-once.
+    await markScheduledMessageSent(env.DB, msg.id, msg.schedule_type === 'once');
+
     for (let i = 0; i < chatIds.length; i += BROADCAST_BATCH_SIZE) {
       if (i > 0) await new Promise((r) => setTimeout(r, BROADCAST_BATCH_PAUSE_MS));
       const batch = chatIds.slice(i, i + BROADCAST_BATCH_SIZE);
@@ -26,8 +34,6 @@ export async function processScheduledMessages(env: Env): Promise<number> {
         else console.error(`Scheduled message ${msg.id} delivery failed:`, r.status === 'rejected' ? r.reason : r.value.description);
       }
     }
-
-    await markScheduledMessageSent(env.DB, msg.id, msg.schedule_type === 'once');
   }
 
   return sent;

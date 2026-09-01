@@ -2,6 +2,7 @@ import { Env } from '../types';
 import { TelegramApi } from '../services/telegram';
 import { getRandomTextResponse, getMultipleRandomTextResponses, getRandomGroupUser, getTwoRandomGroupUsers } from '../services/db';
 import { fetchWeather, buildWeatherMessage } from '../services/weather';
+import { escapeMarkdown } from '../utils/markdown';
 import {
   JUVE_PATTERN, LAMENTI_PATTERN, BESTEMMIA_PATTERN, NAPOLI_PATTERN,
   ROMA_PATTERN, LAZIO_PATTERN, MILAN_PATTERN, EX_PATTERN, TERAPIA_PATTERN,
@@ -177,12 +178,13 @@ async function handleComboInsulti(target: string, chatId: string, env: Env, api:
     return { handled: true, command: 'combo-insulti', target };
   }
 
+  const escapedTarget = escapeMarkdown(target);
   const formatted = insults.map((insult, i) => {
     const emojis = ['\u0031\uFE0F\u20E3', '\u0032\uFE0F\u20E3', '\u0033\uFE0F\u20E3'];
-    return `${emojis[i]} ${insult.replace(/\{name\}/g, target)}`;
+    return `${emojis[i]} ${insult.replace(/\{name\}/g, escapedTarget)}`;
   });
 
-  await api.sendMessage(chatId, `\u{1F480} *COMBO INSULTI per ${target}:*\n\n${formatted.join('\n\n')}\n\n\u2620\uFE0F *FATALITY!*`, 'Markdown');
+  await api.sendMessage(chatId, `\u{1F480} *COMBO INSULTI per ${escapedTarget}:*\n\n${formatted.join('\n\n')}\n\n\u2620\uFE0F *FATALITY!*`, 'Markdown');
   return { handled: true, command: 'combo-insulti', target };
 }
 
@@ -206,7 +208,8 @@ async function handleNotizia(chatId: string, userId: string, senderName: string,
     return { handled: true, command: 'notizie' };
   }
 
-  const finalText = response.replace(/\{name\}/g, targetName);
+  const escapedTargetName = escapeMarkdown(targetName);
+  const finalText = response.replace(/\{name\}/g, escapedTargetName);
   await api.sendMessage(chatId, `\u{1F4F0} *NOTIZIA FLASH*\n\n${finalText}`, 'Markdown');
   return { handled: true, command: 'notizie', target: targetName };
 }
@@ -220,7 +223,7 @@ async function handleSegreto(chatId: string, env: Env, api: TelegramApi): Promis
     return { handled: true, command: 'segreto' };
   }
 
-  const finalText = response.replace(/\{name1\}/g, name1).replace(/\{name2\}/g, name2);
+  const finalText = response.replace(/\{name1\}/g, escapeMarkdown(name1)).replace(/\{name2\}/g, escapeMarkdown(name2));
   await api.sendMessage(chatId, `\uD83E\uDD2B *SEGRETO RIVELATO*\n\n${finalText}`, 'Markdown');
   return { handled: true, command: 'segreto' };
 }
@@ -234,7 +237,7 @@ async function handleBollettino(chatId: string, env: Env, api: TelegramApi): Pro
     return { handled: true, command: 'bollettino' };
   }
 
-  const finalText = response.replace(/\{name1\}/g, name1).replace(/\{name2\}/g, name2);
+  const finalText = response.replace(/\{name1\}/g, escapeMarkdown(name1)).replace(/\{name2\}/g, escapeMarkdown(name2));
   await api.sendMessage(chatId, finalText, 'Markdown');
   return { handled: true, command: 'bollettino' };
 }
@@ -248,7 +251,7 @@ async function handleComplotto(chatId: string, env: Env, api: TelegramApi): Prom
     return { handled: true, command: 'complotto' };
   }
 
-  const finalText = response.replace(/\{name1\}/g, name1).replace(/\{name2\}/g, name2);
+  const finalText = response.replace(/\{name1\}/g, escapeMarkdown(name1)).replace(/\{name2\}/g, escapeMarkdown(name2));
   await api.sendMessage(chatId, `\uD83D\uDD75\uFE0F *COMPLOTTO RIVELATO*\n\n${finalText}`, 'Markdown');
   return { handled: true, command: 'complotto' };
 }
@@ -262,7 +265,7 @@ async function handleEredita(chatId: string, env: Env, api: TelegramApi): Promis
     return { handled: true, command: 'eredita' };
   }
 
-  const finalText = response.replace(/\{name1\}/g, name1).replace(/\{name2\}/g, name2);
+  const finalText = response.replace(/\{name1\}/g, escapeMarkdown(name1)).replace(/\{name2\}/g, escapeMarkdown(name2));
   await api.sendMessage(chatId, `\uD83D\uDCDC *TESTAMENTO APERTO*\n\n${finalText}`, 'Markdown');
   return { handled: true, command: 'eredita' };
 }
@@ -276,7 +279,7 @@ async function handleIntercettazione(chatId: string, env: Env, api: TelegramApi)
     return { handled: true, command: 'intercettazione' };
   }
 
-  const finalText = response.replace(/\{name1\}/g, name1).replace(/\{name2\}/g, name2);
+  const finalText = response.replace(/\{name1\}/g, escapeMarkdown(name1)).replace(/\{name2\}/g, escapeMarkdown(name2));
   await api.sendMessage(chatId, finalText, 'Markdown');
   return { handled: true, command: 'intercettazione' };
 }
@@ -305,7 +308,7 @@ async function handleMeteo(city: string, chatId: string, env: Env, api: Telegram
   try {
     const weather = await fetchWeather(env.OPENWEATHERMAP_API_KEY, city);
     const message = buildWeatherMessage(weather);
-    await api.sendMessage(chatId, `\u2600\uFE0F\uD83C\uDF27\uFE0F *METEO ${weather.cityName.toUpperCase()}*\n\n${message}`, 'Markdown');
+    await api.sendMessage(chatId, `\u2600\uFE0F\uD83C\uDF27\uFE0F *METEO ${escapeMarkdown(weather.cityName.toUpperCase())}*\n\n${message}`, 'Markdown');
     return { handled: true, command: 'meteo', target: weather.cityName };
   } catch (error: any) {
     if (error.message === 'CITY_NOT_FOUND') {
@@ -323,7 +326,7 @@ async function handleAutopsia(target: string, chatId: string, env: Env, api: Tel
     await api.sendMessage(chatId, 'Non ho referti disponibili... aggiungi contenuti dal backoffice!');
     return { handled: true, command: 'autopsia', target };
   }
-  const finalText = response.replace(/\{name\}/g, target);
+  const finalText = response.replace(/\{name\}/g, escapeMarkdown(target));
   await api.sendMessage(chatId, `\uD83D\uDD2C *REFERTO AUTOPTICO*\n\n${finalText}`, 'Markdown');
   return { handled: true, command: 'autopsia', target };
 }

@@ -1,11 +1,19 @@
 import { Env } from '../types';
 import { TelegramApi } from '../services/telegram';
 import { getCategoryList, getUserStats, deleteUserData } from '../services/db';
-import { escapeMarkdown } from '../utils/markdown';
+import { escapeMarkdownV2Code, mdv2, mdv2raw } from '../utils/markdown';
 
 interface CommandResult {
   handled: boolean;
   command?: string;
+}
+
+// Static message text below is authored directly in MarkdownV2: every literal
+// . ! - ( ) + outside a code span carries its own backslash, while *bold*,
+// _italic_ and `code` markers stay live. Interpolations go through mdv2.
+
+function categoryLine(name: string, slug: string, prefix = ''): string {
+  return mdv2`• *${name}* — ${mdv2raw(prefix)}\`${mdv2raw(escapeMarkdownV2Code(slug))}\``;
 }
 
 export async function handleSlashCommand(
@@ -20,11 +28,11 @@ export async function handleSlashCommand(
   switch (cmd) {
     case '/start':
       await api.sendMessage(chatId,
-        '🤖 *SborrBot* è qui!\n\n' +
-        'Sono il bot più sborrante di Telegram. ' +
-        'Scrivi /help per vedere tutti i comandi.\n\n' +
-        '_Scrivi "insulta [nome]" per cominciare il divertimento!_',
-        'Markdown'
+        '🤖 *SborrBot* è qui\\!\n\n' +
+        'Sono il bot più sborrante di Telegram\\. ' +
+        'Scrivi /help per vedere tutti i comandi\\.\n\n' +
+        '_Scrivi "insulta \\[nome\\]" per cominciare il divertimento\\!_',
+        'MarkdownV2'
       );
       return { handled: true, command: '/start' };
 
@@ -35,7 +43,7 @@ export async function handleSlashCommand(
         '• `insulta [nome]` — Insulta qualcuno\n' +
         '• `insulta combo [nome]` — Triplo insulto devastante\n' +
         '• `minaccia [nome]` — Minaccia qualcuno\n' +
-        '• `necrologio [nome]` — Necrologio pre-mortem\n' +
+        '• `necrologio [nome]` — Necrologio pre\\-mortem\n' +
         '• `processo [nome]` — Verdetto del Tribunale SborrBot\n' +
         '• `cv [nome]` / `curriculum [nome]` — CV disastroso\n' +
         '• `complimento [nome]` — Complimento backhanded\n' +
@@ -59,11 +67,11 @@ export async function handleSlashCommand(
         '• `oroscopo [segno]` — Oroscopo dello sborrone\n' +
         '• `meteo [città]` — Meteo volgare in tempo reale\n' +
         '• `frase celebre` / `citazione` / `perla di saggezza` — Citazione trash\n\n' +
-        '😭 *Auto-trigger:*\n' +
+        '😭 *Auto\\-trigger:*\n' +
         '• Scrivi `grazie` — risposta adeguata\n' +
         '• Scrivi `auguri` / `buon compleanno` — auguri del cazzo\n' +
         '• Scrivi `sono il migliore` / `sono forte` / `sono bravo` — demolizione ego\n' +
-        '• Scrivi "ho fame", "sono stanco/a" ecc. — risposta sarcastica\n' +
+        '• Scrivi "ho fame", "sono stanco/a" ecc\\. — risposta sarcastica\n' +
         '• Scrivi "la mia ex" / "il mio ex" — messaggio dall\'ex 💔\n' +
         '• Scrivi "terapia" / "psicologo" — seduta di terapia 🧠\n' +
         '• Scrivi "juve" / "juventus" — reazione immediata 💩\n\n' +
@@ -85,40 +93,40 @@ export async function handleSlashCommand(
         '• `sveglia sborrbot` — Riattiva\n\n' +
         '📂 /testo /foto /audio /sticker — Liste per categoria\n' +
         'ℹ️ /info — Info sul bot\n\n' +
-        '🔒 *Privacy (GDPR):*\n' +
+        '🔒 *Privacy \\(GDPR\\):*\n' +
         '• /privacy — Informativa privacy\n' +
         '• /mydata — Visualizza i tuoi dati\n' +
         '• /deleteme — Cancella tutti i tuoi dati',
-        'Markdown'
+        'MarkdownV2'
       );
       return { handled: true, command: '/help' };
 
     case '/info':
       await api.sendMessage(chatId,
-        '🤖 *SborrBot v1.0*\n\n' +
-        'Il bot più sborrante di Telegram!\n' +
-        'Ispirato al leggendario SpacoBot.\n\n' +
-        '🏗️ Powered by Cloudflare Workers + D1 + R2',
-        'Markdown'
+        '🤖 *SborrBot v1\\.0*\n\n' +
+        'Il bot più sborrante di Telegram\\!\n' +
+        'Ispirato al leggendario SpacoBot\\.\n\n' +
+        '🏗️ Powered by Cloudflare Workers \\+ D1 \\+ R2',
+        'MarkdownV2'
       );
       return { handled: true, command: '/info' };
 
     case '/testo': {
       const categories = await getCategoryList(env.DB, 'text');
-      const list = categories.map(c => `• *${escapeMarkdown(c.name)}* — \`${c.slug}\``).join('\n');
+      const list = categories.map(c => categoryLine(c.name, c.slug)).join('\n');
       await api.sendMessage(chatId,
         `📝 *Categorie Testo:*\n\n${list || '_Nessuna categoria disponibile_'}`,
-        'Markdown'
+        'MarkdownV2'
       );
       return { handled: true, command: '/testo' };
     }
 
     case '/foto': {
       const categories = await getCategoryList(env.DB, 'photo');
-      const list = categories.map(c => `• *${escapeMarkdown(c.name)}* — scrivi \`${c.slug}\``).join('\n');
+      const list = categories.map(c => categoryLine(c.name, c.slug, 'scrivi ')).join('\n');
       await api.sendMessage(chatId,
         `📸 *Categorie Foto:*\n\n${list || '_Nessuna categoria disponibile_'}`,
-        'Markdown'
+        'MarkdownV2'
       );
       return { handled: true, command: '/foto' };
     }
@@ -131,20 +139,20 @@ export async function handleSlashCommand(
     case '/audiorichardbenson':
     case '/audiovari': {
       const categories = await getCategoryList(env.DB, 'audio');
-      const list = categories.map(c => `• *${escapeMarkdown(c.name)}* — scrivi \`${c.slug.replace(/-/g, ' ')}\``).join('\n');
+      const list = categories.map(c => categoryLine(c.name, c.slug.replace(/-/g, ' '), 'scrivi ')).join('\n');
       await api.sendMessage(chatId,
         `🔊 *Categorie Audio:*\n\n${list || '_Nessuna categoria disponibile_'}`,
-        'Markdown'
+        'MarkdownV2'
       );
       return { handled: true, command: '/audio' };
     }
 
     case '/sticker': {
       const categories = await getCategoryList(env.DB, 'sticker');
-      const list = categories.map(c => `• *${escapeMarkdown(c.name)}* — scrivi \`${c.slug.replace('sticker-', '')}\``).join('\n');
+      const list = categories.map(c => categoryLine(c.name, c.slug.replace('sticker-', ''), 'scrivi ')).join('\n');
       await api.sendMessage(chatId,
         `🎨 *Categorie Sticker:*\n\n${list || '_Nessuna categoria disponibile_'}`,
-        'Markdown'
+        'MarkdownV2'
       );
       return { handled: true, command: '/sticker' };
     }
@@ -153,18 +161,18 @@ export async function handleSlashCommand(
       await api.sendMessage(chatId,
         '🔒 *Informativa Privacy — SborrBot*\n\n' +
         '*Dati raccolti:*\n' +
-        '• ID Telegram (chat e utente)\n' +
-        '• Username (se disponibile)\n' +
+        '• ID Telegram \\(chat e utente\\)\n' +
+        '• Username \\(se disponibile\\)\n' +
         '• Comandi inviati e tipo di risposta\n' +
         '• Data e ora di ogni interazione\n\n' +
-        '*Finalità:* funzionamento del bot e statistiche di utilizzo.\n' +
-        '*Conservazione:* i log vengono eliminati automaticamente dopo 90 giorni.\n' +
-        '*Base giuridica:* legittimo interesse (Art. 6.1.f GDPR).\n\n' +
-        '*I tuoi diritti (GDPR):*\n' +
+        '*Finalità:* funzionamento del bot e statistiche di utilizzo\\.\n' +
+        '*Conservazione:* i log vengono eliminati automaticamente dopo 90 giorni\\.\n' +
+        '*Base giuridica:* legittimo interesse \\(Art\\. 6\\.1\\.f GDPR\\)\\.\n\n' +
+        '*I tuoi diritti \\(GDPR\\):*\n' +
         '• /mydata — Visualizza i dati raccolti su di te\n' +
         '• /deleteme — Cancella tutti i tuoi dati\n\n' +
-        '_Titolare: il gestore del bot. Per richieste: contatta l\'admin del gruppo._',
-        'Markdown'
+        '_Titolare: il gestore del bot\\. Per richieste: contatta l\'admin del gruppo\\._',
+        'MarkdownV2'
       );
       return { handled: true, command: '/privacy' };
 
@@ -172,17 +180,13 @@ export async function handleSlashCommand(
       const stats = await getUserStats(env.DB, userId);
       if (!stats) {
         await api.sendMessage(chatId,
-          '📊 *I tuoi dati*\n\nNon ho dati registrati su di te.',
-          'Markdown'
+          '📊 *I tuoi dati*\n\nNon ho dati registrati su di te\\.',
+          'MarkdownV2'
         );
       } else {
         await api.sendMessage(chatId,
-          '📊 *I tuoi dati su SborrBot*\n\n' +
-          `• *Comandi registrati:* ${stats.totalCommands}\n` +
-          `• *Prima interazione:* ${stats.firstSeen}\n` +
-          `• *Ultima interazione:* ${stats.lastSeen}\n\n` +
-          '_Usa /deleteme per cancellare tutti i tuoi dati._',
-          'Markdown'
+          mdv2`📊 *I tuoi dati su SborrBot*\n\n• *Comandi registrati:* ${stats.totalCommands}\n• *Prima interazione:* ${stats.firstSeen ?? 'n/d'}\n• *Ultima interazione:* ${stats.lastSeen ?? 'n/d'}\n\n_Usa /deleteme per cancellare tutti i tuoi dati\\._`,
+          'MarkdownV2'
         );
       }
       return { handled: true, command: '/mydata' };
@@ -192,15 +196,13 @@ export async function handleSlashCommand(
       const deleted = await deleteUserData(env.DB, userId);
       if (deleted === 0) {
         await api.sendMessage(chatId,
-          '🗑️ *Cancellazione dati*\n\nNon avevi dati da cancellare.',
-          'Markdown'
+          '🗑️ *Cancellazione dati*\n\nNon avevi dati da cancellare\\.',
+          'MarkdownV2'
         );
       } else {
         await api.sendMessage(chatId,
-          '🗑️ *Cancellazione dati completata*\n\n' +
-          `Ho eliminato *${deleted}* record associati al tuo account.\n` +
-          '_I tuoi dati sono stati rimossi in conformità all\'Art. 17 GDPR._',
-          'Markdown'
+          mdv2`🗑️ *Cancellazione dati completata*\n\nHo eliminato *${deleted}* record associati al tuo account\\.\n_I tuoi dati sono stati rimossi in conformità all'Art\\. 17 GDPR\\._`,
+          'MarkdownV2'
         );
       }
       return { handled: true, command: '/deleteme' };

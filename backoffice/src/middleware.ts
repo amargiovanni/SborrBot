@@ -17,10 +17,6 @@ const SECURITY_HEADERS: Record<string, string> = {
 };
 
 function withSecurityHeaders(res: Response): Response {
-  if (res.status >= 300 && res.status < 400) {
-    // Redirects: leave untouched (Location must not be disturbed).
-    return res;
-  }
   for (const [name, value] of Object.entries(SECURITY_HEADERS)) {
     res.headers.set(name, value);
   }

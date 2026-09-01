@@ -20,6 +20,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return new Response(JSON.stringify({ error: 'name deve essere una stringa di massimo 100 caratteri' }), { status: 400 });
   }
 
+  if (typeof slug !== 'string') {
+    return new Response(JSON.stringify({ error: 'slug deve essere una stringa' }), { status: 400 });
+  }
+
   if (description !== undefined && description !== null && (typeof description !== 'string' || description.length > 500)) {
     return new Response(JSON.stringify({ error: 'description deve essere una stringa di massimo 500 caratteri' }), { status: 400 });
   }

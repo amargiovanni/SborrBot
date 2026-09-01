@@ -35,7 +35,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
       if (token && env?.DB) {
         const valid = await validateSession(env.DB, token);
         if (valid) {
-          return context.redirect('/dashboard');
+          return withSecurityHeaders(context.redirect('/dashboard'));
         }
       }
     }
@@ -48,13 +48,13 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const env = (context.locals as any).runtime?.env;
 
   if (!token || !env?.DB) {
-    return context.redirect('/login');
+    return withSecurityHeaders(context.redirect('/login'));
   }
 
   const valid = await validateSession(env.DB, token);
   if (!valid) {
     context.cookies.delete('session', { path: '/' });
-    return context.redirect('/login');
+    return withSecurityHeaders(context.redirect('/login'));
   }
 
   const res = await next();

@@ -1,3 +1,17 @@
+# ULTRA batch 1 — 2026-09-01 — IN PROGRESS
+
+Design approved in chat (bounded path): 3 separate PRs, order 1→2→3.
+Decisions: vitest installed in backoffice (npm-install permission granted);
+429 policy = single retry, only when retry_after ≤ 5s; MarkdownV2 via `mdv2`
+tagged template escaping interpolations, static text authored pre-escaped.
+
+- [ ] PR 1 `fix(backoffice)`: wrap the 3 direct `context.redirect()` calls in
+      `withSecurityHeaders()`; add vitest harness to backoffice + middleware test (TDD)
+- [ ] PR 2 `feat(worker)`: TelegramApi retries once on 429 when
+      `parameters.retry_after` ≤ 5s; tests with mocked fetch
+- [ ] PR 3 `feat(worker)`: migrate parse_mode Markdown → MarkdownV2 across
+      text.ts/slash.ts via `mdv2` tagged template; escaping tests + live verification
+
 # Stabilization — 2026-09-01 — DONE (PR #6)
 
 Full plan: `docs/superpowers/plans/2026-09-01-stabilization.md`
@@ -21,7 +35,7 @@ Constraint honored: Telegram bot token NOT rotated (user decision).
 
 Release follow-ups:
 - [x] Branch protection on main requiring `Worker (typecheck + tests)` + `Backoffice (build)` (enabled via API, 2026-09-01)
-- [ ] Reconcile remote `d1_migrations` bookkeeping — **NOT the "safe no-op" the PR #6 body claimed**: remote table records only 0001; 0002–0015 were applied via `d1 execute`. Follow the backfill procedure in `migrations/README.md` (blocked on 2026-09-01 by intermittent D1 API 7500 errors; retry when healthy). Do NOT run `db:migrate:remote` before the backfill.
+- [x] Reconcile remote `d1_migrations` bookkeeping — backfill completed 2026-09-01 (15 rows inserted; `migrations list --remote` reports "No migrations to apply"). `db:migrate:remote` is now safe for future migrations. Procedure documented in `migrations/README.md` (PR #7).
 
 ULTRA-phase backlog (deferred by ruling):
 - middleware direct `context.redirect()` calls bypass security headers (first fast-follow)

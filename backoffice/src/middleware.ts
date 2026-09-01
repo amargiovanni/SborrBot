@@ -13,7 +13,7 @@ const SECURITY_HEADERS: Record<string, string> = {
   'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
   'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
   'Content-Security-Policy':
-    "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; frame-src https://challenges.cloudflare.com; img-src 'self' data:; connect-src 'self' https://challenges.cloudflare.com",
+    "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; frame-src https://challenges.cloudflare.com; img-src 'self' data:; connect-src 'self' https://challenges.cloudflare.com",
 };
 
 function withSecurityHeaders(res: Response): Response {

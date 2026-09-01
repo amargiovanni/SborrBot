@@ -19,9 +19,9 @@ Constraint honored: Telegram bot token NOT rotated (user decision).
 - [x] Task 11: CI (worker tsc + tsc -p test + vitest; backoffice build; token read-only)
 - [x] Task 12: security review (11 findings + slash.ts) — all fixed except parked F10; final whole-branch review "Ready to merge: Yes"
 
-Manual steps at release (in PR body too):
-- [ ] `npm run db:migrate:remote` once (reconciles 0014 bookkeeping, safe no-op)
-- [ ] Branch protection on main requiring `Worker (typecheck + tests)` + `Backoffice (build)`
+Release follow-ups:
+- [x] Branch protection on main requiring `Worker (typecheck + tests)` + `Backoffice (build)` (enabled via API, 2026-09-01)
+- [ ] Reconcile remote `d1_migrations` bookkeeping — **NOT the "safe no-op" the PR #6 body claimed**: remote table records only 0001; 0002–0015 were applied via `d1 execute`. Follow the backfill procedure in `migrations/README.md` (blocked on 2026-09-01 by intermittent D1 API 7500 errors; retry when healthy). Do NOT run `db:migrate:remote` before the backfill.
 
 ULTRA-phase backlog (deferred by ruling):
 - middleware direct `context.redirect()` calls bypass security headers (first fast-follow)

@@ -16,6 +16,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return new Response(JSON.stringify({ error: 'name, slug e type sono obbligatori' }), { status: 400 });
   }
 
+  if (typeof name !== 'string' || name.length > 100) {
+    return new Response(JSON.stringify({ error: 'name deve essere una stringa di massimo 100 caratteri' }), { status: 400 });
+  }
+
+  if (description !== undefined && description !== null && (typeof description !== 'string' || description.length > 500)) {
+    return new Response(JSON.stringify({ error: 'description deve essere una stringa di massimo 500 caratteri' }), { status: 400 });
+  }
+
   const validTypes = ['text', 'audio', 'photo', 'sticker'];
   if (!validTypes.includes(type)) {
     return new Response(JSON.stringify({ error: 'type deve essere: text, audio, photo, sticker' }), { status: 400 });
@@ -56,8 +64,18 @@ export const PUT: APIRoute = async ({ request, locals }) => {
   const updates: string[] = [];
   const binds: any[] = [];
 
-  if ('name' in body) { updates.push('name = ?'); binds.push(body.name); }
-  if ('description' in body) { updates.push('description = ?'); binds.push(body.description); }
+  if ('name' in body) {
+    if (typeof body.name !== 'string' || body.name.length > 100) {
+      return new Response(JSON.stringify({ error: 'name deve essere una stringa di massimo 100 caratteri' }), { status: 400 });
+    }
+    updates.push('name = ?'); binds.push(body.name);
+  }
+  if ('description' in body) {
+    if (body.description !== null && (typeof body.description !== 'string' || body.description.length > 500)) {
+      return new Response(JSON.stringify({ error: 'description deve essere una stringa di massimo 500 caratteri' }), { status: 400 });
+    }
+    updates.push('description = ?'); binds.push(body.description);
+  }
   if ('is_active' in body) { updates.push('is_active = ?'); binds.push(body.is_active ? 1 : 0); }
 
   if (updates.length === 0) {

@@ -11,8 +11,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return new Response(JSON.stringify({ error: 'Invalid JSON' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   }
 
-  const { category_id, items, format } = body;
-  if (!category_id || !items) {
+  const { items, format } = body;
+  const category_id = Number(body.category_id);
+  if (!body.category_id || Number.isNaN(category_id) || !items) {
     return new Response(JSON.stringify({ error: 'category_id e items sono obbligatori' }), { status: 400 });
   }
 
@@ -46,6 +47,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return new Response(JSON.stringify({ error: 'Massimo 500 elementi per importazione' }), { status: 400 });
   }
 
+  if (lines.some(line => line.length > 1000)) {
+    return new Response(JSON.stringify({ error: 'Ogni elemento deve essere massimo 1000 caratteri' }), { status: 400 });
+  }
+
   // Batch insert (D1 supports up to 100 statements per batch)
   let imported = 0;
   const batchSize = 50;
@@ -55,8 +60,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const stmts = batch.map(content =>
       env.DB.prepare('INSERT INTO text_responses (category_id, content) VALUES (?, ?)').bind(category_id, content)
     );
-    await env.DB.batch(stmts);
-    imported += batch.length;
+    const results = await env.DB.batch(stmts);
+    imported += results.reduce((sum, r) => sum + (r.meta?.changes ?? 0), 0);
   }
 
   return Response.json({ imported });

@@ -13,6 +13,7 @@
     "deploy:worker": "cd worker && npx wrangler deploy",
     "deploy:backoffice": "cd backoffice && npm run build",
     "db:migrate:local": "cd worker && npx wrangler d1 execute sborrbot-db --local --file=../migrations/0001_initial_schema.sql",
-    "db:seed:local": "cd worker && npx wrangler d1 execute sborrbot-db --local --file=../migrations/0002_seed_data.sql"
+    "db:seed:local": "cd worker && npx wrangler d1 execute sborrbot-db --local --file=../migrations/0002_seed_data.sql",
+    "test": "npm run test -w worker"
   }
 }

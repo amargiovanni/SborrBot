@@ -1,16 +1,22 @@
-# ULTRA batch 1 — 2026-09-01 — IN PROGRESS
+# ULTRA batch 1 — 2026-09-01 — DONE (PRs #8, #9, #10) + extras
 
 Design approved in chat (bounded path): 3 separate PRs, order 1→2→3.
 Decisions: vitest installed in backoffice (npm-install permission granted);
 429 policy = single retry, only when retry_after ≤ 5s; MarkdownV2 via `mdv2`
 tagged template escaping interpolations, static text authored pre-escaped.
 
-- [ ] PR 1 `fix(backoffice)`: wrap the 3 direct `context.redirect()` calls in
-      `withSecurityHeaders()`; add vitest harness to backoffice + middleware test (TDD)
-- [ ] PR 2 `feat(worker)`: TelegramApi retries once on 429 when
-      `parameters.retry_after` ≤ 5s; tests with mocked fetch
-- [ ] PR 3 `feat(worker)`: migrate parse_mode Markdown → MarkdownV2 across
-      text.ts/slash.ts via `mdv2` tagged template; escaping tests + live verification
+- [x] PR 1 (#8) `fix(backoffice)`: wrapped the 3 direct `context.redirect()` calls in
+      `withSecurityHeaders()`; vitest harness added to backoffice + 4 middleware tests (TDD)
+- [x] PR 2 (#9) `feat(worker)`: TelegramApi retries once on 429 when
+      `parameters.retry_after` ≤ 5s; 3 tests with fetchMock
+- [x] PR 3 (#10) `feat(worker)`: parse_mode Markdown → MarkdownV2 across text.ts/slash.ts
+      via `mdv2` tagged template; legacy escapeMarkdown removed; 11 new tests; verified
+      locally via wrangler dev + webhook POST (real-group smoke test after deploy pending)
+- [x] Extra (#11) `feat(landing)`: conversion overhaul of backoffice/src/pages/index.astro
+      (nav CTA to startgroup link, faster hero CTA, fake-chat demo section, mid CTA,
+      sticky mobile CTA, reassurance bullets)
+- [ ] Extra: `docs(readme)` deep update (testing/CI section, MarkdownV2+429, npm migrate
+      scripts, updated numbers) — PR open
 
 # Stabilization — 2026-09-01 — DONE (PR #6)
 

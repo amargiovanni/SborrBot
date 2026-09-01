@@ -18,6 +18,8 @@
 
 Insulta i tuoi amici, mandali affanculo con stile, bestemmia come Germano Mosconi, fai piovere tette e culi nelle chat di gruppo, fai l'esorcismo al collega stronzo, mettilo all'asta su eBay e fagli la televendita come Mastrota. Tutto su Cloudflare Workers, perche anche le porcherie meritano un'infrastruttura enterprise da paura.
 
+E non e mica scritto col culo: **40 test automatici**, CI su GitHub Actions con branch protection, messaggi in **MarkdownV2** con escaping certificato a prova di 400, e retry automatico quando Telegram fa il prezioso col rate limit. Il codice delle bestemmie piu ingegnerizzato d'Europa.
+
 **Landing page**: [sborrbot.pages.dev](https://sborrbot.pages.dev)
 
 ---
@@ -300,6 +302,9 @@ Cron Triggers:
 | **Meteo** | OpenWeatherMap API (real-time) |
 | **Cron** | Cloudflare Cron Triggers (broadcast ogni minuto + purge log giornaliero) |
 | **Contenuti** | 3000+ frasi pre-caricate in 40+ categorie |
+| **Messaggi** | Telegram MarkdownV2 con escaping completo (tagged template `mdv2`) |
+| **Testing** | Vitest + `@cloudflare/vitest-pool-workers` (worker) e Vitest puro (backoffice) |
+| **CI** | GitHub Actions: typecheck, 40 test, build. Branch protection su `main` |
 
 ### Struttura del Progetto
 
@@ -319,11 +324,14 @@ SborrBot/
 │   │   ├── middleware/
 │   │   │   ├── group-check.ts  # Verifica se il bot e attivo nel gruppo + auto-tracking
 │   │   │   └── logger.ts       # Logga ogni comando su D1 (chi, dove, quando, cosa)
-│   │   └── services/
-│   │       ├── db.ts        # Query D1 (random content, GDPR, group users, scheduling)
-│   │       ├── storage.ts   # Lettura R2 (getMediaFile, getMediaAsArrayBuffer)
-│   │       ├── telegram.ts  # Client API Telegram (text, photo, audio, sticker, reactions, webhook)
-│   │       └── weather.ts   # Client OpenWeatherMap (8 categorie meteo x 8 template)
+│   │   ├── services/
+│   │   │   ├── db.ts        # Query D1 (random content, GDPR, group users, scheduling)
+│   │   │   ├── storage.ts   # Lettura R2 (getMediaFile, getMediaAsArrayBuffer)
+│   │   │   ├── telegram.ts  # Client API Telegram + retry automatico sui 429 (retry_after ≤ 5s)
+│   │   │   └── weather.ts   # Client OpenWeatherMap (8 categorie meteo x 8 template)
+│   │   └── utils/
+│   │       └── markdown.ts  # Escaping MarkdownV2 + tagged template mdv2 (18 caratteri maledetti)
+│   ├── test/                # 36 test su workers-pool con D1 vero e migrazioni applicate
 │   └── wrangler.toml
 │
 ├── backoffice/             # Pannello admin + landing page (Astro + Tailwind)
@@ -351,6 +359,7 @@ SborrBot/
 │   │   └── lib/
 │   │       ├── auth.ts             # Constant-time password comparison (HMAC), session CRUD, token 32 byte
 │   │       └── db.ts               # Query D1 per backoffice
+│   ├── src/test/               # Test vitest del middleware (astro:middleware stubbato)
 │   ├── public/
 │   │   ├── _headers                # Security headers (CSP, HSTS, X-Frame-Options, etc.)
 │   │   ├── .well-known/security.txt
@@ -378,6 +387,8 @@ SborrBot/
 │
 ├── shared/                 # Tipi TypeScript condivisi tra worker e backoffice
 │   └── types.ts
+│
+├── .github/workflows/ci.yml  # CI: typecheck + test worker, test + build backoffice
 │
 └── package.json            # Root monorepo (npm workspaces)
 ```
@@ -426,20 +437,14 @@ Prendi il `database_id` dall'output del comando precedente e sostituiscilo in:
 ### 4. Esegui le migrazioni
 
 ```bash
-cd worker
-
 # Locale (per sviluppo)
-for f in ../migrations/*.sql; do
-  npx wrangler d1 execute sborrbot-db --local --file="$f"
-done
+npm run db:migrate:local
 
 # Remoto (per produzione)
-for f in ../migrations/*.sql; do
-  npx wrangler d1 execute sborrbot-db --remote --file="$f"
-done
-
-cd ..
+npm run db:migrate:remote
 ```
+
+Wrangler tiene traccia di cosa e gia stato applicato nella tabella `d1_migrations`, quindi puoi rilanciarlo quante volte vuoi senza sfasciare niente. I dettagli sporchi (e la procedura di riconciliazione se hai fatto casino applicando roba a mano) stanno in `migrations/README.md`.
 
 > **Nota sui media:** Le migrazioni creano schema, 3000+ testi di esempio e tutte le categorie. I record media puntano a file R2 che **non sono inclusi nel repo** (vanno caricati tramite il backoffice). I comandi testuali funzionano subito dopo le migrazioni — hai gia abbastanza materiale per far piangere chiunque.
 
@@ -661,6 +666,31 @@ curl -H "Authorization: Bearer TUO_BOT_SECRET" "https://TUNNEL-URL/register"
 
 ---
 
+## Testing e CI (si, davvero, nel bot delle bestemmie)
+
+Ti aspettavi spaghetti code scritto alle 3 di notte? Ciccati **40 test automatici**. Ogni bestemmia che esce da questo bot e stata validata da una pipeline CI. Il futuro e adesso, coglione.
+
+| Suite | Quanti | Come |
+|-------|--------|------|
+| **Worker** | 36 test | Vitest + `@cloudflare/vitest-pool-workers`: girano DENTRO workerd, con un D1 vero su cui vengono applicate tutte le migrazioni. Niente mock del database, il database |
+| **Backoffice** | 4 test | Vitest puro con `astro:middleware` stubbato. Verificano che i security headers escano su OGNI risposta, redirect compresi |
+
+Cosa coprono, tra le altre cose:
+
+- **Escaping MarkdownV2**: tutti i 18 caratteri che Telegram considera sacri (`_ * [ ] ( ) ~ \` > # + - = | { } . !`). Un punto fuori posto e Telegram ti sbatte fuori con un 400 — qui non succede, garantito da test
+- **Retry sui 429**: se Telegram dice "aspetta", il bot aspetta (`retry_after` fino a 5s) e riprova UNA volta. Se dice di aspettare troppo, il bot lo manda a cagare e logga. Educato ma non zerbino
+- **Cron e broadcast**: claim atomico dei messaggi programmati, cosi due isolate concorrenti non ti raddoppiano il buongiornissimo
+- **Security headers sui redirect**: pure quando ti rimbalza al login, la CSP viaggia con te
+
+La CI (GitHub Actions) gira su ogni PR: typecheck di worker e test, 40 test, build del backoffice. `main` e protetto: se i check non passano, non mergi un cazzo. Letteralmente.
+
+```bash
+npm test                    # test del worker
+npm run test -w backoffice  # test del backoffice
+```
+
+---
+
 ## Performance e Caching
 
 | Aspetto | Come funziona |
@@ -670,6 +700,8 @@ curl -H "Authorization: Bearer TUO_BOT_SECRET" "https://TUNNEL-URL/register"
 | **telegram_file_id** | Dopo il primo invio di un media, il bot salva l'ID Telegram. Le volte successive usa l'ID invece di ri-scaricare da R2. Risparmio di banda e tempo |
 | **R2** | Storage S3-compatible a basso costo. Zero egress fees. Puoi caricare tonnellate di audio porno senza pagare un cazzo di traffico |
 | **Cron ottimizzato** | Due cron separati: ogni minuto per i broadcast, giornaliero per la pulizia log. Niente spreco |
+| **Rate limit handling** | Telegram risponde 429? Il bot legge `retry_after`, aspetta (max 5s) e riprova una volta. I messaggi non si perdono per un attimo di traffico |
+| **MarkdownV2** | Tutti i messaggi formattati usano il parse mode moderno di Telegram con escaping totale. Zero HTTP 400 perche qualcuno si chiama `mario.rossi!` |
 
 ---
 
@@ -691,14 +723,17 @@ curl -H "Authorization: Bearer TUO_BOT_SECRET" "https://TUNNEL-URL/register"
 | Squadre insultate | 4 (Juve, Roma, Lazio, Milan) |
 | API endpoints backoffice | 15+ |
 | Reazioni emoji automatiche | 7 tipi |
+| Test automatici | 40 (36 worker + 4 backoffice) |
+| Caratteri escapati per MarkdownV2 | 18 (piu il backslash, che va escapato per primo o si incula tutto) |
+| Check CI richiesti per mergiare | 2 (worker + backoffice, main e blindato) |
 
 ---
 
 ## Contribuire
 
-Vuoi aggiungere features? Fork, branch, PR. Le solite cose.
+Vuoi aggiungere features? Fork, branch, PR. Le solite cose. La CI ti controlla typecheck, test e build su ogni PR — se rompi qualcosa lo sapranno tutti, quindi scrivi un test o preparati all'umiliazione pubblica.
 
-Se vuoi aggiungere contenuti, il modo piu veloce e usare il bulk import dal backoffice (fino a 500 frasi per volta). Se vuoi aggiungere un nuovo comando, guarda `worker/src/commands/text.ts` e segui il pattern. E piu facile che scopare.
+Se vuoi aggiungere contenuti, il modo piu veloce e usare il bulk import dal backoffice (fino a 500 frasi per volta). Se vuoi aggiungere un nuovo comando, guarda `worker/src/commands/text.ts` e segui il pattern — e ricorda che i messaggi formattati passano per il tagged template `mdv2` (`worker/src/utils/markdown.ts`), che escapa da solo tutto quello che interpoli. E piu facile che scopare.
 
 ---
 
@@ -725,4 +760,4 @@ MIT License — fai quello cazzo che vuoi. Vedi [LICENSE](LICENSE).
 
 ---
 
-*Fatto con amore, bestemmie, 3000+ frasi di insulti e tanto caffe. Powered by Cloudflare Workers, D1 e R2. Infrastruttura enterprise al servizio della cazzata.*
+*Fatto con amore, bestemmie, 3000+ frasi di insulti, 40 test automatici e tanto caffe. Powered by Cloudflare Workers, D1 e R2. Infrastruttura enterprise al servizio della cazzata, con la CI che veglia sulle bestemmie.*

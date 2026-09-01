@@ -2,6 +2,10 @@ import { Env } from '../types';
 import { TelegramApi } from '../services/telegram';
 import { getRandomTextResponse, getMultipleRandomTextResponses, getRandomGroupUser, getTwoRandomGroupUsers } from '../services/db';
 import { fetchWeather, buildWeatherMessage } from '../services/weather';
+import {
+  JUVE_PATTERN, LAMENTI_PATTERN, BESTEMMIA_PATTERN, NAPOLI_PATTERN,
+  ROMA_PATTERN, LAZIO_PATTERN, MILAN_PATTERN, EX_PATTERN, TERAPIA_PATTERN,
+} from '../patterns';
 
 interface CommandResult {
   handled: boolean;
@@ -38,19 +42,19 @@ const PATTERNS: { pattern: RegExp; slug: string; hasTarget: boolean; useSenderNa
   { pattern: /^(?:cv|curriculum)\s+(.+)/i, slug: 'cv', hasTarget: true },
   { pattern: /^complimento\s+(.+)/i, slug: 'complimento', hasTarget: true },
   { pattern: /^autopsia\s+(.+)/i, slug: 'autopsia', hasTarget: true },
-  { pattern: /\bbestemmia\b/i, slug: 'bestemmie', hasTarget: false },
+  { pattern: BESTEMMIA_PATTERN, slug: 'bestemmie', hasTarget: false },
   { pattern: /\bcome diceva mio nonno\b/i, slug: 'nonno', hasTarget: false },
   { pattern: /^buongiorno\b/i, slug: 'saluti', hasTarget: false },
   { pattern: /^buonanotte\b/i, slug: 'saluti', hasTarget: false },
   { pattern: /^ciao\b/i, slug: 'saluti', hasTarget: false },
   // Anti-Juve
-  { pattern: /\b(?:juve|juventus|gobbi|bianconeri)\b/i, slug: 'anti-juve', hasTarget: false, useSenderName: true },
+  { pattern: JUVE_PATTERN, slug: 'anti-juve', hasTarget: false, useSenderName: true },
   // Anti-Roma
-  { pattern: /\b(?:romanista|romanisti|giallorossi|as roma|lupacchiotti|trigoria)\b/i, slug: 'anti-roma', hasTarget: false, useSenderName: true },
+  { pattern: ROMA_PATTERN, slug: 'anti-roma', hasTarget: false, useSenderName: true },
   // Anti-Lazio
-  { pattern: /\b(?:laziale|laziali|biancocelesti|aquilotti|ss lazio|lotito)\b/i, slug: 'anti-lazio', hasTarget: false, useSenderName: true },
+  { pattern: LAZIO_PATTERN, slug: 'anti-lazio', hasTarget: false, useSenderName: true },
   // Anti-Milan
-  { pattern: /\b(?:milanista|milanisti|rossoneri|ac milan|casciavit)\b/i, slug: 'anti-milan', hasTarget: false, useSenderName: true },
+  { pattern: MILAN_PATTERN, slug: 'anti-milan', hasTarget: false, useSenderName: true },
   // Oroscopo
   { pattern: /^oroscopo\s*(.*)/i, slug: 'oroscopo', hasTarget: false },
   // Frasi celebri
@@ -93,13 +97,13 @@ const PATTERNS: { pattern: RegExp; slug: string; hasTarget: boolean; useSenderNa
   { pattern: /\b(?:sono il migliore|sono la migliore|sono forte|sono bravo|sono brava)\b/i, slug: 'ego', hasTarget: false },
   // Lamenti (auto-trigger)
   {
-    pattern: /\b(?:ho fame|sono stanco|sono stanca|che noia|mi annoio|sono triste|che palle|ho sonno|sono depresso|sono depressa|sto male|non ce la faccio|sono solo|sono sola|ho caldo|ho freddo|sono stressato|sono stressata|mi fa male|che fatica|sono esausto|sono esausta|che barba|sono a pezzi|non ne posso pi[uù]|basta tutto)\b/i,
+    pattern: LAMENTI_PATTERN,
     slug: 'lamenti',
     hasTarget: false,
   },
   // Napoletano (auto-trigger su parole napoletane)
   {
-    pattern: /\b(?:napoli|napoletan[oiae]|vesuvio|pizza|pizzaiolo|mozzarella|sfogliatella|maradona|pulcinella|camorra|gomorra|totò|toto|pino daniele|spaccanapoli|posillipo|vomero|scampia|secondigliano|marechiaro|fuorigrotta|san gennaro|babà|baba|ragù|ragu|friarielli|cuoppo|o sole mio)\b/i,
+    pattern: NAPOLI_PATTERN,
     slug: 'napoletano',
     hasTarget: false,
   },
@@ -119,14 +123,14 @@ const PATTERNS: { pattern: RegExp; slug: string; hasTarget: boolean; useSenderNa
   { pattern: /\bintercettazione\b/i, slug: 'intercettazione', hasTarget: false },
   // Ex (auto-trigger)
   {
-    pattern: /\b(?:la mia ex|il mio ex|mia ex|mio ex|ex ragazza|ex fidanzata|ex fidanzato|ex moglie|ex marito|ex morosa|ex moroso)\b/i,
+    pattern: EX_PATTERN,
     slug: 'ex',
     hasTarget: false,
     useSenderName: true,
   },
   // Terapia / Psicologo (auto-trigger)
   {
-    pattern: /\b(?:terapia|psicologo|psicologa|psichiatra|psicanalisi|psicanalista|vado dallo psicologo|seduta dallo psicologo|lo psicologo)\b/i,
+    pattern: TERAPIA_PATTERN,
     slug: 'terapia',
     hasTarget: false,
     useSenderName: true,

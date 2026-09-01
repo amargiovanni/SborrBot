@@ -8,6 +8,7 @@ import { handleMediaCommand } from './commands/media';
 import { handleStickerCommand } from './commands/sticker';
 import { handleControlCommand } from './commands/control';
 import { getRandomTextResponse } from './services/db';
+import { JUVE_PATTERN, LAMENTI_PATTERN, BESTEMMIA_PATTERN, NAPOLI_PATTERN, CALCIO_PATTERN, EX_PATTERN, TERAPIA_PATTERN, isCapslock } from './patterns';
 
 interface TelegramUpdate {
   update_id: number;
@@ -21,14 +22,6 @@ interface TelegramMessage {
   chat: { id: number; type: string; title?: string };
   text?: string;
 }
-
-const JUVE_PATTERN = /\b(?:juve|juventus|gobbi|bianconeri)\b/i;
-const LAMENTI_PATTERN = /\b(?:ho fame|sono stanco|sono stanca|che noia|mi annoio|sono triste|che palle|ho sonno|sono depresso|sono depressa|sto male|non ce la faccio|sono solo|sono sola|ho caldo|ho freddo|sono stressato|sono stressata|mi fa male|che fatica|sono esausto|sono esausta|che barba|sono a pezzi|non ne posso pi[uù]|basta tutto)\b/i;
-const BESTEMMIA_PATTERN = /\bbestemmia\b/i;
-const NAPOLI_PATTERN = /\b(?:napoli|napoletan[oiae]|vesuvio|pizza|pizzaiolo|mozzarella|sfogliatella|maradona|pulcinella|camorra|gomorra|totò|toto|pino daniele|spaccanapoli|posillipo|vomero|scampia|secondigliano|marechiaro|fuorigrotta|san gennaro|babà|baba|ragù|ragu|friarielli|cuoppo|o sole mio)\b/i;
-const CALCIO_PATTERN = /\b(?:romanista|romanisti|giallorossi|as roma|lupacchiotti|trigoria|laziale|laziali|biancocelesti|aquilotti|ss lazio|lotito|milanista|milanisti|rossoneri|ac milan|casciavit)\b/i;
-const EX_PATTERN = /\b(?:la mia ex|il mio ex|mia ex|mio ex|ex ragazza|ex fidanzata|ex fidanzato|ex moglie|ex marito|ex morosa|ex moroso)\b/i;
-const TERAPIA_PATTERN = /\b(?:terapia|psicologo|psicologa|psichiatra|psicanalisi|psicanalista|vado dallo psicologo|seduta dallo psicologo|lo psicologo)\b/i;
 
 async function triggerAutoReaction(text: string, chatId: string, messageId: number, api: TelegramApi): Promise<void> {
   if (JUVE_PATTERN.test(text)) {
@@ -107,15 +100,11 @@ export async function handleUpdate(update: TelegramUpdate, env: Env): Promise<vo
   }
 
   // CAPS LOCK auto-trigger: if message is mostly uppercase (10+ chars, 70%+ uppercase letters)
-  const letters = text.replace(/[^a-zA-ZÀ-ÿ]/g, '');
-  if (letters.length >= 10) {
-    const upperCount = letters.replace(/[^A-ZÀ-Ö]/g, '').length;
-    if (upperCount / letters.length >= 0.7) {
-      const capsResponse = await getRandomTextResponse(env.DB, 'capslock');
-      if (capsResponse) {
-        await api.sendMessage(chatId, capsResponse);
-        await logBotCommand(env.DB, chatId, userId, username, 'keyword', 'capslock', null, 'text');
-      }
+  if (isCapslock(text)) {
+    const capsResponse = await getRandomTextResponse(env.DB, 'capslock');
+    if (capsResponse) {
+      await api.sendMessage(chatId, capsResponse);
+      await logBotCommand(env.DB, chatId, userId, username, 'keyword', 'capslock', null, 'text');
     }
   }
 }

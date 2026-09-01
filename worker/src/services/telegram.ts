@@ -5,7 +5,12 @@ export interface TelegramResponse {
   description?: string;
   error_code?: number;
   result?: unknown;
+  parameters?: { retry_after?: number };
 }
+
+// A 429 whose retry_after fits under this cap is retried once after waiting;
+// anything longer would hold the webhook handler past what Telegram tolerates.
+const MAX_RETRY_AFTER_S = 5;
 
 export class TelegramApi {
   private baseUrl: string;
@@ -14,31 +19,39 @@ export class TelegramApi {
     this.baseUrl = `${TELEGRAM_API}${botToken}`;
   }
 
-  private async handle(method: string, res: Response): Promise<TelegramResponse> {
-    let body: TelegramResponse;
+  private async parse(res: Response): Promise<TelegramResponse> {
     try {
-      body = (await res.json()) as TelegramResponse;
+      return (await res.json()) as TelegramResponse;
     } catch {
-      body = { ok: false, error_code: res.status, description: `HTTP ${res.status}: non-JSON response` };
+      return { ok: false, error_code: res.status, description: `HTTP ${res.status}: non-JSON response` };
     }
-    if (!res.ok || !body.ok) {
-      console.error(`Telegram API ${method} failed:`, body.description ?? `HTTP ${res.status}`);
+  }
+
+  private async handle(method: string, doFetch: () => Promise<Response>): Promise<TelegramResponse> {
+    let body = await this.parse(await doFetch());
+    const retryAfter = body.error_code === 429 ? body.parameters?.retry_after : undefined;
+    if (retryAfter !== undefined && retryAfter <= MAX_RETRY_AFTER_S) {
+      await new Promise((r) => setTimeout(r, retryAfter * 1000));
+      body = await this.parse(await doFetch());
+    }
+    if (!body.ok) {
+      console.error(`Telegram API ${method} failed:`, body.description ?? `error ${body.error_code ?? 'unknown'}`);
     }
     return body;
   }
 
   private async callJson(method: string, payload: Record<string, unknown>): Promise<TelegramResponse> {
-    const res = await fetch(`${this.baseUrl}/${method}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    return this.handle(method, res);
+    return this.handle(method, () =>
+      fetch(`${this.baseUrl}/${method}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+    );
   }
 
   private async callForm(method: string, form: FormData): Promise<TelegramResponse> {
-    const res = await fetch(`${this.baseUrl}/${method}`, { method: 'POST', body: form });
-    return this.handle(method, res);
+    return this.handle(method, () => fetch(`${this.baseUrl}/${method}`, { method: 'POST', body: form }));
   }
 
   async sendMessage(chatId: number | string, text: string, parseMode?: string): Promise<TelegramResponse> {
@@ -80,8 +93,7 @@ export class TelegramApi {
   }
 
   async deleteWebhook(): Promise<TelegramResponse> {
-    const res = await fetch(`${this.baseUrl}/deleteWebhook`, { method: 'POST' });
-    return this.handle('deleteWebhook', res);
+    return this.handle('deleteWebhook', () => fetch(`${this.baseUrl}/deleteWebhook`, { method: 'POST' }));
   }
 
   async answerInlineQuery(queryId: string, results: unknown[]): Promise<TelegramResponse> {

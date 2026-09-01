@@ -49,12 +49,13 @@ export async function getCommandLogs(db: D1Database, page = 1, limit = 50, filte
   const binds: any[] = [];
 
   if (filters?.command) {
-    query += ' AND command LIKE ?';
-    binds.push(`%${filters.command}%`);
+    const command = filters.command.slice(0, 64).replace(/[\\%_]/g, (c) => '\\' + c);
+    query += " AND command LIKE ? ESCAPE '\\'";
+    binds.push(`%${command}%`);
   }
   if (filters?.chatId) {
     query += ' AND telegram_chat_id = ?';
-    binds.push(filters.chatId);
+    binds.push(filters.chatId.slice(0, 64));
   }
   if (filters?.dateFrom) {
     query += ' AND created_at >= ?';

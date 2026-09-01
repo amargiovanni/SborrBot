@@ -36,7 +36,11 @@ describe('scheduled()', () => {
 
     const ctrl = createScheduledController({ cron: '* * * * *' });
     const ctx = createExecutionContext();
-    await worker.scheduled(ctrl, env, ctx);
+    // createScheduledController returns a ScheduledController, which is what
+    // the runtime actually passes to `scheduled()` — the handler's parameter
+    // is typed ScheduledEvent for backwards compatibility, so the two don't
+    // structurally match and the call needs an explicit cast here.
+    await worker.scheduled(ctrl as unknown as ScheduledEvent, env, ctx);
     await waitOnExecutionContext(ctx);
 
     const row = await env.DB.prepare('SELECT last_sent_at FROM scheduled_messages').first<{ last_sent_at: string | null }>();
@@ -55,7 +59,7 @@ describe('scheduled()', () => {
     // No interceptor registered: any telegram call would throw (disableNetConnect).
     const ctrl = createScheduledController({ cron: '0 3 * * *' });
     const ctx = createExecutionContext();
-    await worker.scheduled(ctrl, env, ctx);
+    await worker.scheduled(ctrl as unknown as ScheduledEvent, env, ctx);
     await waitOnExecutionContext(ctx);
 
     const row = await env.DB.prepare('SELECT last_sent_at FROM scheduled_messages').first<{ last_sent_at: string | null }>();

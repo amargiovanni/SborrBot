@@ -12,4 +12,4 @@ CREATE TABLE IF NOT EXISTS scheduled_messages (
   updated_at TEXT DEFAULT (datetime('now'))
 );
 
-CREATE INDEX idx_scheduled_messages_active ON scheduled_messages(is_active, scheduled_at);
+CREATE INDEX IF NOT EXISTS idx_scheduled_messages_active ON scheduled_messages(is_active, scheduled_at);

@@ -110,17 +110,11 @@ function getConfigBySection(sectionKey: string) {
                 <div class="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-lg flex-shrink-0">⚙️</div>
                 <div>
                   <div class="text-sm font-medium text-gray-800 dark:text-white/90 font-mono">{item.key}</div>
-                  <div class="text-theme-sm text-gray-500 dark:text-gray-400 mt-0.5">Chiave custom</div>
+                  <div class="text-theme-sm text-gray-500 dark:text-gray-400 mt-0.5">Chiave non riconosciuta &mdash; non modificabile dal backoffice.</div>
                 </div>
               </div>
               <div class="flex gap-2 items-center flex-shrink-0">
-                <input
-                  type="text"
-                  value={item.value}
-                  data-input-config={item.key}
-                  class="input-field w-48"
-                />
-                <button data-save-config={item.key} class="btn-primary text-sm !py-2 !px-4">Salva</button>
+                <span class="text-sm text-gray-500 dark:text-gray-400 font-mono">{item.value}</span>
               </div>
             </div>
           ))}

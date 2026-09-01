@@ -230,6 +230,15 @@ const svgIcons: Record<string, string> = {
         category: '/content/texts',
       };
 
+      function esc(s) {
+        return String(s)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
       function open() {
         modal.classList.remove('hidden');
         modal.classList.add('flex');
@@ -273,7 +282,7 @@ const svgIcons: Record<string, string> = {
           var res = await fetch('/api/search?q=' + encodeURIComponent(q));
           var data = await res.json();
           if (!data.results || data.results.length === 0) {
-            results.innerHTML = '<div class="px-3 py-8 text-center text-sm text-gray-400 dark:text-gray-500">Nessun risultato per &ldquo;' + q.replace(/</g, '&lt;') + '&rdquo;</div>';
+            results.innerHTML = '<div class="px-3 py-8 text-center text-sm text-gray-400 dark:text-gray-500">Nessun risultato per &ldquo;' + esc(q) + '&rdquo;</div>';
             return;
           }
           var html = '';
@@ -284,8 +293,8 @@ const svgIcons: Record<string, string> = {
             html += '<a href="' + link + '" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 transition-colors group">';
             html += '<span class="text-lg flex-shrink-0">' + icon + '</span>';
             html += '<div class="flex-1 min-w-0">';
-            html += '<div class="text-sm font-medium text-gray-800 dark:text-white/90 truncate">' + (r.title || '-').replace(/</g, '&lt;') + '</div>';
-            html += '<div class="text-theme-xs text-gray-500 dark:text-gray-400 truncate">' + label + (r.subtitle ? ' &middot; ' + r.subtitle.replace(/</g, '&lt;') : '') + '</div>';
+            html += '<div class="text-sm font-medium text-gray-800 dark:text-white/90 truncate">' + esc(r.title || '-') + '</div>';
+            html += '<div class="text-theme-xs text-gray-500 dark:text-gray-400 truncate">' + label + (r.subtitle ? ' &middot; ' + esc(r.subtitle) : '') + '</div>';
             html += '</div>';
             html += '</a>';
           });

@@ -1,6 +1,7 @@
 import { Env } from '../types';
 import { TelegramApi } from '../services/telegram';
 import { getCategoryList, getUserStats, deleteUserData } from '../services/db';
+import { escapeMarkdown } from '../utils/markdown';
 
 interface CommandResult {
   handled: boolean;
@@ -104,7 +105,7 @@ export async function handleSlashCommand(
 
     case '/testo': {
       const categories = await getCategoryList(env.DB, 'text');
-      const list = categories.map(c => `• *${c.name}* — \`${c.slug}\``).join('\n');
+      const list = categories.map(c => `• *${escapeMarkdown(c.name)}* — \`${c.slug}\``).join('\n');
       await api.sendMessage(chatId,
         `📝 *Categorie Testo:*\n\n${list || '_Nessuna categoria disponibile_'}`,
         'Markdown'
@@ -114,7 +115,7 @@ export async function handleSlashCommand(
 
     case '/foto': {
       const categories = await getCategoryList(env.DB, 'photo');
-      const list = categories.map(c => `• *${c.name}* — scrivi \`${c.slug}\``).join('\n');
+      const list = categories.map(c => `• *${escapeMarkdown(c.name)}* — scrivi \`${c.slug}\``).join('\n');
       await api.sendMessage(chatId,
         `📸 *Categorie Foto:*\n\n${list || '_Nessuna categoria disponibile_'}`,
         'Markdown'
@@ -130,7 +131,7 @@ export async function handleSlashCommand(
     case '/audiorichardbenson':
     case '/audiovari': {
       const categories = await getCategoryList(env.DB, 'audio');
-      const list = categories.map(c => `• *${c.name}* — scrivi \`${c.slug.replace(/-/g, ' ')}\``).join('\n');
+      const list = categories.map(c => `• *${escapeMarkdown(c.name)}* — scrivi \`${c.slug.replace(/-/g, ' ')}\``).join('\n');
       await api.sendMessage(chatId,
         `🔊 *Categorie Audio:*\n\n${list || '_Nessuna categoria disponibile_'}`,
         'Markdown'
@@ -140,7 +141,7 @@ export async function handleSlashCommand(
 
     case '/sticker': {
       const categories = await getCategoryList(env.DB, 'sticker');
-      const list = categories.map(c => `• *${c.name}* — scrivi \`${c.slug.replace('sticker-', '')}\``).join('\n');
+      const list = categories.map(c => `• *${escapeMarkdown(c.name)}* — scrivi \`${c.slug.replace('sticker-', '')}\``).join('\n');
       await api.sendMessage(chatId,
         `🎨 *Categorie Sticker:*\n\n${list || '_Nessuna categoria disponibile_'}`,
         'Markdown'

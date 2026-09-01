@@ -1,30 +1,38 @@
 import { Env } from './types';
 import { TelegramApi } from './services/telegram';
 import { handleUpdate } from './bot';
-import { purgeOldLogs, getDueScheduledMessages, markScheduledMessageSent, getActiveGroupChatIds } from './services/db';
+import { purgeOldLogs, getDueScheduledMessages, claimScheduledMessage, getActiveGroupChatIds } from './services/db';
 
 const LOG_RETENTION_DAYS = 90;
+const BROADCAST_BATCH_SIZE = 20; // Telegram caps broadcasts around 30 msg/s
+const BROADCAST_BATCH_PAUSE_MS = 1100;
 
-async function processScheduledMessages(env: Env): Promise<number> {
+export async function processScheduledMessages(env: Env): Promise<number> {
   const api = new TelegramApi(env.BOT_TOKEN);
   const messages = await getDueScheduledMessages(env.DB);
   let sent = 0;
 
   for (const msg of messages) {
+    // Claim atomically before sending: overlapping cron isolates can both read
+    // the same due list, so the UPDATE itself is the arbiter — only the
+    // isolate whose claim actually matches a row (still unclaimed) owns the
+    // send. A message that loses the race is skipped outright.
+    const claimed = await claimScheduledMessage(env.DB, msg.id, msg.schedule_type === 'once');
+    if (!claimed) continue;
+
     const chatIds = msg.target_group_id
       ? [msg.target_group_id]
       : await getActiveGroupChatIds(env.DB);
 
-    for (const chatId of chatIds) {
-      try {
-        await api.sendMessage(chatId, msg.message_text);
-        sent++;
-      } catch (e) {
-        console.error(`Failed to send scheduled message ${msg.id} to ${chatId}:`, e);
+    for (let i = 0; i < chatIds.length; i += BROADCAST_BATCH_SIZE) {
+      if (i > 0) await new Promise((r) => setTimeout(r, BROADCAST_BATCH_PAUSE_MS));
+      const batch = chatIds.slice(i, i + BROADCAST_BATCH_SIZE);
+      const results = await Promise.allSettled(batch.map((chatId) => api.sendMessage(chatId, msg.message_text)));
+      for (const r of results) {
+        if (r.status === 'fulfilled' && r.value.ok) sent++;
+        else console.error(`Scheduled message ${msg.id} delivery failed:`, r.status === 'rejected' ? r.reason : r.value.description);
       }
     }
-
-    await markScheduledMessageSent(env.DB, msg.id, msg.schedule_type === 'once');
   }
 
   return sent;
@@ -32,10 +40,11 @@ async function processScheduledMessages(env: Env): Promise<number> {
 
 export default {
   async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
-    // Purge old logs (daily at 03:00)
+    // Purge old logs (daily at 03:00) — never broadcasts.
     if (event.cron === '0 3 * * *') {
       const deleted = await purgeOldLogs(env.DB, LOG_RETENTION_DAYS);
       console.log(`Cron: purged ${deleted} logs older than ${LOG_RETENTION_DAYS} days`);
+      return;
     }
 
     // Process scheduled messages (every minute)

@@ -49,12 +49,13 @@ export async function getCommandLogs(db: D1Database, page = 1, limit = 50, filte
   const binds: any[] = [];
 
   if (filters?.command) {
-    query += ' AND command LIKE ?';
-    binds.push(`%${filters.command}%`);
+    const command = filters.command.slice(0, 64).replace(/[\\%_]/g, (c) => '\\' + c);
+    query += " AND command LIKE ? ESCAPE '\\'";
+    binds.push(`%${command}%`);
   }
   if (filters?.chatId) {
     query += ' AND telegram_chat_id = ?';
-    binds.push(filters.chatId);
+    binds.push(filters.chatId.slice(0, 64));
   }
   if (filters?.dateFrom) {
     query += ' AND created_at >= ?';
@@ -256,25 +257,28 @@ export async function deleteScheduledMessage(db: D1Database, id: number) {
 // --- Global Search ---
 
 export async function globalSearch(db: D1Database, query: string) {
-  const like = `%${query}%`;
+  // Escape LIKE metacharacters so a search term can't widen its own match
+  // (e.g. a bare "%" or "_" scanning the whole table).
+  const escaped = query.replace(/[\\%_]/g, (c) => '\\' + c);
+  const like = `%${escaped}%`;
   const [commands, texts, groups, categories] = await Promise.all([
     db.prepare(
       `SELECT 'command' as type, command as title, username as subtitle, created_at
-       FROM command_logs WHERE command LIKE ? ORDER BY created_at DESC LIMIT 5`
+       FROM command_logs WHERE command LIKE ? ESCAPE '\\' ORDER BY created_at DESC LIMIT 5`
     ).bind(like).all(),
     db.prepare(
       `SELECT 'text' as type, SUBSTR(content, 1, 80) as title, c.name as subtitle, tr.created_at
        FROM text_responses tr
        JOIN categories c ON tr.category_id = c.id
-       WHERE tr.content LIKE ? ORDER BY tr.created_at DESC LIMIT 5`
+       WHERE tr.content LIKE ? ESCAPE '\\' ORDER BY tr.created_at DESC LIMIT 5`
     ).bind(like).all(),
     db.prepare(
       `SELECT 'group' as type, title, telegram_chat_id as subtitle, updated_at as created_at
-       FROM groups WHERE title LIKE ? OR telegram_chat_id LIKE ? ORDER BY updated_at DESC LIMIT 5`
+       FROM groups WHERE title LIKE ? ESCAPE '\\' OR telegram_chat_id LIKE ? ESCAPE '\\' ORDER BY updated_at DESC LIMIT 5`
     ).bind(like, like).all(),
     db.prepare(
       `SELECT 'category' as type, name as title, type as subtitle, created_at
-       FROM categories WHERE name LIKE ? OR slug LIKE ? ORDER BY name LIMIT 5`
+       FROM categories WHERE name LIKE ? ESCAPE '\\' OR slug LIKE ? ESCAPE '\\' ORDER BY name LIMIT 5`
     ).bind(like, like).all(),
   ]);
 

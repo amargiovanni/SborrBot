@@ -34,9 +34,9 @@ export async function fetchWeather(apiKey: string, city: string): Promise<Weathe
   };
 }
 
-type WeatherCategory = 'temporale' | 'pioggia' | 'neve' | 'nebbia' | 'sereno' | 'nuvole' | 'caldo' | 'freddo';
+export type WeatherCategory = 'temporale' | 'pioggia' | 'neve' | 'nebbia' | 'sereno' | 'nuvole' | 'caldo' | 'freddo';
 
-function categorizeWeather(weather: WeatherData): WeatherCategory {
+export function categorizeWeather(weather: WeatherData): WeatherCategory {
   if (weather.temperature >= 35) return 'caldo';
   if (weather.temperature <= 0) return 'freddo';
 

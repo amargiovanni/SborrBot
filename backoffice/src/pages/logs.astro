@@ -125,9 +125,9 @@ function formatDate(dateStr: string) {
         <div class="pt-3 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between">
           <span class="text-gray-500 dark:text-gray-400 text-theme-sm">{total.toLocaleString('it-IT')} risultati</span>
           <div class="flex items-center gap-2">
-            {page > 1 && <a href={`/logs?page=${page - 1}&command=${filterCommand}&chatId=${filterChatId}`} class="px-3 py-1.5 text-theme-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">&larr; Prec</a>}
+            {page > 1 && <a href={`/logs?page=${page - 1}&command=${encodeURIComponent(filterCommand)}&chatId=${encodeURIComponent(filterChatId)}`} class="px-3 py-1.5 text-theme-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">&larr; Prec</a>}
             <span class="px-3 py-1.5 text-theme-sm text-gray-500 dark:text-gray-400 tabular-nums">{page}/{totalPages}</span>
-            {page < totalPages && <a href={`/logs?page=${page + 1}&command=${filterCommand}&chatId=${filterChatId}`} class="px-3 py-1.5 text-theme-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Succ &rarr;</a>}
+            {page < totalPages && <a href={`/logs?page=${page + 1}&command=${encodeURIComponent(filterCommand)}&chatId=${encodeURIComponent(filterChatId)}`} class="px-3 py-1.5 text-theme-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Succ &rarr;</a>}
           </div>
         </div>
       )}

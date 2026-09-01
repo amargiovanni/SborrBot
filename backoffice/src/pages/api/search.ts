@@ -6,7 +6,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
   if (!env?.DB) return new Response('Server error', { status: 500 });
 
   const url = new URL(request.url);
-  const q = url.searchParams.get('q')?.trim();
+  const q = url.searchParams.get('q')?.trim().slice(0, 64);
   if (!q || q.length < 2) {
     return Response.json({ results: [] });
   }

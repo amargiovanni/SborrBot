@@ -1,6 +1,6 @@
 import { env, fetchMock, createScheduledController, createExecutionContext, waitOnExecutionContext } from 'cloudflare:test';
 import { describe, it, expect, beforeAll, beforeEach, afterEach } from 'vitest';
-import worker from '../src/index';
+import worker, { processScheduledMessages } from '../src/index';
 
 beforeAll(() => {
   fetchMock.activate();
@@ -60,5 +60,27 @@ describe('scheduled()', () => {
 
     const row = await env.DB.prepare('SELECT last_sent_at FROM scheduled_messages').first<{ last_sent_at: string | null }>();
     expect(row!.last_sent_at).toBeNull();
+  });
+
+  it('claims a due message at most once across overlapping cron runs', async () => {
+    await env.DB.prepare(
+      "INSERT INTO groups (telegram_chat_id, is_active, is_banned) VALUES ('-100', 1, 0)"
+    ).run();
+    await env.DB.prepare(
+      "INSERT INTO scheduled_messages (message_text, target_group_id, schedule_type, scheduled_at) VALUES ('una volta sola', NULL, 'daily', ?)"
+    ).bind(currentHHMM()).run();
+
+    // Only one sendMessage interceptor registered: a second run claiming and
+    // broadcasting again would exhaust it and fail assertNoPendingInterceptors.
+    fetchMock
+      .get('https://api.telegram.org')
+      .intercept({ path: '/bottest-token/sendMessage', method: 'POST' })
+      .reply(200, { ok: true, result: {} });
+
+    const firstSent = await processScheduledMessages(env);
+    expect(firstSent).toBe(1);
+
+    const secondSent = await processScheduledMessages(env);
+    expect(secondSent).toBe(0);
   });
 });

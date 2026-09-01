@@ -214,16 +214,20 @@ export async function getDueScheduledMessages(db: D1Database): Promise<Scheduled
   ];
 }
 
-export async function markScheduledMessageSent(db: D1Database, id: number, deactivate: boolean): Promise<void> {
-  if (deactivate) {
-    await db.prepare(
-      "UPDATE scheduled_messages SET last_sent_at = datetime('now'), is_active = 0 WHERE id = ?"
-    ).bind(id).run();
-  } else {
-    await db.prepare(
-      "UPDATE scheduled_messages SET last_sent_at = datetime('now') WHERE id = ?"
-    ).bind(id).run();
-  }
+// Atomically claims a due scheduled message so overlapping cron isolates that
+// both read the due list cannot both send it: only the isolate whose UPDATE
+// actually matches a row (last_sent_at still NULL, or last sent before today)
+// owns the send. The WHERE clause mirrors getDueScheduledMessages' "not sent
+// yet" condition, so a claim can only ever succeed once per due window.
+export async function claimScheduledMessage(db: D1Database, id: number, deactivate: boolean): Promise<boolean> {
+  const result = deactivate
+    ? await db.prepare(
+        "UPDATE scheduled_messages SET last_sent_at = datetime('now'), is_active = 0 WHERE id = ? AND (last_sent_at IS NULL OR DATE(last_sent_at) < DATE('now'))"
+      ).bind(id).run()
+    : await db.prepare(
+        "UPDATE scheduled_messages SET last_sent_at = datetime('now') WHERE id = ? AND (last_sent_at IS NULL OR DATE(last_sent_at) < DATE('now'))"
+      ).bind(id).run();
+  return result.meta.changes === 1;
 }
 
 export async function getActiveGroupChatIds(db: D1Database): Promise<string[]> {

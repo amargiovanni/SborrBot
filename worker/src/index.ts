@@ -1,7 +1,7 @@
 import { Env } from './types';
 import { TelegramApi } from './services/telegram';
 import { handleUpdate } from './bot';
-import { purgeOldLogs, getDueScheduledMessages, markScheduledMessageSent, getActiveGroupChatIds } from './services/db';
+import { purgeOldLogs, getDueScheduledMessages, claimScheduledMessage, getActiveGroupChatIds } from './services/db';
 
 const LOG_RETENTION_DAYS = 90;
 const BROADCAST_BATCH_SIZE = 20; // Telegram caps broadcasts around 30 msg/s
@@ -13,17 +13,16 @@ export async function processScheduledMessages(env: Env): Promise<number> {
   let sent = 0;
 
   for (const msg of messages) {
+    // Claim atomically before sending: overlapping cron isolates can both read
+    // the same due list, so the UPDATE itself is the arbiter — only the
+    // isolate whose claim actually matches a row (still unclaimed) owns the
+    // send. A message that loses the race is skipped outright.
+    const claimed = await claimScheduledMessage(env.DB, msg.id, msg.schedule_type === 'once');
+    if (!claimed) continue;
+
     const chatIds = msg.target_group_id
       ? [msg.target_group_id]
       : await getActiveGroupChatIds(env.DB);
-
-    // Claim before sending: a broadcast can span multiple minutes for a large
-    // group list, and marking it sent only after the loop leaves the message
-    // eligible for `getDueScheduledMessages` again if an overlapping cron run
-    // starts in the meantime, causing a double send. Marking it sent first
-    // makes delivery at-most-once (acceptable for this bot) instead of
-    // at-least-once.
-    await markScheduledMessageSent(env.DB, msg.id, msg.schedule_type === 'once');
 
     for (let i = 0; i < chatIds.length; i += BROADCAST_BATCH_SIZE) {
       if (i > 0) await new Promise((r) => setTimeout(r, BROADCAST_BATCH_PAUSE_MS));

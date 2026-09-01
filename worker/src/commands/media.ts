@@ -60,8 +60,9 @@ export async function handleMediaCommand(
     const result = await api.sendAudio(chatId, blob, media.file_name, media.caption ?? undefined);
 
     // Cache the telegram file_id for future use
-    if (result?.result?.audio?.file_id) {
-      await updateTelegramFileId(env.DB, media.id, result.result.audio.file_id);
+    const audioResult = result.result as { audio?: { file_id?: string } } | undefined;
+    if (audioResult?.audio?.file_id) {
+      await updateTelegramFileId(env.DB, media.id, audioResult.audio.file_id);
     }
 
     return { handled: true, command: slug, responseType: 'audio' };
@@ -94,8 +95,9 @@ export async function handleMediaCommand(
     const result = await api.sendPhoto(chatId, blob, media.caption ?? undefined);
 
     // Cache the telegram file_id
-    if (result?.result?.photo) {
-      const largestPhoto = result.result.photo[result.result.photo.length - 1];
+    const photoResult = result.result as { photo?: Array<{ file_id: string }> } | undefined;
+    if (photoResult?.photo) {
+      const largestPhoto = photoResult.photo[photoResult.photo.length - 1];
       if (largestPhoto?.file_id) {
         await updateTelegramFileId(env.DB, media.id, largestPhoto.file_id);
       }
